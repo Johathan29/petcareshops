@@ -1,0 +1,8 @@
+ // Encrypt
+                    var ciphertext = CryptoJS.HmacSHA512('my message', 'secret key 123');
+                    console.log(ciphertext)
+                // Decrypt
+                var bytes  = CryptoJS.HmacSHA512.decrypt(ciphertext.toString(), 'secret key 123');
+                var plaintext = bytes.toString(CryptoJS.enc.Utf8);
+                
+                    console.log(plaintext)

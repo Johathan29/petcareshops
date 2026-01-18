@@ -1,0 +1,43 @@
+{
+  "name": "vite-vue-starter",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview"
+  },
+  "dependencies": {
+    "@fortawesome/fontawesome-svg-core": "^6.6.0",
+    "@fortawesome/free-brands-svg-icons": "^6.7.2",
+    "@fortawesome/free-regular-svg-icons": "^6.7.2",
+    "@fortawesome/free-solid-svg-icons": "^6.6.0",
+    "@fortawesome/vue-fontawesome": "^3.0.8",
+    "@splidejs/vue-splide": "^0.6.12",
+    "@types/node": "^22.15.14",
+    "buffer": "^6.0.3",
+    "chart.js": "^4.4.9",
+    "cors": "^2.8.5",
+    "crypto-js": "^3.1.9-1",
+    "express": "^5.2.1",
+    "firebase": "^12.7.0",
+    "firebase-admin": "^13.6.0",
+    "firebase-functions": "^7.0.2",
+    "flowbite": "^2.5.2",
+    "motion": "^12.23.26",
+    "sqlite3": "^5.1.6",
+    "twitter-api-sdk": "^1.2.1",
+    "twitter.js": "^0.14.0",
+    "typeorm": "^0.3.17",
+    "vue": "^3.3.4",
+    "vue-router": "^4.2.5"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^4.2.3",
+    "autoprefixer": "^10.4.20",
+    "postcss": "^8.4.41",
+    "tailwindcss": "^3.4.10",
+    "vite": "^4.4.8"
+  }
+}

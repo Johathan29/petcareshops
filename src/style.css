@@ -1,0 +1,122 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+  button.splide__arrow.splide__arrow--next, button.splide__arrow.splide__arrow--prev
+ {
+    background: #0f6cbd4a!important;
+}
+  button.splide__arrow.splide__arrow--next:hover, button.splide__arrow.splide__arrow--prev:hover
+ {
+    background: #0f6cbd!important;
+}
+ button.splide__arrow.splide__arrow--next svg, button.splide__arrow.splide__arrow--prev svg{
+  fill: white;
+ }
+ button.splide__arrow.splide__arrow--next svg, button.splide__arrow.splide__arrow--prev svg{
+  fill: white;
+ }
+:root{
+--background: 30 40% 98%;
+--foreground: 220 30% 15%;
+    --card: 0 0% 100%;
+    --card-foreground: 220 30% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 220 30% 15%;
+    --primary: 24 95% 55%;
+    --primary-foreground: 0 0% 100%;
+    --secondary:206 85% 40% / 1;
+    --secondary-foreground: 0 0% 100%;
+    --muted: 30 20% 94%;
+    --muted-foreground: 220 15% 45%;
+    --accent: 24 100% 60%;
+    --accent-foreground: 0 0% 100%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 30 20% 90%;
+    --input: 30 20% 90%;
+    --ring: 24 95% 55%;
+    --radius: 1rem;
+    --coral: 24 95% 55%;
+    --coral-light: 24 100% 70%;
+    --coral-dark: 24 90% 45%;
+    --navy: 220 60% 25%;
+    --navy-light: 220 50% 35%;
+    --cream: 30 40% 98%;
+    --warm-gray: 30 10% 60%;
+    --gradient-primary: linear-gradient(135deg, hsl(24 95% 55%), hsl(35 100% 60%));
+    --gradient-hero: linear-gradient(180deg, hsl(30 40% 98%) 0%, hsl(30 30% 95%) 100%);
+    --gradient-card: linear-gradient(145deg, hsl(0 0% 100%), hsl(30 20% 98%));
+    --gradient-glass: linear-gradient(135deg, rgba(255, 255, 255, 0.9), rgba(255, 255, 255, 0.6));
+    --shadow-sm: 0 2px 8px -2px hsl(24 95% 55% / 0.1);
+    --shadow-md: 0 8px 24px -8px hsl(24 95% 55% / 0.15);
+    --shadow-lg: 0 16px 48px -12px hsl(24 95% 55% / 0.2);
+    --shadow-glow: 0 0 40px hsl(24 95% 55% / 0.3);
+    --shadow-card: 0 4px 20px -4px hsl(220 30% 15% / 0.08);
+    --shadow-card-hover: 0 20px 40px -12px hsl(220 30% 15% / 0.15);
+    --sidebar-background: 0 0% 98%;
+    --sidebar-foreground:240 5.3% 26.1%
+: 240 5.3% 26.1%;
+    --sidebar-primary: 240 5.9% 10%;
+    --sidebar-primary-foreground: 0 0% 98%;
+    --sidebar-accent: 240 4.8% 95.9%;
+    --sidebar-accent-foreground: 240 5.9% 10%;
+    --sidebar-border: 220 13% 91%;
+    --sidebar-ring: 217.2 91.2% 59.8%;
+}
+.bg-primary{
+  background-color:#0F6CBD ;
+}
+.bg-primary:hover{
+  background-color:#0F6CBD ;
+}
+#app {
+        display: grid;
+    grid-template-rows: auto 1fr auto;
+    min-height: 100vh;
+    max-width: 100%!important;
+    margin: 0 0!important;
+    padding: 0rem!important; 
+    text-align: center;
+}
+body{
+    overflow-x: hidden;
+    font-family: Inter, sans-serif;
+}
+.splide__list{
+    /*height: 24rem!important;*/
+    justify-content: space-between;
+}
+/* LOGIN → REGISTER */
+.auth-slide-enter-active,
+.auth-slide-leave-active {
+  transition: all 0.35s ease;
+}
+
+.auth-slide-enter-from {
+  opacity: 0;
+  transform: translateX(30px);
+}
+span.text-text-sec-light {
+    color: #0a19bc;
+}
+
+.auth-slide-leave-to {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+/* REGISTER → LOGIN (dirección inversa) */
+.auth-slide-reverse-enter-active,
+.auth-slide-reverse-leave-active {
+  transition: all 0.35s ease;
+}
+
+.auth-slide-reverse-enter-from {
+  opacity: 0;
+  transform: translateX(-30px);
+}
+
+.auth-slide-reverse-leave-to {
+  opacity: 0;
+  transform: translateX(30px);
+}
