@@ -74,7 +74,7 @@ const detalleUser = () => {
 <script  lang="ts">
 
 export default{
-  name:'Home',
+name:'Home',
 props:{
 
 userId: Number, 

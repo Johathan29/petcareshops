@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
 import { computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { animate, stagger, inView } from 'motion'
@@ -105,7 +105,7 @@ onMounted(() => {
         <FontAwesomeIcon :icon="service.icon" class="w-8 h-8" />
       </div>
 
-      <div class="w-fit">
+      <div class="w-fit relative ">
         <!-- TITLE -->
         <h3
           class="text-xl font-bold mb-3 text-black text-left
@@ -115,7 +115,7 @@ onMounted(() => {
         </h3>
 
         <!-- DESCRIPTION -->
-        <p class="text-muted-foreground leading-relaxed mb-4 text-left pb-[1rem] border-b-[1px] border-gray-500/20 group-hover:border-[#0f6cbdc5]">
+        <p class="text-muted-foreground leading-relaxed mb-4 text-left pb-[1rem] min-h-[6rem] border-b-[1px] border-gray-500/20 group-hover:border-[#0f6cbdc5]">
           {{ service.description }}
         </p>
 
@@ -125,8 +125,8 @@ onMounted(() => {
         <template v-if="isHome">
           <div
             class="flex items-center text-primary font-semibold text-sm
-                   absolute bottom-[1rem] gap-2
-                   group-hover:gap-3 transition-all"
+                   absolute -bottom-[1rem] gap-2
+                   group-hover:gap-3 transition-all "
           >
             Saber más
             <svg
@@ -145,26 +145,29 @@ onMounted(() => {
             </svg>
           </div>
         </template>
-
         <template v-else>
-          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full">
+          <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mb-4 py-[1.4rem]">
             <li
               v-for="(value, i) in service.procesos"
               :key="i"
               class="flex w-max items-center gap-2 text-sm
                      text-slate-500 group-hover:text-black"
             >
-             <span
-  class="w-1.5 h-1.5 rounded-full
-         bg-gray-400
-         group-hover:bg-[#0f6cbdc5]
-         transition-transform duration-300
-         group-hover:scale-125"
-></span>
+              <FontAwesomeIcon
+              :icon="faCheckCircle"
+              class=" group-hover:scale-[1.2] group-hover:text-[#0f6cbdc5] transition-transform duration-300"
+      /> 
               {{ value }}
             </li>
           </ul>
-          <RouterLink :to="`/services/${slugify(service.title)}`">ver mas</RouterLink>
+          <RouterLink :to="`/services/${slugify(service.title)}`" class="absolute bottom-0 right-0 flex items-center gap-4 group-hover:text-[#0f6cbdc5] transition-all duration-300" :title="service.title">
+            Ver más
+            <FontAwesomeIcon
+        :icon="faArrowRight"
+        class="w-4 h-4 group-hover:translate-x-1.5
+               transition duration-300"
+      />
+          </RouterLink>
         </template>
       </div>
     </component>
@@ -173,6 +176,7 @@ onMounted(() => {
   <!-- CTA HOME -->
   <div v-if="isHome" class="pt-[4rem] text-center">
     <RouterLink
+    title="Ver todos los servicios"
       to="/services"
       class="inline-flex items-center justify-center gap-2
              font-semibold bg-sky-500 text-white shadow-md

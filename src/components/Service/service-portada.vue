@@ -13,7 +13,7 @@ import CardServices from './cardServices.vue';
       <!-- HEADER -->
       <header class="mb-16 text-left">
         <span
-          class="inline-block font-semibold text-sm uppercase tracking-wider mb-4 text-gray-400 shadow-md"
+          class="inline-block font-semibold text-sm uppercase tracking-wider mb-4 text-white border-b-2 border-white p-2 "
         >
           Our Services
         </span>

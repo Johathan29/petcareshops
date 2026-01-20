@@ -41,48 +41,7 @@ const serviceSlug = computed(() =>
 ================================ */
 const services: Service[] = Data.value[3]
 
-const doctors: Doctor[] = [
-  {
-    id: 1,
-    name: 'Dr. Laura Martínez',
-    specialty: ['General Consultation', 'Preventive medicine'],
-     avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApt8_b4fUQYwS8prThyy-yPwh_H7W1fy9Kvj8iBVBcwRtJrgwynMNJw4tuWwqjoveKAe0rAlZ9QCMFSqGDB3hKzMzLcQpyH68XzrtsbQ2xCQG2eC0dCKcMi-Hdued46WGkDVcRwbiZAk3XzT4lputQePSj7EkAp4diRHPeSMMb1f9eorqo06CXH6qaxbtfM22EvsTLBXrt0EVomGwJydGRpEXhZ_Hs6lt1J14F2Ame1Wc5ATKH0aSRMXibHJrcF2K_ojC2eqRFeKkr',
-    processes:[{title:'Soft Tissue Repair',price:1000},{title:"Endoscopy",price:1500},{title:'Biopsy',price:2000}],
-
-    phone: '+1 809-555-1234',
-    schedule: [{ day:'Lunes', hour: null},{ day:"Martes",hour:'10-6'},{day:'Miercoles', hour:'10-6'},{day:'Jueves',hour:'9-4'},{day:'Viernes',hour:'10-6'},{day:'Sabados',hour:'9-2'},{day:'Domingos',hour:null }]
-  },
-  {
-    id: 2,
-    name: 'Dr. Carlos Gómez',
-     avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApt8_b4fUQYwS8prThyy-yPwh_H7W1fy9Kvj8iBVBcwRtJrgwynMNJw4tuWwqjoveKAe0rAlZ9QCMFSqGDB3hKzMzLcQpyH68XzrtsbQ2xCQG2eC0dCKcMi-Hdued46WGkDVcRwbiZAk3XzT4lputQePSj7EkAp4diRHPeSMMb1f9eorqo06CXH6qaxbtfM22EvsTLBXrt0EVomGwJydGRpEXhZ_Hs6lt1J14F2Ame1Wc5ATKH0aSRMXibHJrcF2K_ojC2eqRFeKkr',
-    specialty: ['Surgery', '24h Emergencies','Preventive medicine'],
-    processes:[{title:'Soft Tissue Repair',price:1000},{title:"Endoscopy",price:1500},{title:'Biopsy',price:2000}],
-
-    phone: '+1 809-555-5678',
-    schedule: [{ day:'Lunes', hour: null},{ day:"Martes",hour:'10-6'},{day:'Miercoles', hour:'10-6'},{day:'jueves',hour:null},{day:'Viernes',hour:'10-6'},{day:'Sabados',hour:'9-2'},{day:'Domingos',hour:"10-6" }]
-  },
-  {
-    id: 3,
-    name: 'Dr. Ana Pérez',
-    specialty: ['Laboratory', 'Vaccination', 'Deworming'],
-     avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApt8_b4fUQYwS8prThyy-yPwh_H7W1fy9Kvj8iBVBcwRtJrgwynMNJw4tuWwqjoveKAe0rAlZ9QCMFSqGDB3hKzMzLcQpyH68XzrtsbQ2xCQG2eC0dCKcMi-Hdued46WGkDVcRwbiZAk3XzT4lputQePSj7EkAp4diRHPeSMMb1f9eorqo06CXH6qaxbtfM22EvsTLBXrt0EVomGwJydGRpEXhZ_Hs6lt1J14F2Ame1Wc5ATKH0aSRMXibHJrcF2K_ojC2eqRFeKkr',
-       processes:[{title:'Soft Tissue Repair',price:1000},{title:"Endoscopy",price:1500},{title:'Biopsy',price:2000}],
-
-    phone: '+1 809-555-9012',
-    schedule: [{ day:'Lunes', hour: null},{ day:"Martes",hour:'10-6'},{day:'Miercoles', hour:'10-6'},{day:'jueves',hour:null},{day:'Viernes',hour:'10-6'},{day:'Sabados',hour:'9-2'},{day:'Domingos',hour:null }]
-  },
-  {
-    id: 4,
-    name: 'Dr. Miguel Santos',
-    specialty: ['Veterinary Dentistry'],
-     avatar: 'https://lh3.googleusercontent.com/aida-public/AB6AXuApt8_b4fUQYwS8prThyy-yPwh_H7W1fy9Kvj8iBVBcwRtJrgwynMNJw4tuWwqjoveKAe0rAlZ9QCMFSqGDB3hKzMzLcQpyH68XzrtsbQ2xCQG2eC0dCKcMi-Hdued46WGkDVcRwbiZAk3XzT4lputQePSj7EkAp4diRHPeSMMb1f9eorqo06CXH6qaxbtfM22EvsTLBXrt0EVomGwJydGRpEXhZ_Hs6lt1J14F2Ame1Wc5ATKH0aSRMXibHJrcF2K_ojC2eqRFeKkr',
-     processes:[{title:'Soft Tissue Repair',price:1000},{title:"Endoscopy",price:1500},{title:'Biopsy',price:2000}],
-    phone: '+1 809-555-3344',
-    schedule: [{ day:'Lunes', hour: null},{ day:"Martes",hour:'10-6'},{day:'Miercoles', hour:'10-6'},{day:'jueves',hour:null},{day:'Viernes',hour:'10-6'},{day:'Sabados',hour:'9-2'},{day:'Domingos',hour:null }]
-  }
-]
-
+const doctors: Doctor[] = Data.value[4]
 
 
 const reservation = ref(null)

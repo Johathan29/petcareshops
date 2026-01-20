@@ -26,11 +26,12 @@ import {
 import BreadCrum from '../components/Breadcrum.vue'
 import CardMascota from '../components/UI/cardMascota.vue'
 import MyFavorite from '../components/MyFavorite.vue'
+import Data from '../Data.js'
 import RegistrarMascotas from '../components/RegistrarMascotas.vue'
 import { nextTick } from 'vue'
 
 onMounted(async () => {
-  await fetchPets()
+  //await fetchPets()
   await nextTick()
 
   initAccordions(),
@@ -81,9 +82,10 @@ const API_URL = 'http://localhost:5000/api/animals'
    📊 STATE (GLOBAL DEL COMPONENTE)
 ===================================================== */
 const pets = ref<Pet[]>([])
+
 const loading = ref(false)
 const error = ref<string | null>(null)
-
+console.log(Data.value[3])
 /* UI State */
 const showModal = ref(false)
 
@@ -105,16 +107,16 @@ const route = useRoute()
  * Se usa para limitar a 4 mascotas
  */
 const isHome = computed(() => route.path === '/')
-
+pets.value = isHome.value ? Data.value[1].slice(0, 4) : Data.value[1]
 /**
  * Indica si estamos viendo el detalle
  */
 const isDetailView = computed(() => !!route.params.id)
 
 /* =====================================================
-   🔄 DATA FETCHING
+   DATA FETCHING
 ===================================================== */
-const fetchPets = async () => {
+/*const fetchPets = async () => {
   try {
     loading.value = true
 
@@ -131,7 +133,7 @@ const fetchPets = async () => {
     loading.value = false
   }
 }
-
+*/
 /* =====================================================
    🔍 FILTERS & SEARCH
 ===================================================== */
@@ -164,7 +166,7 @@ const setFilter = (type: typeof activeFilter.value) => {
 }
 
 /* =====================================================
-   ❤️ FAVORITES LOGIC
+   FAVORITES LOGIC
 ===================================================== */
 const onLikePet = (pet: Pet) => {
   if (favoriteIds.value.has(pet.id)) return
@@ -220,7 +222,7 @@ const orderedPets = computed(() => {
 <div class="flex flex-col sm:flex-row items-stretch sm:items-center gap-4 w-full md:w-auto" v-if="!isHome">
 <div class="relative flex-grow md:w-72 lg:w-96 group">
 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none text-slate-400 group-focus-within:text-primary transition-colors">
-<span class="material-symbols-outlined text-[20px]">
+<span class="material-symbols-outlined text-[15px] rotate-90">
 <FontAwesomeIcon :icon="faSearch"/>
 </span>
 </div>
@@ -238,9 +240,9 @@ add_circle
 </button>
 </div>
 </div>
-<div class="mb-6" v-if="!isHome">
+<div class="mb-6 px-6" v-if="!isHome">
 <div class="flex items-center justify-between ">
-<h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight">Browse by Type</h2>
+<h2 class="text-xl font-bold text-[#0F6CBD] dark:text-white tracking-tight">Browse by Type</h2>
 </div>
  <div class="flex gap-4 overflow-x-auto pb-4 no-scrollbar px-6 py-8">
 

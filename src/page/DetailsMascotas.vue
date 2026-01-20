@@ -3,11 +3,14 @@ import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
 import BreadCrum from '../components/Breadcrum.vue'
 import { initAccordions, initTabs, initModals } from 'flowbite'
-
+import Data from '../Data';
+import AdoptionForm from '../components/Mascotas/Adoption.form.vue';
+import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons';
+import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 /* ================= ROUTE ================= */
 const route = useRoute()
-const petId = route.params.id as string
-
+const petId = parseInt(route.params.id) 
+console.log(petId)
 /* ================= INTERFACE ================= */
 export interface Pet {
   id: string
@@ -27,17 +30,22 @@ export interface Pet {
     telefono: string
   }
 }
-
+const showAdoptionModal = ref(false)
 /* ================= API ================= */
 const API_URL = 'http://localhost:5000/api/animals'
 
 /* ================= STATE ================= */
 const pet = ref<Pet | null>(null)
+pet.value=Data.value[1].find((item)=> item.id===petId);
+console.log(pet.value)
 const loading = ref(false)
 const error = ref<string | null>(null)
-
+  const openAdoptionModal = (pet: Pet) => {
+  pet.value = pet
+  showAdoptionModal.value = true
+}
 /* ================= FETCH ================= */
-const fetchPet = async () => {
+/*const fetchPet = async () => {
   try {
     loading.value = true
 
@@ -50,11 +58,11 @@ const fetchPet = async () => {
   } finally {
     loading.value = false
   }
-}
+}*/
 
 /* ================= COMPUTED ================= */
 const breadCrumUrl = computed(() => [
-  'mascotas',
+  'Adoption',
   pet.value?.nombre ?? ''
 ])
 
@@ -95,7 +103,7 @@ const petExpiredDate = computed(() => {
 
 /* ================= LIFECYCLE ================= */
 onMounted(async () => {
-  await fetchPet()
+  //await fetchPet()
 
   if (pet.value) {
     document.title = `PetCare - Adoption ${pet.value.nombre}`
@@ -122,10 +130,15 @@ onMounted(async () => {
 <span class="material-symbols-outlined text-[18px]">print</span>
                              Print Record
                         </button>
-<button class="px-5 py-2.5 rounded-lg bg-primary text-[#0d1b12] text-sm font-bold shadow-sm shadow-primary/20 hover:brightness-110 transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">edit</span>
-                            Edit Pet
-                        </button>
+                        <button title="Adoptar mascota"
+  class="mt-4 w-full py-3 rounded-xl flex items-center gap-2 justify-center
+         bg-[#0F6CBD] text-white font-bold
+         hover:bg-[#0c5aa3] transition
+         active:scale-95"
+  @click.prevent="openAdoptionModal(pet)"
+>
+  <FontAwesomeIcon :icon="faPaw"/> Solicitar Adopción
+</button>
 </div>
 </div>
 </div>
@@ -293,6 +306,12 @@ onMounted(async () => {
 </div>
 </div>
 </div>
+</div>
+<div v-if="showAdoptionModal"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm
+         flex items-center justify-center z-50 p-4"
+>
+  <AdoptionForm :mascota="pet" @closed="showAdoptionModal=false"/>
 </div>
   </section>
 </template>

@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons'
 import { faHeart,faPaperPlane,} from '@fortawesome/free-regular-svg-icons'
+import AdoptionForm from '../Mascotas/Adoption.form.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { defineProps, ref, onMounted, onUnmounted, watch, nextTick } from 'vue'
-
+import { defineProps, ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
+import { useRoute } from 'vue-router'
 /* =========================================================
    INTERFAZ DEL MODELO
    Define la estructura de cada mascota (Pet)
@@ -134,7 +135,8 @@ onMounted(() => {
 
   observeCards()
 })
-
+const route = useRoute()
+const isHome = computed(() => route.path === '/')
 /* ---------------------------------------------------------
    Watch:
    Se dispara cuando cambia el contenido (filtros)
@@ -163,70 +165,6 @@ const selectedPet = ref<Pet | null>(null)
 const openAdoptionModal = (pet: Pet) => {
   selectedPet.value = pet
   showAdoptionModal.value = true
-}
-
-/* Cerrar modal */
-const closeAdoptionModal = () => {
-  showAdoptionModal.value = false
-  selectedPet.value = null
-}
-const form = ref({
-  name: '',
-  email: '',
-  phone: '',
-  address: '',
-  housing: '',
-  experience: '',
-  message: ''
-})
-const loading = ref(false)
-const submitAdoption = async () => {
-  if (!selectedPet.value) return
-
-  try {
-    loading.value = true
-
-    await fetch('http://localhost:5000/api/adoption', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        petId: selectedPet.value.id,
-        petName: selectedPet.value.nombre,
-        
-        userName: form.value.name,
-        email: form.value.email,
-        phone: form.value.phone,
-        address: form.value.address,
-        housingType: form.value.housing,
-        experience: form.value.experience,
-        message: form.value.message
-        
-      })
-    })
-    await fetch(`http://localhost:5000/api/animals/${selectedPet.value.id}`, {
-  method: 'PATCH',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ id: selectedPet.value.id,
-    status:"PENDING"
-   })
-})
-
-// 3️⃣ Notificar admin
-await fetch('http://localhost:5000/api/notifications', {
-   headers: { 'Content-Type': 'application/json' },
-  method: 'POST',
-  body: JSON.stringify({
-     petId:selectedPet.value.id,
-    requestId: 5
-  })
-})
-    closeAdoptionModal()
-    alert('Solicitud enviada correctamente 🐾')
-  } catch (e) {
-    alert('Error enviando solicitud')
-  } finally {
-    loading.value = false
-  }
 }
 
 
@@ -364,7 +302,7 @@ await fetch('http://localhost:5000/api/notifications', {
                   <span>{{ items.owner.nombre }}</span>
                 </div>
               </div>
-          <button
+          <button v-if="!isHome"
   class="mt-4 w-full py-3 rounded-xl flex items-center gap-2 justify-center
          bg-[#0F6CBD] text-white font-bold
          hover:bg-[#0c5aa3] transition
@@ -394,169 +332,7 @@ await fetch('http://localhost:5000/api/notifications', {
   class="fixed inset-0 bg-black/50 backdrop-blur-sm
          flex items-center justify-center z-50 p-4"
 >
-  <div
-    class="bg-white rounded-3xl max-w-2xl w-full
-           max-h-[90vh] overflow-y-auto p-8"
-  >
-    <!-- HEADER -->
-    <div class="flex justify-between items-center mb-6">
-      <h3 class="text-3xl font-bold text-[#0F6CBD]">
-        Solicitud de Adopción
-      </h3>
-      <button
-        @click="closeAdoptionModal"
-        class="text-4xl text-red-400 hover:text-red-600"
-      >
-        ×
-      </button>
-    </div>
-
-    <!-- INFO -->
-    <!-- INFO -->
-<div class="bg-slate-100 p-6 rounded-2xl mb-6">
-  <p class="text-sm text-slate-600 leading-relaxed">
-    Estás solicitando adoptar a
-    <strong class="text-[#0F6CBD]">
-      {{ selectedPet?.nombre }}
-    </strong>.
-    Por favor completa el formulario para continuar con el proceso de adopción.
-  </p>
-</div>
-
-<!-- FORM -->
-<form class="space-y-6" @submit.prevent="submitAdoption">
-
-  <!-- Nombre -->
-  <div>
-    <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-      Nombre completo <span class="text-red-500">*</span> 
-    </label>
-    <input
-      type="text"
-      v-model="form.name" 
-      required
-      placeholder="Tu nombre completo"
-      class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-             focus:border-[#0F6CBD] focus:outline-none transition"
-    />
-  </div>
-
-  <!-- Email / Teléfono -->
-  <div class="grid md:grid-cols-2 gap-4">
-    <div>
-      <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-        Email <span class="text-red-500">*</span> 
-      </label>
-      <input
-        type="email"
-        v-model="form.email" 
-        required
-        placeholder="correo@ejemplo.com"
-        class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-               focus:border-[#0F6CBD] focus:outline-none transition"
-      />
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-        Teléfono <span class="text-red-500">*</span> 
-      </label>
-      <input
-        type="tel"
-        required
-        v-model="form.phone" 
-        placeholder="(000) 000-0000"
-        class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-               focus:border-[#0F6CBD] focus:outline-none transition"
-      />
-    </div>
-  </div>
-
-  <!-- Dirección -->
-  <div>
-    <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-      Dirección completa <span class="text-red-500">*</span> 
-    </label>
-    <textarea
-      rows="2"
-      required
-      v-model="form.address" 
-      placeholder="Dirección donde vivirá la mascota"
-      class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-             focus:border-[#0F6CBD] focus:outline-none transition resize-none"
-    ></textarea>
-  </div>
-
-  <!-- Tipo de vivienda -->
-  <div>
-    <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-      Tipo de vivienda
-    </label>
-    <select v-model="form.housing" 
-      class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-             focus:border-[#0F6CBD] focus:outline-none transition"
-    >
-      <option>Casa con jardín</option>
-      <option>Apartamento</option>
-      <option>Casa sin jardín</option>
-      <option>Finca / Terreno grande</option>
-    </select>
-  </div>
-
-  <!-- Experiencia -->
-  <div>
-    <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-      ¿Tienes experiencia previa con mascotas?
-    </label>
-    <div class="flex gap-6">
-      <label class="flex items-center gap-2 cursor-pointer text-sm">
-        <input type="radio" name="experience" class="w-4 h-4"  v-model="form.experience"/>
-        Sí
-      </label>
-      <label class="flex items-center gap-2 cursor-pointer text-sm">
-        <input type="radio"  v-model="form.experience" name="experience" class="w-4 h-4" />
-        No
-      </label>
-    </div>
-  </div>
-
-  <!-- Mensaje -->
-  <div>
-    <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
-      ¿Por qué quieres adoptar esta mascota? <span class="text-red-500">*</span> 
-    </label>
-    <textarea
-      rows="4"
-       v-model="form.message"
-      required
-      placeholder="Cuéntanos por qué esta mascota sería ideal para tu familia..."
-      class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-             focus:border-[#0F6CBD] focus:outline-none transition resize-none"
-    ></textarea>
-  </div>
-
-  <!-- ACTIONS -->
-  <div class="flex gap-4 pt-4">
-    <button  @click="closeAdoptionModal"
-      type="button"
-      class="flex-1 py-3 rounded-xl border font-semibold
-             hover:bg-slate-50 transition"
-    >
-      Cancelar
-    </button>
-
-    <button
-      type="submit"
-      class="flex-1 flex items-center justify-center py-3 rounded-xl gap-4
-             bg-[#0F6CBD] text-white font-bold group
-             hover:bg-[#0c5aa0] transition"
-    >
-      Enviar Solicitud <FontAwesomeIcon :icon="faPaperPlane" class="group-hover:-translate-y-2 transition duration-300"/>
-    </button>
-  </div>
-
-</form>
-</div>
+  <AdoptionForm :mascota="selectedPet" @closed="showAdoptionModal=false"/>
 </div>
 </template>
 

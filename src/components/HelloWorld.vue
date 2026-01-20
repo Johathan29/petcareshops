@@ -88,14 +88,14 @@ onMounted(async () => {
 
 <template>
   <Splide
-    class="hero-slider relative w-full h-full"
+    class="hero-slider relative w-full h-full max-h-[45rem]"
     :options="options"
     aria-label="Hero Slider"
   >
     <SplideSlide
       v-for="(item, index) in slides"
       :key="index"
-      class="relative slide-anim"
+      class="relative slide-anim max-h-[45rem]"
     >
       <!-- Background -->
       <div
