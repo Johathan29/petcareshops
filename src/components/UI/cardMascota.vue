@@ -26,9 +26,12 @@ interface Pet {
   owner: {
     nombre: string
     telefono: string
-  }
+  },
+  status:string
 }
-
+interface loading{
+  value:boolean
+}
 /* =========================================================
    EMITS
    Permite notificar al padre cuando una mascota recibe like
@@ -70,21 +73,10 @@ const isFavorite = (id: number) => favoriteIds.value.has(id)
    PROPS
    data = lista de mascotas (ya filtrada desde el padre)
 ========================================================= */
-const loading = ref(false)
-const error = ref<string | null>(null)
-  const props = defineProps<{
+const props = defineProps<{
+  loading: loading
   data: Pet[]
 }>()
-try {
-  loading.value=false
-  props
-} catch (error) {
-  
-}
-finally{
-loading.value=false
-}
-
 
 /* =========================================================
    INTERSECTION OBSERVER
@@ -204,13 +196,17 @@ const openAdoptionModal = (pet: Pet) => {
           <!-- Card clickable -->
           <router-link
             :to="`/adoption/${items.id}`"
-            class="group bg-white dark:bg-slate-800 rounded-2xl
+            class="group bg-white relative dark:bg-slate-800 rounded-2xl
                    border border-slate-200 dark:border-[#192e54b0]
                    overflow-hidden hover:shadow-2xl
                    transition-all duration-300
                    flex flex-col hover:-translate-y-1"
           >
-
+          <div class="ribbon-wrapper">
+<div class="ribbon-diagonal">
+                {{items.status}}
+            </div>
+</div>
             <!-- IMAGEN -->
             <div
               class="relative h-56 w-full overflow-hidden"
@@ -329,14 +325,15 @@ const openAdoptionModal = (pet: Pet) => {
 
         </div>
       </TransitionGroup>
-
+      
       <!-- ================= EMPTY STATE ================= -->
-      <div v-if="loading" class="flex justify-center">
-        <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4 shadow-md shadow-slate-500 ">
-          <span class="text-2xl">Cargando mascotas</span>
+      <div v-if="props.loading" class="flex justify-center">
+        <div class="p-6">
+          <div class="loader w-full"></div> 
+          
         </div>
       </div>
-      <div v-else class="flex justify-center">
+      <div v-if="props.data.length===0 && !props.loading" class="flex justify-center">
         <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4 shadow-md shadow-slate-500 ">
           <span class="text-2xl">No se encontraron mascotas</span>
         </div>
@@ -359,7 +356,49 @@ const openAdoptionModal = (pet: Pet) => {
     /* ===============================
    CONTAINER FADE (GRID ↔ EMPTY)
 ================================ */
+.ribbon-diagonal::before {
+    left: 0;
+}
 
+
+.ribbon-diagonal::before, .ribbon-diagonal::after {
+    content: "";
+    position: absolute;
+    bottom: -5px;
+    border-top: 5px solid #C2410C;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    z-index: -1;
+}
+.ribbon-diagonal {
+    position: absolute;
+    background: #F97316;
+    color: white;
+    text-align: center;
+    padding: 10px 0;
+    width: 225px;
+    top: 35px;
+    left: -55px;
+    transform: rotate(-45deg);
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    text-transform: uppercase;
+    font-weight: 900;
+    font-size: 1rem;
+    letter-spacing: 0.1em;
+    z-index: 50;
+}
+.loader {
+  width: 19px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+}
+@keyframes l5 {
+    0%  {box-shadow: 20px 0 #000, -20px 0 #0002;background: #000 }
+    33% {box-shadow: 20px 0 #000, -20px 0 #0002;background: #0002}
+    66% {box-shadow: 20px 0 #0002,-20px 0 #000; background: #0002}
+    100%{box-shadow: 20px 0 #0002,-20px 0 #000; background: #000 }
+}
 .card-item {
   
   animation-delay: calc(var(--i) * 60ms);

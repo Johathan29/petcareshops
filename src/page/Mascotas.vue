@@ -105,8 +105,17 @@ const favoriteIds = ref<Set<number>>(new Set())
 const route = useRoute()
 const isHome = computed(() => route.path === '/')
 async function getTodos() {
+  try {
+    loading.value=true
     const { data } = await supabase.from('animals').select()
-    pets.value=isHome.value ?  data.slice(0, 4) :  data
+    pets.value=isHome.value ?  data.slice(0, 4) :  data  
+  } catch (error) {
+    console.log(error)
+  }
+  finally{
+loading.value=false
+  }
+    
   }
 /**
  * Indica si estamos en la Home (/)
@@ -324,7 +333,7 @@ add_circle
 
     <!-- GRID -->
  
-    <CardMascota :data="orderedPets"   @like="onLikePet"></CardMascota>
+    <CardMascota :data="orderedPets"   @like="onLikePet" :loading="loading"></CardMascota>
     
     <template v-if="isHome">
       <div  class="flex items-center justify-center py-6">
