@@ -13,6 +13,7 @@ import Mascotas from './Mascotas.vue';
 import Testimonio from './testimonio.vue';
 import Enfermedades from '../components/Enfermedades.vue';
 import ServicePortada from '../components/Service/service-portada.vue';
+import supabase from '../components/supabase.vue';
 const valores = ref([]);
 console.log(data.value);
 const activeclass = ref('active carousel-item');
@@ -63,12 +64,14 @@ const detalleUser = () => {
 <h3 >{{messager.firstName}}</h3>
 
 </section>
+
 <HelloWorld></HelloWorld>
 <ServicePortada></ServicePortada>
 <Mascotas></Mascotas>
 <Testimonio></Testimonio> 
 <Enfermedades></Enfermedades>
   <BirthDay></BirthDay>
+  <supabase></supabase>
 </template>
 
 <script  lang="ts">

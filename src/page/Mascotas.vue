@@ -29,7 +29,7 @@ import MyFavorite from '../components/MyFavorite.vue'
 import Data from '../Data.js'
 import RegistrarMascotas from '../components/RegistrarMascotas.vue'
 import { nextTick } from 'vue'
-
+import { supabase } from '../config/supabase'
 onMounted(async () => {
   //await fetchPets()
   await nextTick()
@@ -44,6 +44,7 @@ onMounted(async () => {
   initModals(),
   initPopovers(),
   initTabs(),
+  getTodos(),
   initTooltips()
 })
 
@@ -69,7 +70,8 @@ export interface Pet {
   nacimiento: string
   microchip: string
   imagen: string
-  owner: Owner[]
+  owner: Owner[],
+  id_doctor:[]
 }
 
 
@@ -82,10 +84,10 @@ const API_URL = 'http://localhost:5000/api/animals'
    📊 STATE (GLOBAL DEL COMPONENTE)
 ===================================================== */
 const pets = ref<Pet[]>([])
-
+const supabaseValue=ref<Pet[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-console.log(Data.value[3])
+
 /* UI State */
 const showModal = ref(false)
 
@@ -101,13 +103,20 @@ const favoriteIds = ref<Set<number>>(new Set())
    🧭 ROUTE STATE
 ===================================================== */
 const route = useRoute()
-
+const isHome = computed(() => route.path === '/')
+async function getTodos() {
+    const { data } = await supabase.from('animals').select()
+    pets.value=isHome.value ?  data.slice(0, 4) :  data
+  }
 /**
  * Indica si estamos en la Home (/)
  * Se usa para limitar a 4 mascotas
  */
-const isHome = computed(() => route.path === '/')
-pets.value = isHome.value ? Data.value[1].slice(0, 4) : Data.value[1]
+ console.log(pets.value)
+
+//pets.value = isHome.value ?  supabaseValue.value.slice(0, 4) :  supabaseValue.value
+
+
 /**
  * Indica si estamos viendo el detalle
  */
@@ -134,6 +143,7 @@ const isDetailView = computed(() => !!route.params.id)
   }
 }
 */
+
 /* =====================================================
    🔍 FILTERS & SEARCH
 ===================================================== */

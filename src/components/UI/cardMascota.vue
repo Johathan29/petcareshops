@@ -70,9 +70,21 @@ const isFavorite = (id: number) => favoriteIds.value.has(id)
    PROPS
    data = lista de mascotas (ya filtrada desde el padre)
 ========================================================= */
-const props = defineProps<{
+const loading = ref(false)
+const error = ref<string | null>(null)
+  const props = defineProps<{
   data: Pet[]
 }>()
+try {
+  loading.value=false
+  props
+} catch (error) {
+  
+}
+finally{
+loading.value=false
+}
+
 
 /* =========================================================
    INTERSECTION OBSERVER
@@ -319,6 +331,11 @@ const openAdoptionModal = (pet: Pet) => {
       </TransitionGroup>
 
       <!-- ================= EMPTY STATE ================= -->
+      <div v-if="loading" class="flex justify-center">
+        <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4 shadow-md shadow-slate-500 ">
+          <span class="text-2xl">Cargando mascotas</span>
+        </div>
+      </div>
       <div v-else class="flex justify-center">
         <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4 shadow-md shadow-slate-500 ">
           <span class="text-2xl">No se encontraron mascotas</span>

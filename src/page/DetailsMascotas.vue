@@ -7,10 +7,11 @@ import Data from '../Data';
 import AdoptionForm from '../components/Mascotas/Adoption.form.vue';
 import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
+import { supabase } from '../config/supabase';
 /* ================= ROUTE ================= */
 const route = useRoute()
 const petId = parseInt(route.params.id) 
-console.log(petId)
+
 /* ================= INTERFACE ================= */
 export interface Pet {
   id: string
@@ -36,8 +37,14 @@ const API_URL = 'http://localhost:5000/api/animals'
 
 /* ================= STATE ================= */
 const pet = ref<Pet | null>(null)
-pet.value=Data.value[1].find((item)=> item.id===petId);
-console.log(pet.value)
+  async function getTodos() {
+    const { data } = await supabase.from('animals').select()
+    
+    pet.value=data.find((item)=> item.id===petId);
+    
+  }
+
+
 const loading = ref(false)
 const error = ref<string | null>(null)
   const openAdoptionModal = (pet: Pet) => {
@@ -108,7 +115,7 @@ onMounted(async () => {
   if (pet.value) {
     document.title = `PetCare - Adoption ${pet.value.nombre}`
   }
-
+  getTodos()
   initAccordions()
   initTabs()
   initModals()
@@ -191,11 +198,11 @@ onMounted(async () => {
 <div class="size-12 rounded-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center text-gray-500 dark:text-gray-400">
 <span class="material-symbols-outlined">person</span>
 </div>
-<div>
-<h4 class="text-base font-bold text-text-main-light dark:text-text-main-dark">{{pet?.owner.nombre}}</h4>
+<div v-for="owner in pet?.owner">
+<h4 class="text-base font-bold text-text-main-light dark:text-text-main-dark">{{owner.nombre}}</h4>
 <div class="flex items-center gap-2 text-sm text-text-sec-light dark:text-text-sec-dark mt-0.5">
 <span class="material-symbols-outlined text-[16px]">call</span>
-<span>{{ pet?.owner.telefono }}</span>
+<span>{{ owner.telefono }}</span>
 </div>
 </div>
 </div>
