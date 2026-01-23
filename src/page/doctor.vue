@@ -1,5 +1,5 @@
 <script setup lang="ts">
-
+import skeletom from '../components/Doctor/skeletom.vue'
 import { computed,onMounted,ref, toValue } from 'vue'
 import ReserveModal from '../components/Doctor/ReserveModal.vue'
 import { useRoute } from 'vue-router'
@@ -41,6 +41,7 @@ const loading = ref(false)
 const doctors= ref<Doctor[]>([])
 
 onMounted(async () => {
+  
   loadingchanges(true)
   doctors.value = await getDoctors()
   getService() 
@@ -67,7 +68,7 @@ async function getService() {
   try {
     
     const { data } = await supabase.from('services').select()
-    services.value=  data; 
+    services.value=  data?.find(s=>slugify(s.title) === serviceSlug.value); 
   } catch (error) {
     console.log(error)
   }
@@ -92,9 +93,7 @@ async function getDoctors() {
   }
   const doctorsByService = computed(() => {
 
-  const service = services.value.find(
-    s => slugify(s.title) === serviceSlug.value
-  )
+  const service = services.value
 
   if (!service) return null
 
@@ -166,7 +165,7 @@ const breadCrumUrl = computed(() => [
                 <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
                 <div>
                     <h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">
-                    {{doctorsByService?.service}}
+                    {{services.title}}
                     </h2>
                     <p class="text-slate-500 dark:text-slate-400 mt-1">
                     {{doctorsByService?.description}}
@@ -185,9 +184,9 @@ const breadCrumUrl = computed(() => [
     <!-- Grid -->
     
      <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6">
+      <skeletom v-if="loading"></skeletom>
   <DoctorCard
-   
-    
+   v-else
     :doctor="doctorsByService?.doctors"
    :loading="loading"
     @reserve="openReservationModal"
