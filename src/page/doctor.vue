@@ -1,11 +1,12 @@
 <script setup lang="ts">
 
-import { computed,ref } from 'vue'
+import { computed,onMounted,ref, toValue } from 'vue'
 import ReserveModal from '../components/Doctor/ReserveModal.vue'
 import { useRoute } from 'vue-router'
 import Data from '../Data'
 import DoctorCard from '../components/Doctor/DoctorCard.vue'
 import Breadcrum from '../components/Breadcrum.vue'
+import { supabase } from '../config/supabase'
 
 /* ===============================
    TYPES
@@ -13,17 +14,18 @@ import Breadcrum from '../components/Breadcrum.vue'
 interface Doctor {
   id: number
   name: string
-  specialty: string[]
+  specialty: []
   avatar:string
   phone: string
-  schedule: any
-  processes:any
+  schedule: []
+  processes:[]
+  id_animals:[]
 }
 
 interface Service {
   title: string
   description:string
-  procesos: string[]
+  procesos: []
 }
 
 /* ===============================
@@ -35,14 +37,86 @@ const serviceSlug = computed(() =>
   route.params.service?.toString() ??
   route.fullPath.replace('/services/', '')
 )
+const loading = ref(false)
+const doctors= ref<Doctor[]>([])
 
+onMounted(async () => {
+  loadingchanges(true)
+  doctors.value = await getDoctors()
+  getService() 
+  loadingchanges(false)
+})
+/*const loading = ref(true)
+onMounted(async() => {
+  loading.value=false
+  getDoctors()
+  getService() 
+  loading.value=true
+});*/
 /* ===============================
    DATA
 ================================ */
-const services: Service[] = Data.value[3]
+//const services: Service[] = Data.value[3]
 
-const doctors: Doctor[] = Data.value[4]
+const loadingchanges=(Value:boolean)=>{
+ loading.value=!Value ? false : true
+}
+  const services=ref<Service[]>([])
+console.log(loading.value)
+async function getService() {
+  try {
+    
+    const { data } = await supabase.from('services').select()
+    services.value=  data; 
+  } catch (error) {
+    console.log(error)
+  }
+  finally{
+    
+  }
+    
+  }
 
+async function getDoctors() {
+  try {
+    
+    const { data } = await supabase.from('doctors').select()
+    return data; 
+  } catch (error) {
+    console.log(error)
+  }
+  finally{
+   
+  }
+    
+  }
+  const doctorsByService = computed(() => {
+
+  const service = services.value.find(
+    s => slugify(s.title) === serviceSlug.value
+  )
+
+  if (!service) return null
+
+  const matchedDoctors = doctors.value
+    .filter(doc =>
+      doc.specialty.includes(service.title)
+    )
+    .map(doc => ({
+      ...doc,
+      availableToday: Boolean(
+        doc.schedule[normalizeDay(todayKey)]
+      )
+    }))
+
+  return {
+    service: service.title,
+    description: service.description,
+    procesos: service.procesos,
+    doctors: matchedDoctors,
+    
+  }
+})
 
 const reservation = ref(null)
 const showModal = ref(false)
@@ -73,31 +147,7 @@ const slugify = (text: string) =>
 /* ===============================
    COMPUTED
 ================================ */
-const doctorsByService = computed(() => {
-  const service = services.find(
-    s => slugify(s.title) === serviceSlug.value
-  )
 
-  if (!service) return null
-
-  const matchedDoctors = doctors
-    .filter(doc =>
-      doc.specialty.includes(service.title)
-    )
-    .map(doc => ({
-      ...doc,
-      availableToday: Boolean(
-        doc.schedule[normalizeDay(todayKey)]
-      )
-    }))
-
-  return {
-    service: service.title,
-    description: service.description,
-    procesos: service.procesos,
-    doctors: matchedDoctors
-  }
-})
 
 const breadCrumUrl = computed(() => [
   'Services',
@@ -136,9 +186,10 @@ const breadCrumUrl = computed(() => [
     
      <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6">
   <DoctorCard
-    v-for="doctor in doctorsByService?.doctors"
-    :key="doctor.id"
-    :doctor="doctor"
+   
+    
+    :doctor="doctorsByService?.doctors"
+   :loading="loading"
     @reserve="openReservationModal"
   />
   <ReserveModal

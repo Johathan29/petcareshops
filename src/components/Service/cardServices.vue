@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faArrowRight, faCheckCircle } from '@fortawesome/free-solid-svg-icons'
+import { faArrowRight, faCheckCircle,faHeart} from '@fortawesome/free-solid-svg-icons'
 import { computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { animate, stagger, inView } from 'motion'
@@ -16,6 +16,7 @@ interface Service {
   bg: string
   color: string
   procesos: Record<string, string>
+  icon:string
 }
 
 const props = defineProps<{ data: Service[] }>()
@@ -79,6 +80,7 @@ onMounted(() => {
     { once: true }
   )
 })
+console.log(props.data.map(items=> items.icon))
 </script>
 
 <template>
@@ -102,7 +104,7 @@ onMounted(() => {
                group-hover:scale-110"
         :class="[service.bg, service.color]"
       >
-        <FontAwesomeIcon :icon="service.icon" class="w-8 h-8" />
+        <FontAwesomeIcon :icon="faHeart" class="w-8 h-8" />
       </div>
 
       <div class="w-fit relative ">

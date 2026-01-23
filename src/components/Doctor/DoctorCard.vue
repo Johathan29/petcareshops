@@ -9,7 +9,8 @@ defineProps<{
     processes: string[]
     schedule: Record<string, string | null>
     availableToday: boolean
-  }
+  } | null
+  loading:boolean
 }>()
 const emit=defineEmits<{
   (e: 'reserve', payload: {
@@ -41,10 +42,42 @@ const toggleTooltip = (day: string) => {
   activeDay.value = activeDay.value === day ? null : day
 }
 </script>
-
 <template>
+ <div
+    v-if="loading "
+    class="bg-white dark:bg-zinc-900 rounded-xl border shadow-sm p-6 animate-pulse"
+  >
+    <div class="flex gap-4">
+      <div class="size-16 rounded-xl bg-slate-200 dark:bg-zinc-700">{{ loading }}</div>
+
+      <div class="flex-1 space-y-2">
+        <div class="h-4 w-40 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+        <div class="h-3 w-24 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+      </div>
+    </div>
+
+    <div class="mt-6 space-y-2">
+      <div class="h-3 w-32 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+      <div class="flex gap-2">
+        <div class="h-6 w-20 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+        <div class="h-6 w-24 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+        <div class="h-6 w-16 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+      </div>
+    </div>
+
+    <div class="mt-6 flex justify-between">
+      <div
+        v-for="i in 7"
+        :key="i"
+        class="flex flex-col items-center gap-2"
+      >
+        <div class="h-3 w-8 bg-slate-200 dark:bg-zinc-700 rounded"></div>
+        <div class="size-8 rounded-full bg-slate-200 dark:bg-zinc-700"></div>
+      </div>
+    </div>
+  </div>
     
-  <div
+  <div v-else v-for="docto in doctor"
     class=" bg-white dark:bg-zinc-900 rounded-xl border overflow-hidden
            shadow-sm hover:shadow-xl transition-all flex flex-col
            border-slate-200 dark:border-zinc-800"
@@ -57,17 +90,17 @@ const toggleTooltip = (day: string) => {
         <div class="flex gap-4">
           <div
             class="size-16 rounded-xl bg-cover bg-center border"
-            :style="{ backgroundImage: `url(${doctor.avatar})` }"
+            :style="{ backgroundImage: `url(${docto?.avatar})` }"
           ></div>
 
           <div>
             <h3 class="text-lg  text-left font-bold text-zinc-900 dark:text-white">
-              {{ doctor.name }}
+              {{ docto.name }}
             </h3>
-<div class="flex items-center gap-1">
+<div class="flex items-center gap-1 flex-wrap">
 <span
               class="inline-block px-2 py-0.5 mt-1 text-[10px] font-bold uppercase rounded border tracking-wide"
-              v-for="value in doctor.specialty"
+              v-for="value in docto.specialty"
               :class="doctor.availableToday 
                 ? 'bg-emerald-50 text-emerald-600 border-emerald-200'
                 : 'bg-[#eff6ff] dark:bg-zinc-800 text-[#0f6cbd] border-slate-200'"
@@ -99,7 +132,7 @@ const toggleTooltip = (day: string) => {
             </p>
             <ul class="space-y-1">
               <li
-                v-for="p in doctor.processes"
+                v-for="p in docto.processes"
                 :key="p"
                 class="flex justify-between"
               >
@@ -117,7 +150,7 @@ const toggleTooltip = (day: string) => {
         </p>
         <div class="flex flex-wrap gap-2">
           <span
-            v-for="p in doctor.processes"
+            v-for="p in docto.processes"
             :key="p"
             class="px-3 py-1 text-xs rounded-lg border
                    bg-[#eff6ff] dark:bg-zinc-800 text-[#0f6cbd] border-slate-200"
@@ -138,7 +171,7 @@ const toggleTooltip = (day: string) => {
         
     <!-- Schedule Item -->
 <div
-  v-for="value in doctor.schedule"
+  v-for="value in docto.schedule"
   :key="value.day"
   class="relative group flex flex-col items-center gap-1"
 >
@@ -150,13 +183,13 @@ const toggleTooltip = (day: string) => {
         ? 'text-green-500 text-[10px]'
         : 'text-slate-500 text-[10px]'"
   >
-    {{ value.day }}
+    {{ value.day }} 
   </span>
 
   <!-- Hour -->
-  <span
+  <button
     class="size-8 flex items-center justify-center rounded-full
-           text-[10px] font-bold cursor-default
+           text-[10px] font-bold cursor-pointer
            transition-colors"
            @click.stop="value.hour  &&
     emit('reserve', {
@@ -171,7 +204,7 @@ const toggleTooltip = (day: string) => {
         : 'bg-slate-200 dark:bg-zinc-700 text-black'"
   >
     {{ value.hour || '—' }}
-  </span>
+  </button>
 
   <!-- Tooltip -->
 <span
@@ -208,4 +241,16 @@ const toggleTooltip = (day: string) => {
       </div>
     </div>
   </div>
+
+
+ 
+
 </template>
+<style scoped>
+.loader {
+  width: 19px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+}
+</style>

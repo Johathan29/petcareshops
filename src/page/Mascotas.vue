@@ -121,7 +121,7 @@ loading.value=false
  * Indica si estamos en la Home (/)
  * Se usa para limitar a 4 mascotas
  */
- console.log(pets.value)
+
 
 //pets.value = isHome.value ?  supabaseValue.value.slice(0, 4) :  supabaseValue.value
 

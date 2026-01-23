@@ -1,16 +1,46 @@
 <script setup lang="ts">
-import { computed } from 'vue';
+import { computed, onMounted, ref } from 'vue';
 import { useRoute } from 'vue-router';
 import Breadcrum from '../components/Breadcrum.vue';
 import Data from '../Data';
 import CardServices from '../components/Service/cardServices.vue';
+import { supabase } from '../config/supabase'
+onMounted(async()=>{
+    getService()
+})
 const route = useRoute()
 
 const isHome = computed(() => route.path)
 const breadCrumUrl = computed(() => [
   'Services',
 ])
-console.log(Data.value[3])
+interface Service {
+    id: number,
+  title :string,
+  description :string,
+  link :string,
+  bg :string,
+  color :string,
+  procesos :[],
+  id_doctor:[],
+}
+const service=ref<Service[]>([])
+const loading = ref(false)
+async function getService() {
+  try {
+    loading.value=true
+    const { data } = await supabase.from('services').select()
+    service.value=  data; 
+  } catch (error) {
+    console.log(error)
+  }
+  finally{
+loading.value=false
+  }
+    
+  }
+  
+
 </script>
 
 <template>
@@ -28,7 +58,7 @@ console.log(Data.value[3])
                 Ofrecemos atención médica integral con el mejor equipo profesional y tecnología de punta para el cuidado de tu mascota.
             </p>
         </div>
-        <CardServices :data="Data.value[3]"/>
+        <CardServices :data="service"/>
     </div>
 </section>
 
