@@ -48,7 +48,7 @@ const detalleUser =computed(
                     {
                         Swal.fire({
                         title: 'Estas seguro?',
-                        text: "You won't be able to revert this!",
+                        text: "¡No podrás revertir esto!",
                         icon: 'warning',
                         showCancelButton: true,
                         confirmButtonColor: '#3085d6',
