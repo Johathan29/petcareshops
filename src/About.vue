@@ -1,4 +1,4 @@
-<script setup>
+i<script setup>
 import { ref, computed, onMounted } from 'vue';
 const users = ref(null);
 const capturar = ref(0);
@@ -47,7 +47,7 @@ const detalleUser =computed(
                     } else 
                     {
                         Swal.fire({
-                        title: 'Are you sure?',
+                        title: 'Estas seguro?',
                         text: "You won't be able to revert this!",
                         icon: 'warning',
                         showCancelButton: true,
