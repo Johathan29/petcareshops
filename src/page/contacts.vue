@@ -33,8 +33,8 @@ function sendData() {
  
 
   <!-- CONTENT -->
-  <section class="py-[4rem] bg-slate-50">
-    <div class="max-w-screen-xl md:mx-auto px-[3rem]">
+  <section class="bg-slate-50 dark:bg-[#0F6CBD] py-12 border-b-2 border-gray-500/10">
+    <div class="max-w-screen-xl md:mx-auto px-[3.5rem]">
 
       <div class="layout-content-container flex flex-col w-full max-w-[1200px] mx-auto flex-1">
 <div class="flex flex-col gap-3 pb-8">

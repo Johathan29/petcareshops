@@ -8,6 +8,11 @@ import { ref,onMounted } from 'vue';
     const { data } = await supabase.from('animals').select()
     console.log(data)
   }
+  async funtion setData(adoption){
+    const { error } = await supabase
+  .from('adoption')
+  .insert({ id: 1, name: 'Mordor' })
+  }
 
   onMounted(() => {
     getTodos()

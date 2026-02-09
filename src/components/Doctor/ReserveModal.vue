@@ -14,7 +14,7 @@ const emit = defineEmits(['close', 'confirm'])
 <template>
   <div
     v-if="open"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50"
+    class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 px-[1.5rem] md:px-[3.5rem]"
   >
     <div
       class="bg-white dark:bg-zinc-900 rounded-2xl shadow-xl

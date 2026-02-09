@@ -127,19 +127,19 @@ onMounted(async () => {
 <template>
   <BreadCrum :name="breadCrumUrl" ></BreadCrum>
   <section class="bg-slate-50 dark:bg-slate-900 py-12 ">
-   <div class="flex flex-col max-w-screen-xl md:mx-auto px-[3.5rem] gap-6">
+   <div class="flex flex-col max-w-screen-xl md:mx-auto px-[1.5rem] md:px-[3.5rem] gap-6">
 <div class="flex flex-col gap-4">
 
 <div class="flex flex-wrap justify-between items-end gap-4">
 <h1 class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight tracking-tight">Pet Details: {{ pet?.nombre }}</h1>
-<div class="flex gap-3">
-<button class="px-5 py-2.5 rounded-lg border border-border-light dark:border-border-dark bg-white dark:bg-card-dark text-text-main-light dark:text-text-main-dark text-sm font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center gap-2">
+<div class="block items-center justify-end md:flex gap-3">
+<button class="px-3 py-2.5 rounded-lg w-full border border-border-light dark:border-border-dark bg-white dark:bg-card-dark text-text-main-light dark:text-text-main-dark text-sm font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center gap-2">
 <span class="material-symbols-outlined text-[18px]">print</span>
                              Print Record
                         </button>
                         <button title="Adoptar mascota"
-  class="mt-4 w-full py-3 rounded-xl flex items-center gap-2 justify-center
-         bg-[#0F6CBD] text-white font-bold
+  class=" w-full py-2.5 px-3 rounded-lg flex items-center gap-2 justify-center
+         bg-[#0F6CBD] text-white font-bold text-[14px]
          hover:bg-[#0c5aa3] transition
          active:scale-95"
   @click.prevent="openAdoptionModal(pet)"
@@ -246,7 +246,7 @@ onMounted(async () => {
 </div>
 </div>
 <div class="bg-card-light dark:bg-card-dark rounded-xl shadow-sm border border-border-light dark:border-border-dark p-6 md:p-8">
-<div class="flex items-center justify-between mb-6">
+<div class="md:flex items-center justify-between mb-6">
 <h3 class="text-xl font-bold text-text-main-light dark:text-text-main-dark flex items-center gap-2">
 <span class="material-symbols-outlined text-primary">medical_services</span>
                                 Medical History &amp; Health

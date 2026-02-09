@@ -1,10 +1,10 @@
 <script setup lang="ts">
 import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons'
 import { faHeart,faPaperPlane,} from '@fortawesome/free-regular-svg-icons'
-
+import { supabase } from '../../config/supabase'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { ref } from 'vue';
-defineProps<{
+const mascota=defineProps<{
     mascota:{
         id: number,
         nombre:string,
@@ -28,55 +28,42 @@ const form = ref({
   message: ''
 })
 const loading = ref(false)
-/*const submitAdoption = async () => {
-  if (!mascota) return
+const submitAdoption =  async() => {
+  
+  var session = await supabase.Auth.SignIn('rosariojohathan@gmail.com', "Johathan2929*");
+  console.log(session)
+  const { error } = await supabase
+  .from('adoption')
+  .insert({ id:1,
+    address: form.value.address,
+    email:form.value.email,
+    experience: form.value.experience,
+    housingType: form.value.housing,
+    message:  form.value.message,
+    petId: mascota.mascota?.id,
+    phone: form.value.phone,
+    status: 'pending'})
 
-  try {
-    loading.value = true
-
-    await fetch('http://localhost:5000/api/adoption', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        petId: mascota.id,
-        petName: mascota.nombre,
+    console.log(
         
-        userName: form.value.name,
-        email: form.value.email,
-        phone: form.value.phone,
-        address: form.value.address,
-        housingType: form.value.housing,
-        experience: form.value.experience,
-        message: form.value.message
+    mascota.mascota?.nombre ,
+        form.value.name,
+        form.value.email,
+         form.value.phone,
+         form.value.address,
+         form.value.housing,
+         form.value.experience,
+         form.value.message
         
-      })
-    })
-    await fetch(`http://localhost:5000/api/animals/${mascota.id}`, {
-  method: 'PATCH',
-  headers: { 'Content-Type': 'application/json' },
-  body: JSON.stringify({ id: mascota.id,
-    status:"PENDING"
-   })
-})
+      )
+     
+    
+    
 
-// 3️⃣ Notificar admin
-await fetch('http://localhost:5000/api/notifications', {
-   headers: { 'Content-Type': 'application/json' },
-  method: 'POST',
-  body: JSON.stringify({
-     petId:mascota?.id,
-    requestId: 5
-  })
-})
-    closeAdoptionModal()
-    alert('Solicitud enviada correctamente 🐾')
-  } catch (e) {
-    alert('Error enviando solicitud')
-  } finally {
-    loading.value = false
-  }
+ 
+  
+  
 }
-*/
 </script>
 <template>
 <div
@@ -102,7 +89,7 @@ await fetch('http://localhost:5000/api/notifications', {
   <p class="text-sm text-slate-600 leading-relaxed">
     Estás solicitando adoptar a
     <strong class="text-[#0F6CBD]">
-      {{ mascota?.nombre }}
+      {{ mascota.mascota?.nombre }}
     </strong>.
     Por favor completa el formulario para continuar con el proceso de adopción.
   </p>

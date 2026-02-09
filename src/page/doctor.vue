@@ -152,13 +152,21 @@ const breadCrumUrl = computed(() => [
   'Services',
  doctorsByService.value?.service || ''
 ])
+
+const  roleUser= ref('user');
+const filterbyDoctor=ref()
+function filterDoctor(doctor){
+  filterbyDoctor.value=doctor
+  console.log(filterbyDoctor.value)
+}
+
 </script>
 
 
 <template>
     <Breadcrum :name="breadCrumUrl" ></Breadcrum>
-    <section class="bg-slate-50 dark:bg-[#0F6CBD] py-12 border-b-2 border-gray-500/10 !max-w-full">
-        <div class="max-w-screen-xl md:mx-auto px-[3.5rem]">
+    <section class="bg-slate-50 dark:bg-[#0F6CBD] min-h-[51rem] py-12 border-b-2 border-gray-500/10 !max-w-full">
+        <div class="max-w-screen-xl md:mx-auto px-[1.5rem] md:px-[3.5rem]">
             <div class="flex-1 overflow-y-auto">
 
                 <!-- Header -->
@@ -171,14 +179,18 @@ const breadCrumUrl = computed(() => [
                     {{doctorsByService?.description}}
                     </p>
                 </div>
-
-                <button
+                
+                <button v-if="roleUser==='admin'"
                     class="flex items-center gap-2 px-4 py-2 bg-primary text-zinc-900 font-bold rounded-lg
                         hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
                 >
                     <span class="material-symbols-outlined text-lg">person_add</span>
                     Add Doctor
                 </button>
+                <select name="" id="" v-else class="mx-[1rem] px-8 py-2  text-zinc-900 font-bold rounded-lg 
+                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm" @change="filterDoctor(filter)" v-model="filter" >
+                  <option :value="doctor" v-for="doctor in doctorsByService?.doctors" > {{ doctor.name }}</option>
+                </select>
                 </div>
 
     <!-- Grid -->

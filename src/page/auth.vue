@@ -1,53 +1,26 @@
-<script>
-export default {
-  name: "Auth",
-  data() {
-    return {
-      authMode: "login",
-
-      // form
-      email: "",
-      password: "",
-
-      // auth mock
-      mockUser: {
-          id: 1,
-          name: "Admin User",
-          email: "admin@petcare.com",
-          avatar: "https://i.pravatar.cc/150?img=3",
-          role: "admin",
-          password: "123456"
-      },
-
-      // ui state
-      showErrorModal: false,
-      showSuccessModal: false,
-      errorMessage: "",
-      welcomeMessage: ""
-    }
-  },
-  methods: {
-    login() {
-  if (!this.email || !this.password) {
-    this.errorMessage = "Todos los campos son obligatorios"
-    this.showErrorModal = true
-    return
-  }
-
-  if (
-    this.email !== this.mockUser.email ||
-    this.password !== this.mockUser.password
-  ) {
-    this.errorMessage = "Credenciales incorrectas ❌"
-    this.showErrorModal = true
-    return
-  }
-
-  // ✅ GUARDAR USUARIO
-  localStorage.setItem("user", JSON.stringify(this.mockUser))
-
-  this.welcomeMessage = `¡Bienvenido ${this.mockUser.name}! 🐾`
-  this.showSuccessModal = true
+<script setup lang="ts">
+import {supabase} from '../config/supabase'
+import {ref} from 'vue'
+const authMode=ref("login")
+ // ui state
+     const showErrorModal=ref(false)
+      const showSuccessModal= ref(false)
+     const errorMessage= ref("")
+      const welcomeMessage= ref("")
+const login=async()=> {
+      try{
+        const emai='rosariojohathan@gmail.com'
+const pasw='Johathan2929*'
+const user = await supabase.auth.signInWithPassword({ email:email,password:pasw })
+localStorage.setItem("user", JSON.stringify(user))
+console.log(localStorage.getItem("user"))
+welcomeMessage.value = `¡Bienvenido ! 🐾`
+showSuccessModal.value = true
+      }catch(error){
+        errorMessage.value = "Credenciales incorrectas ❌"
+    showErrorModal.value = true
+ console.log(error, 'el error es desde supabes')
+      }
 
   setTimeout(() => {
     this.showSuccessModal = false
@@ -55,8 +28,7 @@ export default {
   }, 1500)
 }
 
-  }
-}
+ 
 </script>
 
 <template>
