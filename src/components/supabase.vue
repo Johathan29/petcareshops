@@ -8,9 +8,9 @@ import { ref,onMounted } from 'vue';
     const { data } = await supabase.from('animals').select()
     console.log(data)
   }
-  async funtion setData(adoption){
+  /*async funtion setData(adoption){
     
-  }
+  }*/
 
   onMounted(() => {
     getTodos()
