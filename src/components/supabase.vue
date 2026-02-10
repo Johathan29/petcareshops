@@ -9,9 +9,7 @@ import { ref,onMounted } from 'vue';
     console.log(data)
   }
   async funtion setData(adoption){
-    const { error } = await supabase
-  .from('adoption')
-  .insert({ id: 1, name: 'Mordor' })
+    
   }
 
   onMounted(() => {
