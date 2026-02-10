@@ -25,7 +25,7 @@ import {
 /* Components */
 import BreadCrum from '../components/Breadcrum.vue'
 import CardMascota from '../components/UI/cardMascota.vue'
-import MyFavorite from '../components/MyFavorite.vue'
+import MyFavorite from '../components/Mascotas/MyFavorite.vue'
 import Data from '../Data.js'
 import RegistrarMascotas from '../components/RegistrarMascotas.vue'
 import { nextTick } from 'vue'
@@ -108,7 +108,7 @@ async function getTodos() {
   try {
     loading.value=true
     const { data } = await supabase.from('animals').select()
-    pets.value=isHome.value ?  data.slice(0, 4) :  data  
+    pets.value=isHome.value ?  data.slice(0, 4)  :  data  
   } catch (error) {
     console.log(error)
   }
@@ -215,11 +215,7 @@ const breadCrumUrl = computed(() => ['Adoption'])
 /* =====================================================
    🚀 LIFECYCLE
 ===================================================== */
-const orderedPets = computed(() => {
-  return [...filteredPets.value].sort((a, b) =>
-    a.nombre.localeCompare(b.nombre, 'es', { sensitivity: 'base' })
-  )
-})
+
 </script>
 
 
@@ -333,10 +329,10 @@ add_circle
 
     <!-- GRID -->
  
-    <CardMascota :data="orderedPets"   @like="onLikePet" :loading="loading"></CardMascota>
+    <CardMascota :data="filteredPets"   @like="onLikePet" :loading="loading"></CardMascota>
     
     <template v-if="isHome">
-      <div  class="flex items-center justify-center py-6">
+      <div  class="flex items-center justify-center mt-[4rem]">
           <router-link to="/adoption" class="group flex items-center hover:text-[#0F6CBD] hover:shadow-[#0F6CBD]/30  justify-center gap-2 px-8 py-3 rounded-xl bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 text-slate-600 dark:text-slate-300 font-semibold hover:bg-slate-50 dark:hover:bg-slate-700 hover:text-primary dark:hover:text-white transition-colors shadow-sm hover:shadow-md"> 
             View more 
             <span class="material-symbols-outlined group-hover:translate-x-1 duration-600 transition">
@@ -380,7 +376,7 @@ arrow_forward
     </div>
 
 <template v-if="favorites.length!==0">
-<MyFavorite :favorites="favorites"></MyFavorite>
+<MyFavorite :favorites="favorites"/>
 </template>
 <template v-else>
 <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4">

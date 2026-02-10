@@ -48,7 +48,7 @@ loading.value=false
     <Breadcrum :name="breadCrumUrl" />
   </section>
 <section class="bg-slate-50 dark:bg-[#0F6CBD] py-12 border-b-2 border-gray-500/10">
-    <div class="max-w-screen-xl md:mx-auto px-[3.5rem]">
+    <div class="max-w-screen-xl md:mx-auto px-[1.5rem] md:px-[3.5rem]">
         <div class="mb-6">
             <h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">
                 Our Services

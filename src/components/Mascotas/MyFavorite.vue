@@ -121,7 +121,7 @@ const formatLikes = (value: number): string => {
           >
             <router-link
     
-    :to="`/mascotas/${item.id}`" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2  dark:bg-slate-700/50 bg-primary hover:bg-[#2881cf]  text-white dark:text-slate-300 rounded-lg text-sm font-semibold transition-colors duration-400">
+    :to="`/adoption/${item.id}`" class="flex-1 sm:flex-none flex items-center justify-center gap-2 px-4 py-2  dark:bg-slate-700/50 bg-primary hover:bg-[#2881cf]  text-white dark:text-slate-300 rounded-lg text-sm font-semibold transition-colors duration-400">
 <span class="material-symbols-outlined text-[18px]">visibility</span>
 <span class="sm:hidden lg:inline ">View Details</span>
 <span class="hidden sm:inline lg:hidden">View</span>
