@@ -246,9 +246,7 @@ const openMessageModal=()=>{
          active:scale-90 transition-transform duration-300"
   @click.prevent="userAuthed ? toggleLike(items) : openMessageModal()"
 >
-<span class="material-symbols-outlined text-red-700">
-favorite
-</span>
+
   <FontAwesomeIcon
     :icon="isFavorite(items.id) ? faHeartCircleCheck : faHeart"
     class="text-red-700 text-[20px]"
