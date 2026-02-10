@@ -11,7 +11,8 @@ const mascota=defineProps<{
     }
 }>()
 
-
+const user=JSON.parse(localStorage.getItem('user'))
+console.log(user.user)
 const emit = defineEmits(['closed'])
 /* Cerrar modal */
 const closeAdoptionModal = () => {
@@ -30,32 +31,25 @@ const form = ref({
 const loading = ref(false)
 const submitAdoption =  async() => {
   
-  var session = await supabase.Auth.SignIn('rosariojohathan@gmail.com', "Johathan2929*");
-  console.log(session)
-  const { error } = await supabase
+console.log(formExperience1.value)
+  /*const insertAdoption= await supabase
   .from('adoption')
-  .insert({ id:1,
-    address: form.value.address,
-    email:form.value.email,
-    experience: form.value.experience,
-    housingType: form.value.housing,
-    message:  form.value.message,
+  .insert({
+    userName:formName.value,
+    address: formAddress.value,
+    email:user.user.email,
+    experience: formExperience.value | formExperience1.value,
+    housingType: formHousing.value,
+    message:  formMessage.value,
     petId: mascota.mascota?.id,
-    phone: form.value.phone,
+    phone: formPhone.value,
     status: 'pending'})
 
     console.log(
         
-    mascota.mascota?.nombre ,
-        form.value.name,
-        form.value.email,
-         form.value.phone,
-         form.value.address,
-         form.value.housing,
-         form.value.experience,
-         form.value.message
+    insertAdoption
         
-      )
+      )*/
      
     
     
@@ -105,7 +99,8 @@ const submitAdoption =  async() => {
     </label>
     <input
       type="text"
-      v-model="form.name" 
+      v-model="formName" 
+      id="formName"
       required
       placeholder="Tu nombre completo"
       class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
@@ -121,10 +116,11 @@ const submitAdoption =  async() => {
       </label>
       <input
         type="email"
-        v-model="form.email" 
+        disabled
+        :value="user.user.email"
         required
         placeholder="correo@ejemplo.com"
-        class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
+        class="w-full px-4 py-3 rounded-lg bg-slate-100 border-2 border-slate-200
                focus:border-[#0F6CBD] focus:outline-none transition"
       />
     </div>
@@ -136,7 +132,8 @@ const submitAdoption =  async() => {
       <input
         type="tel"
         required
-        v-model="form.phone" 
+        v-model="formPhone" 
+        id="formPhone"
         placeholder="(000) 000-0000"
         class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
                focus:border-[#0F6CBD] focus:outline-none transition"
@@ -152,7 +149,8 @@ const submitAdoption =  async() => {
     <textarea
       rows="2"
       required
-      v-model="form.address" 
+      v-model="formAddress"
+      id="formAddress" 
       placeholder="Dirección donde vivirá la mascota"
       class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
              focus:border-[#0F6CBD] focus:outline-none transition resize-none"
@@ -165,7 +163,7 @@ const submitAdoption =  async() => {
     <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
       Tipo de vivienda
     </label>
-    <select v-model="form.housing" 
+    <select v-model="formHousing"  id="formHousing"
       class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
              focus:border-[#0F6CBD] focus:outline-none transition"
     >
@@ -182,14 +180,17 @@ const submitAdoption =  async() => {
       ¿Tienes experiencia previa con mascotas?
     </label>
     <div class="flex gap-6">
-      <label class="flex items-center gap-2 cursor-pointer text-sm">
-        <input type="radio" name="experience" class="w-4 h-4"  v-model="form.experience"/>
-        Sí
-      </label>
-      <label class="flex items-center gap-2 cursor-pointer text-sm">
-        <input type="radio"  v-model="form.experience" name="experience" class="w-4 h-4" />
+      
+        <select name="formExperience1" class="w-full px-4 py-3 rounded-lg border-2 border-slate-200 focus:border-[#0F6CBD] focus:outline-none transition"   v-model="formExperience1" id="formExperience1">
+        <option value="" selected>Seleccione un a opcion</option>
+        <option value="si">Si</option>
+        <option value="no">No</option>
+        </select>
+      
+     <!-- <label class="flex items-center gap-2 cursor-pointer text-sm">
+        <input type="radio"  v-model="formExperience" name="formExperience1"  class="w-4 h-4" id="formExperience"/>
         No
-      </label>
+      </label>-->
     </div>
   </div>
 
@@ -200,7 +201,8 @@ const submitAdoption =  async() => {
     </label>
     <textarea
       rows="4"
-       v-model="form.message"
+       v-model="formMessage"
+       id="formMessage"
       required
       placeholder="Cuéntanos por qué esta mascota sería ideal para tu familia..."
       class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
@@ -212,8 +214,8 @@ const submitAdoption =  async() => {
   <div class="flex gap-4 pt-4">
     <button  @click="closeAdoptionModal"
       type="button"
-      class="flex-1 py-3 rounded-xl border font-semibold
-             hover:bg-slate-50 transition"
+      class="flex-1 py-3 rounded-xl border font-bold bg-red-500 
+             hover:bg-red-700 transition duratution-300  text-white"
     >
       Cancelar
     </button>

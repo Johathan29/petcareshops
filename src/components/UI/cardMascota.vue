@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons'
-import { faHeart,faPaperPlane,} from '@fortawesome/free-regular-svg-icons'
+import { faHeart,faPaperPlane} from '@fortawesome/free-regular-svg-icons'
 import AdoptionForm from '../Mascotas/Adoption.form.vue'
+import MessageModal from './messageModal.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { defineProps, ref, onMounted, onUnmounted, watch, nextTick, computed } from 'vue'
 import { useRoute } from 'vue-router'
@@ -96,7 +97,7 @@ let observer = new IntersectionObserver(
     rootMargin: '0px 0px -8% 0px'
   }
 )
-
+const userAuthed=JSON.parse(localStorage.getItem('user'))
 
 /* ---------------------------------------------------------
    Observa todas las cards visibles en el DOM
@@ -170,7 +171,10 @@ const openAdoptionModal = (pet: Pet) => {
   selectedPet.value = pet
   showAdoptionModal.value = true
 }
-
+const showMessageAlert= ref(false)
+const openMessageModal=()=>{
+  showMessageAlert.value=true
+}
 
 </script>
 <template>
@@ -240,8 +244,11 @@ const openAdoptionModal = (pet: Pet) => {
   class="group relative flex items-center justify-center
          
          active:scale-90 transition-transform duration-300"
-  @click.prevent="toggleLike(items)"
+  @click.prevent="userAuthed ? toggleLike(items) : openMessageModal()"
 >
+<span class="material-symbols-outlined text-red-700">
+favorite
+</span>
   <FontAwesomeIcon
     :icon="isFavorite(items.id) ? faHeartCircleCheck : faHeart"
     class="text-red-700 text-[20px]"
@@ -315,7 +322,7 @@ const openAdoptionModal = (pet: Pet) => {
          bg-[#0F6CBD] text-white font-bold
          hover:bg-[#0c5aa3] transition
          active:scale-95"
-  @click.prevent="openAdoptionModal(items)"
+  @click.prevent="userAuthed ? openAdoptionModal(items) : openMessageModal()"
 >
   <FontAwesomeIcon :icon="faPaw"/> Solicitar Adopción
 </button>
@@ -348,6 +355,17 @@ const openAdoptionModal = (pet: Pet) => {
 >
   <AdoptionForm :mascota="selectedPet" @closed="showAdoptionModal=false"/>
 </div>
+<div v-if="showMessageAlert"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm
+         flex items-center justify-center z-50 p-4"
+>
+<MessageModal
+  :open="showMessageAlert"
+  @close="showMessageAlert = false"
+  
+/>
+</div>
+
 </template>
 
 

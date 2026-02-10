@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, onMounted, ref } from 'vue'
 import { useRoute } from 'vue-router'
+import MessageModal from '../components/UI/messageModal.vue'
 import BreadCrum from '../components/Breadcrum.vue'
 import { initAccordions, initTabs, initModals } from 'flowbite'
 import Data from '../Data';
@@ -120,6 +121,11 @@ onMounted(async () => {
   initTabs()
   initModals()
 })
+const userAuthed=JSON.parse(localStorage.getItem('user'))
+const showMessageAlert= ref(false)
+const openMessageModal=()=>{
+  showMessageAlert.value=true
+}
 </script>
 
 
@@ -131,18 +137,18 @@ onMounted(async () => {
 <div class="flex flex-col gap-4">
 
 <div class="flex flex-wrap justify-between items-end gap-4">
-<h1 class="text-text-main-light dark:text-text-main-dark text-3xl font-bold leading-tight tracking-tight">Pet Details: {{ pet?.nombre }}</h1>
-<div class="block items-center justify-end md:flex gap-3">
-<button class="px-3 py-2.5 rounded-lg w-full border border-border-light dark:border-border-dark bg-white dark:bg-card-dark text-text-main-light dark:text-text-main-dark text-sm font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center gap-2">
-<span class="material-symbols-outlined text-[18px]">print</span>
-                             Print Record
-                        </button>
-                        <button title="Adoptar mascota"
-  class=" w-full py-2.5 px-3 rounded-lg flex items-center gap-2 justify-center
+<h1 class="text-text-main-light dark:text-text-main-dark text-3xl  font-bold leading-tight tracking-tight">Pet Details: {{ pet?.nombre }}</h1>
+<div class="block items-center justify-end md:flex gap-3 ">
+<button class="px-3 py-2.5 rounded-lg  w-[13rem] border border-border-light dark:border-border-dark bg-white dark:bg-card-dark text-text-main-light dark:text-text-main-dark text-sm font-semibold hover:bg-gray-50 dark:hover:bg-white/5 transition-colors flex items-center justify-center gap-2">
+    <span class="material-symbols-outlined text-[18px]">print</span>
+      Print Record
+ </button>
+<button title="Adoptar mascota"
+  class=" w-[14rem] py-2.5 px-3 rounded-lg flex items-center gap-2 justify-center
          bg-[#0F6CBD] text-white font-bold text-[14px]
          hover:bg-[#0c5aa3] transition
          active:scale-95"
-  @click.prevent="openAdoptionModal(pet)"
+  @click.prevent="userAuthed ? openAdoptionModal(pet) : openMessageModal()"
 >
   <FontAwesomeIcon :icon="faPaw"/> Solicitar Adopción
 </button>
@@ -319,6 +325,16 @@ onMounted(async () => {
          flex items-center justify-center z-50 p-4"
 >
   <AdoptionForm :mascota="pet" @closed="showAdoptionModal=false"/>
+</div>
+<div v-if="showMessageAlert"
+  class="fixed inset-0 bg-black/50 backdrop-blur-sm
+         flex items-center justify-center z-50 p-4"
+>
+<MessageModal
+  :open="showMessageAlert"
+  @close="showMessageAlert = false"
+  
+/>
 </div>
   </section>
 </template>

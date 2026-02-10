@@ -6,7 +6,7 @@ import { ref, computed, onMounted } from 'vue'
 import { useRoute } from 'vue-router'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faSearch } from '@fortawesome/free-solid-svg-icons'
-
+import MessageModal from '../components/UI/messageModal.vue'
 /* Flowbite UI */
 import {
   initAccordions,
@@ -87,7 +87,7 @@ const pets = ref<Pet[]>([])
 const supabaseValue=ref<Pet[]>([])
 const loading = ref(false)
 const error = ref<string | null>(null)
-
+const showMessageAlert = ref(false)
 /* UI State */
 const showModal = ref(false)
 
