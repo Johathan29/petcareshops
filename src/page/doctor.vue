@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import skeletom from '../components/Doctor/skeletom.vue'
-import { computed,onMounted,ref, toValue } from 'vue'
+import { computed, onMounted, ref, toValue } from 'vue'
 import ReserveModal from '../components/Doctor/ReserveModal.vue'
 import { useRoute } from 'vue-router'
 import Data from '../Data'
@@ -15,16 +15,16 @@ interface Doctor {
   id: number
   name: string
   specialty: []
-  avatar:string
+  avatar: string
   phone: string
   schedule: []
-  processes:[]
-  id_animals:[]
+  processes: []
+  id_animals: []
 }
 
 interface Service {
   title: string
-  description:string
+  description: string
   procesos: []
 }
 
@@ -38,13 +38,13 @@ const serviceSlug = computed(() =>
   route.fullPath.replace('/services/', '')
 )
 const loading = ref(false)
-const doctors= ref<Doctor[]>([])
+const doctors = ref<Doctor[]>([])
 
 onMounted(async () => {
-  
+
   loadingchanges(true)
   doctors.value = await getDoctors()
-  getService() 
+  getService()
   loadingchanges(false)
 })
 /*const loading = ref(true)
@@ -59,45 +59,46 @@ onMounted(async() => {
 ================================ */
 //const services: Service[] = Data.value[3]
 
-const loadingchanges=(Value:boolean)=>{
- loading.value=!Value ? false : true
+const loadingchanges = (Value: boolean) => {
+  loading.value = !Value ? false : true
 }
-  const services=ref<Service[]>([])
+const services = ref<Service[]>([])
 console.log(loading.value)
 async function getService() {
   try {
-    
+
     const { data } = await supabase.from('services').select()
-    services.value=  data?.find(s=>slugify(s.title) === serviceSlug.value); 
+    services.value = data?.find(s => slugify(s.title) === serviceSlug.value);
   } catch (error) {
     console.log(error)
   }
-  finally{
-    
+  finally {
+
   }
-    
-  }
+
+}
 
 async function getDoctors() {
   try {
-    
+
     const { data } = await supabase.from('doctors').select()
-    return data; 
+    return data;
   } catch (error) {
     console.log(error)
   }
-  finally{
-   
+  finally {
+
   }
-    
-  }
-  const doctorsByService = computed(() => {
+
+}
+const matchedDoctors=ref()
+const doctorsByService = computed(() => {
 
   const service = services.value
 
   if (!service) return null
 
-  const matchedDoctors = doctors.value
+  matchedDoctors.value= doctors.value
     .filter(doc =>
       doc.specialty.includes(service.title)
     )
@@ -112,8 +113,8 @@ async function getDoctors() {
     service: service.title,
     description: service.description,
     procesos: service.procesos,
-    doctors: matchedDoctors,
-    
+    doctors: matchedDoctors.value,
+
   }
 })
 
@@ -150,70 +151,66 @@ const slugify = (text: string) =>
 
 const breadCrumUrl = computed(() => [
   'Services',
- doctorsByService.value?.service || ''
+  doctorsByService.value?.service || ''
 ])
 
-const  roleUser= ref('user');
-const filterbyDoctor=ref()
-function filterDoctor(doctor){
-  filterbyDoctor.value=doctor
-  console.log(filterbyDoctor.value)
+const roleUser = ref('user');
+const filterbyDoctor = ref()
+function filterDoctor(doctor) {
+  matchedDoctors.value = doctors.value.find(item=> item.name === doctor)
+  
+ 
 }
-
+ 
 </script>
 
 
 <template>
-    <Breadcrum :name="breadCrumUrl" ></Breadcrum>
-    <section class="bg-slate-50 dark:bg-[#0F6CBD] min-h-[51rem] py-12 border-b-2 border-gray-500/10 !max-w-full">
-        <div class="max-w-screen-xl md:mx-auto px-[1.5rem] md:px-[3.5rem]">
-            <div class="flex-1 overflow-y-auto">
+  <Breadcrum :name="breadCrumUrl"></Breadcrum>
+  <section class="bg-slate-50 dark:bg-[#0F6CBD] min-h-[51rem] py-12 border-b-2 border-gray-500/10 !max-w-full">
+    <div class="max-w-screen-xl md:mx-auto px-[1.5rem] md:px-[3.5rem]">
+      <div class="flex-1 overflow-y-auto">
 
-                <!-- Header -->
-                <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
-                <div>
-                    <h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">
-                    {{services.title}}
-                    </h2>
-                    <p class="text-slate-500 dark:text-slate-400 mt-1">
-                    {{doctorsByService?.description}}
-                    </p>
-                </div>
-                
-                <button v-if="roleUser==='admin'"
-                    class="flex items-center gap-2 px-4 py-2 bg-primary text-zinc-900 font-bold rounded-lg
-                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm"
-                >
-                    <span class="material-symbols-outlined text-lg">person_add</span>
-                    Add Doctor
-                </button>
-                <select name="" id="" v-else class="mx-[1rem] px-8 py-2  text-zinc-900 font-bold rounded-lg 
-                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm" @change="filterDoctor(filter)" v-model="filter" >
-                  <option :value="doctor" v-for="doctor in doctorsByService?.doctors" > {{ doctor.name }}</option>
-                </select>
-                </div>
+        <!-- Header -->
+        <div class="flex flex-col md:flex-row justify-between items-end gap-4 mb-8">
+          <div>
+            <h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">
+              {{ services.title }}
+            </h2>
+            <p class="text-slate-500 dark:text-slate-400 mt-1">
+              {{ doctorsByService?.description }}
+            </p>
+          </div>
 
-    <!-- Grid -->
-    
-     <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6">
-      <skeletom v-if="loading"></skeletom>
-  <DoctorCard
-   v-else
-    :doctor="doctorsByService?.doctors"
-   :loading="loading"
-    @reserve="openReservationModal"
-  />
-  <ReserveModal
-  :open="showModal"
-  :data="reservation"
-  @close="showModal = false"
-  @confirm="confirmReservation"
-/>
-</div>
+          <button v-if="roleUser === 'admin'" class="flex items-center gap-2 px-4 py-2 bg-primary text-zinc-900 font-bold rounded-lg
+                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm">
+            <span class="material-symbols-outlined text-lg">person_add</span>
+            Add Doctor
+          </button>
+          <div class="flex items-center flex-col space-y-2 mx-[1rem] justify-start" v-else>
+            <label for="" class="font-bold text-[#106cbd]"> Filtrar por Doctores</label>
+            <select name="doctor" class=" px-8 py-2 form-select resize-none overflow-hidden text-zinc-900 border-slate-200 font-bold rounded-lg 
+                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm" @change="filterDoctor(doctor)" id="doctor" v-model="doctor">
+              <option disabled selected> Selectiona un Doctor</option>
+              <option :value="doctor.name" v-for="doctor in doctorsByService?.doctors"> {{ doctor.name }}</option>
+              
+            </select>
+          </div>
 
-    
-  </div>
-  </div>
+        </div>
+
+        <!-- Grid -->
+
+        <div class="grid md:grid-cols-2 xl:grid-cols-2 gap-6">
+          <skeletom v-if="loading"></skeletom>
+          <DoctorCard v-else :doctor="doctorsByService?.doctors" :loading="loading" @reserve="openReservationModal" />
+          <ReserveModal :open="showModal" :data="reservation" @close="showModal = false"
+            @confirm="confirmReservation" />
+        </div>
+
+
+      </div>
+    </div>
   </section>
 </template>
 

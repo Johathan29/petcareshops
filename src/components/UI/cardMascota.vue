@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { faHeartCircleCheck,faPaw} from '@fortawesome/free-solid-svg-icons'
-import { faHeart,faPaperPlane} from '@fortawesome/free-regular-svg-icons'
+import { faHeartCircleCheck, faPaw } from '@fortawesome/free-solid-svg-icons'
+import { faHeart, faPaperPlane } from '@fortawesome/free-regular-svg-icons'
 import AdoptionForm from '../Mascotas/Adoption.form.vue'
 import MessageModal from './messageModal.vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
@@ -28,10 +28,10 @@ interface Pet {
     nombre: string
     telefono: string
   },
-  status:string
+  status: string
 }
-interface loading{
-  value:boolean
+interface loading {
+  value: boolean
 }
 /* =========================================================
    EMITS
@@ -97,7 +97,7 @@ let observer = new IntersectionObserver(
     rootMargin: '0px 0px -8% 0px'
   }
 )
-const userAuthed=JSON.parse(localStorage.getItem('user'))
+const userAuthed = JSON.parse(localStorage.getItem('user')) 
 
 /* ---------------------------------------------------------
    Observa todas las cards visibles en el DOM
@@ -171,9 +171,9 @@ const openAdoptionModal = (pet: Pet) => {
   selectedPet.value = pet
   showAdoptionModal.value = true
 }
-const showMessageAlert= ref(false)
-const openMessageModal=()=>{
-  showMessageAlert.value=true
+const showMessageAlert = ref(false)
+const openMessageModal = () => {
+  showMessageAlert.value = true
 }
 
 </script>
@@ -183,75 +183,49 @@ const openMessageModal=()=>{
     <div :key="data.length ? 'cards' : 'empty'">
 
       <!-- ================= GRID DE CARDS ================= -->
-      <TransitionGroup
-        v-if="data.length"
-        :key="data.length + '-' + data[0]?.id"
-        name="card"
-        tag="div"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8"
-      >
+      <TransitionGroup v-if="data.length" :key="data.length + '-' + data[0]?.id" name="card" tag="div"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
         <!-- Cada card -->
-        <div
-  v-for="(items, index) in data"
-  :key="items.id"
-  class="card-item"
-  :style="`--i:${index}`"
->
+        <div v-for="(items, index) in data" :key="items.id" class="card-item" :style="`--i:${index}`">
           <!-- Card clickable -->
-          <router-link
-            :to="`/adoption/${items.id}`"
-            class="group bg-white relative dark:bg-slate-800 rounded-2xl
+          <router-link :to="`/adoption/${items.id}`" class="group bg-white relative dark:bg-slate-800 rounded-2xl
                    border border-slate-200 dark:border-[#192e54b0]
                    overflow-hidden hover:shadow-2xl
                    transition-all duration-300
-                   flex flex-col hover:-translate-y-1"
-          >
-          <div class="ribbon-wrapper">
-<div class="ribbon-diagonal">
-                {{items.status}}
+                   flex flex-col hover:-translate-y-1">
+            <div class="ribbon-wrapper">
+              <div class="ribbon-diagonal">
+                {{ items.status }}
+              </div>
             </div>
-</div>
             <!-- IMAGEN -->
-            <div
-              class="relative h-56 w-full overflow-hidden"
-              :style="`background-image:url(${items.imagen})`"
-            >
+            <div class="relative h-56 w-full overflow-hidden" :style="`background-image:url(${items.imagen})`">
               <!-- Zoom suave al hover -->
-              <div
-                class="absolute inset-0 bg-cover bg-center
+              <div class="absolute inset-0 bg-cover bg-center
                        transition-transform duration-700
-                       group-hover:scale-110"
-                :style="`background-image:url(${items.imagen})`"
-              ></div>
+                       group-hover:scale-110" :style="`background-image:url(${items.imagen})`"></div>
 
               <!-- BADGES -->
               <div class="absolute top-4 right-4 flex justify-between w-full px-8">
 
                 <!-- Estado -->
-                <span
-                  class="inline-flex px-3 py-1 rounded-full text-xs font-bold border"
-                  :class="items.estado === 'Surgery'
-                    ? 'bg-red-100 text-red-800'
-                    : items.estado === 'Healthy'
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'"
-                >
+                <span class="inline-flex px-3 py-1 rounded-full text-xs font-bold border" :class="items.estado === 'Surgery'
+      ? 'bg-red-100 text-red-800'
+      : items.estado === 'Healthy'
+        ? 'bg-green-100 text-green-800'
+        : 'bg-yellow-100 text-yellow-800'">
                   {{ items.estado }}
                 </span>
 
                 <!-- Like -->
-                <button
-  class="group relative flex items-center justify-center
+                <button class="group relative flex items-center justify-center
          
          active:scale-90 transition-transform duration-300"
-  @click.prevent="userAuthed ? toggleLike(items) : openMessageModal()"
->
+                  @click.prevent="userAuthed ? toggleLike(items) : openMessageModal()">
 
-  <FontAwesomeIcon
-    :icon="isFavorite(items.id) ? faHeartCircleCheck : faHeart"
-    class="text-red-700 text-[20px]"
-  />
-</button>
+                  <FontAwesomeIcon :icon="isFavorite(items.id) ? faHeartCircleCheck : faHeart"
+                    class="text-red-700 text-[20px]" />
+                </button>
 
               </div>
             </div>
@@ -263,32 +237,32 @@ const openMessageModal=()=>{
               <div class="flex justify-between mb-3">
                 <div class="text-left w-full">
                   <div class="flex items-center justify-between w-full">
-                    <div> 
+                    <div>
                       <h3 class="text-xl font-bold text-[#0F6CBD] ">
-                    {{ items.nombre }}
-                  </h3>
-                        <p class="text-sm text-slate-500">
-                    {{ items.raza }}
-                  </p>
+                        {{ items.nombre }}
+                      </h3>
+                      <p class="text-sm text-slate-500">
+                        {{ items.raza }}
+                      </p>
                     </div>
-                   
-                  
-                  <div class="w-min">
-                    <span class="text-xs font-bold">Genero</span>
-                    <template v-if="items.genero==='female'">
-                      <span class="material-symbols-outlined text-md text-rose-500/50">
-                        female
-                      </span>
-                    </template>
-                    <template v-else>
-                     <span class="material-symbols-outlined text-md text-blue-700/70">
-                        male
-                      </span>
-                    </template>
+
+
+                    <div class="w-min">
+                      <span class="text-xs font-bold">Genero</span>
+                      <template v-if="items.genero === 'female'">
+                        <span class="material-symbols-outlined text-md text-rose-500/50">
+                          female
+                        </span>
+                      </template>
+                      <template v-else>
+                        <span class="material-symbols-outlined text-md text-blue-700/70">
+                          male
+                        </span>
+                      </template>
+                    </div>
                   </div>
-                  </div>
-                  
-                
+
+
                 </div>
 
                 <!-- Icono de género -->
@@ -315,30 +289,27 @@ const openMessageModal=()=>{
                   <span>{{ items.owner.nombre }}</span>
                 </div>
               </div>
-          <button v-if="!isHome"
-  class="mt-4 w-full py-3 rounded-xl flex items-center gap-2 justify-center
+              <button v-if="!isHome" class="mt-4 w-full py-3 rounded-xl flex items-center gap-2 justify-center
          bg-[#0F6CBD] text-white font-bold
          hover:bg-[#0c5aa3] transition
-         active:scale-95"
-  @click.prevent="userAuthed ? openAdoptionModal(items) : openMessageModal()"
->
-  <FontAwesomeIcon :icon="faPaw"/> Solicitar Adopción
-</button>
+         active:scale-95" @click.prevent="userAuthed ? openAdoptionModal(items) : openMessageModal()">
+                <FontAwesomeIcon :icon="faPaw" /> Solicitar Adopción
+              </button>
             </div>
-            
+
           </router-link>
 
         </div>
       </TransitionGroup>
-      
+
       <!-- ================= EMPTY STATE ================= -->
       <div v-if="props.loading" class="flex justify-center">
         <div class="p-6">
-          <div class="loader w-full"></div> 
-          
+          <div class="loader w-full"></div>
+
         </div>
       </div>
-      <div v-if="props.data.length===0 && !props.loading" class="flex justify-center">
+      <div v-if="props.data.length === 0 && !props.loading" class="flex justify-center">
         <div class="p-6 border-2 bg-white text-red-500 rounded-xl flex gap-4 shadow-md shadow-slate-500 ">
           <span class="text-2xl">No se encontraron mascotas</span>
         </div>
@@ -347,102 +318,119 @@ const openMessageModal=()=>{
     </div>
   </Transition>
   <!-- ================= MODAL ADOPCIÓN ================= -->
-<div v-if="showAdoptionModal"
-  class="fixed inset-0 bg-black/50 backdrop-blur-sm
-         flex items-center justify-center z-50 p-4"
->
-  <AdoptionForm :mascota="selectedPet" @closed="showAdoptionModal=false"/>
-</div>
-<div v-if="showMessageAlert"
-  class="fixed inset-0 bg-black/50 backdrop-blur-sm
-         flex items-center justify-center z-50 p-4"
->
-<MessageModal
-  :open="showMessageAlert"
-  @close="showMessageAlert = false"
-  
-/>
-</div>
+  <div v-if="showAdoptionModal" class="fixed inset-0 bg-black/50 backdrop-blur-sm
+         flex items-center justify-center z-50 p-4">
+    <AdoptionForm :mascota="selectedPet" @closed="showAdoptionModal = false" />
+  </div>
+  <div v-if="showMessageAlert" class="fixed inset-0 bg-black/50 backdrop-blur-sm
+         flex items-center justify-center z-50 p-4">
+    <MessageModal :open="showMessageAlert" @close="showMessageAlert = false" />
+  </div>
 
 </template>
 
 
 
 <style scoped>
-    /* ===============================
+/* ===============================
    CONTAINER FADE (GRID ↔ EMPTY)
 ================================ */
 .ribbon-diagonal::before {
-    left: 0;
+  left: 0;
 }
 
 
-.ribbon-diagonal::before, .ribbon-diagonal::after {
-    content: "";
-    position: absolute;
-    bottom: -5px;
-    border-top: 5px solid #C2410C;
-    border-left: 5px solid transparent;
-    border-right: 5px solid transparent;
-    z-index: -1;
+.ribbon-diagonal::before,
+.ribbon-diagonal::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  border-top: 5px solid #C2410C;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  z-index: -1;
 }
+
 .ribbon-diagonal {
-    position: absolute;
-    background: #F97316;
-    color: white;
-    text-align: center;
-    padding: 10px 0;
-    width: 225px;
-    top: 35px;
-    left: -55px;
-    transform: rotate(-45deg);
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
-    text-transform: uppercase;
-    font-weight: 900;
-    font-size: 1rem;
-    letter-spacing: 0.1em;
-    z-index: 50;
+  position: absolute;
+  background: #F97316;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  width: 225px;
+  top: 35px;
+  left: -55px;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  z-index: 50;
 }
+
 .loader {
   width: 19px;
   aspect-ratio: 1;
   border-radius: 50%;
   animation: l5 1s infinite linear alternate;
 }
+
 @keyframes l5 {
-    0%  {box-shadow: 20px 0 #000, -20px 0 #0002;background: #000 }
-    33% {box-shadow: 20px 0 #000, -20px 0 #0002;background: #0002}
-    66% {box-shadow: 20px 0 #0002,-20px 0 #000; background: #0002}
-    100%{box-shadow: 20px 0 #0002,-20px 0 #000; background: #000 }
+  0% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #000
+  }
+
+  33% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #0002
+  }
+
+  66% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #0002
+  }
+
+  100% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #000
+  }
 }
+
 .card-item {
-  
+
   animation-delay: calc(var(--i) * 60ms);
 
   opacity: 1;
   transform: translateY(12px) scale(0.98);
-  
+
 }
+
 .card-item.in-view {
   animation: cardReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
 }
+
 @keyframes cardReveal {
   from {
     opacity: 0;
     transform: translateY(28px) scale(0.96);
     filter: blur(6px);
   }
+
   to {
     opacity: 1;
     transform: translateY(0) scale(1);
     filter: blur(0);
   }
 }
+
 .card-item:not(.in-view) {
   opacity: 1;
   transform: translateY(28px) scale(0.96);
-  
+
 }
+
 .card-item {
   animation: force-visible 0.01s forwards;
 }
@@ -451,17 +439,18 @@ const openMessageModal=()=>{
   to {
     opacity: 1;
     transform: translateY(28px) scale(0.96);
-  
-  transition:
-    opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
-    filter 0.6s ease;
-  will-change: transform, opacity;
+
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.6s ease;
+    will-change: transform, opacity;
   }
 }
+
 .container-enter-active,
 .container-leave-active {
-  transition: 
+  transition:
     opacity 0.45s ease,
     transform 0.45s ease,
     filter 0.45s ease;
@@ -491,13 +480,15 @@ const openMessageModal=()=>{
   filter: blur(4px);
 }
 
-    .empty-enter-active,
+.empty-enter-active,
 .empty-leave-active {
   transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
 }
+
 .empty-enter-active {
   transition-delay: 120ms;
 }
+
 .empty-enter-from {
   opacity: 0;
   transform: translateY(12px) scale(0.96);
