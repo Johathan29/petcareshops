@@ -17,9 +17,12 @@ interface Service {
   color: string
   procesos: Record<string, string>
   icon:string
+} 
+interface loading{
+value:boolean
 }
 
-const props = defineProps<{ data: Service[] }>()
+const props = defineProps<{loading: loading,data: Service[] }>()
 
 /* ------------------------------------
    Route state
@@ -85,6 +88,12 @@ console.log(props.data.map(items=> items.icon))
 
 <template>
   <div :class="gridClasses">
+    <div v-if="props.loading" class="flex justify-center">
+        <div class="p-6">
+          <div class="loader w-full"></div>
+
+        </div>
+      </div>
     <component
       :is="CardWrapper"
       v-for="service in visibleServices"
@@ -207,4 +216,207 @@ console.log(props.data.map(items=> items.icon))
   background: lightgoldenrodyellow;
   color: #645a09;
 }
+
+/* ===============================
+   CONTAINER FADE (GRID ↔ EMPTY)
+================================ */
+.ribbon-diagonal::before {
+  left: 0;
+}
+
+
+.ribbon-diagonal::before,
+.ribbon-diagonal::after {
+  content: "";
+  position: absolute;
+  bottom: -5px;
+  border-top: 5px solid #C2410C;
+  border-left: 5px solid transparent;
+  border-right: 5px solid transparent;
+  z-index: -1;
+}
+
+.ribbon-diagonal {
+  position: absolute;
+  background: #F97316;
+  color: white;
+  text-align: center;
+  padding: 10px 0;
+  width: 225px;
+  top: 35px;
+  left: -55px;
+  transform: rotate(-45deg);
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  text-transform: uppercase;
+  font-weight: 900;
+  font-size: 1rem;
+  letter-spacing: 0.1em;
+  z-index: 50;
+}
+
+.loader {
+  width: 19px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  animation: l5 1s infinite linear alternate;
+}
+
+@keyframes l5 {
+  0% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #000
+  }
+
+  33% {
+    box-shadow: 20px 0 #000, -20px 0 #0002;
+    background: #0002
+  }
+
+  66% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #0002
+  }
+
+  100% {
+    box-shadow: 20px 0 #0002, -20px 0 #000;
+    background: #000
+  }
+}
+
+.card-item {
+
+  animation-delay: calc(var(--i) * 60ms);
+
+  opacity: 1;
+  transform: translateY(12px) scale(0.98);
+
+}
+
+.card-item.in-view {
+  animation: cardReveal 0.65s cubic-bezier(0.22, 1, 0.36, 1) both;
+}
+
+@keyframes cardReveal {
+  from {
+    opacity: 0;
+    transform: translateY(28px) scale(0.96);
+    filter: blur(6px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    filter: blur(0);
+  }
+}
+
+.card-item:not(.in-view) {
+  opacity: 1;
+  transform: translateY(28px) scale(0.96);
+
+}
+
+.card-item {
+  animation: force-visible 0.01s forwards;
+}
+
+@keyframes force-visible {
+  to {
+    opacity: 1;
+    transform: translateY(28px) scale(0.96);
+
+    transition:
+      opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),
+      filter 0.6s ease;
+    will-change: transform, opacity;
+  }
+}
+
+.container-enter-active,
+.container-leave-active {
+  transition:
+    opacity 0.45s ease,
+    transform 0.45s ease,
+    filter 0.45s ease;
+}
+
+.container-enter-from {
+  opacity: 0;
+  transform: scale(0.98);
+  filter: blur(4px);
+}
+
+.container-enter-to {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+.container-leave-from {
+  opacity: 1;
+  transform: scale(1);
+  filter: blur(0);
+}
+
+.container-leave-to {
+  opacity: 0;
+  transform: scale(0.98);
+  filter: blur(4px);
+}
+
+.empty-enter-active,
+.empty-leave-active {
+  transition: all 0.45s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.empty-enter-active {
+  transition-delay: 120ms;
+}
+
+.empty-enter-from {
+  opacity: 0;
+  transform: translateY(12px) scale(0.96);
+}
+
+.empty-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.empty-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.empty-leave-to {
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+}
+
+.card-enter-active,
+.card-leave-active {
+  transition: all 0.4s ease;
+}
+
+.card-enter-from {
+  opacity: 0;
+  transform: translateY(20px) scale(0.95);
+}
+
+.card-enter-to {
+  opacity: 1;
+  transform: translateY(0) scale(1);
+}
+
+.card-leave-from {
+  opacity: 1;
+  transform: scale(1);
+}
+
+.card-leave-to {
+  opacity: 0;
+  transform: scale(0.9);
+}
 </style>
+

@@ -59,7 +59,7 @@ async function getService() {
           mascota.
         </p>
       </div>
-      <CardServices :data="service" />
+      <CardServices :data="service" :loading="loading"/>
     </div>
   </section>
 
