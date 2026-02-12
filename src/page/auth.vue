@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { supabase } from '../config/supabase'
-import { ref } from 'vue'
+import { ref,onMounted } from 'vue'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 const authMode = ref("login")
 const captchaToken = ref()
@@ -8,25 +8,36 @@ const captchaToken = ref()
 const setCaptchaToken = (Token) => {
 
 }
+async function   getUser() {
+  const users = await supabase.auth.getUser()
+
+
+// 'users' es un array que contiene todos los registros de la tabla 'profiles'
+console.log('Usuarios obtenidos:', users);
+
+  
+}
+onMounted(() => {
+  getUser()
+});
 // ui state
 const showErrorModal = ref(false)
 const showSuccessModal = ref(false)
 const errorMessage = ref("")
 const welcomeMessage = ref("")
+
+
 const login = async () => {
   const respond = await supabase.auth.signInWithPassword({ email: email.value, password: password.value, })
-  await supabase.auth.updateUser({
-    email: email.value,
-  display_name:'Johathan'
-})
+  
   try {
     /*
     const emai='rosariojohathan@gmail.com'
 const pasw='Johathan2929*'*/
 
     if (respond.data.session !== null) {
-      const user = respond.data
-      localStorage.setItem("user", JSON.stringify(user))
+      const user = await supabase.auth.getUser()
+      sessionStorage.setItem("user", JSON.stringify(user))
       welcomeMessage.value = `¡Bienvenido ! 🐾`
       showSuccessModal.value = true
     }

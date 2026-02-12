@@ -25,13 +25,13 @@ interface User {
   email: string
   avatar: string
   role: string
-  identities:[{
-    identity_data:{}
-    
+  identities: [{
+    identity_data: {}
+
   }]
 }
 const logout = () => {
-  localStorage.removeItem("user")
+  sessionStorage.removeItem("user")
   user.value = null
   isUserMenuOpen.value = false
 }
@@ -50,14 +50,17 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside)
 })
 
-const user = ref<User | null>(null)
-
+const user = ref()
+const profile = ref()
+const role = ref()
 onMounted(() => {
-  const storedUser = localStorage.getItem("user")
+  const storedUser = sessionStorage.getItem("user")
   if (storedUser) {
-    user.value = JSON.parse(storedUser).user
+    user.value = JSON.parse(storedUser)
+    profile.value = user.value.data.user.identities.map(item => item.identity_data)
+    role.value = user.value.data.user.app_metadata;
   }
-  console.log(user.value?.identities.map(item=> item.identity_data.first_name))
+  console.log(role.value.role)
 })
 
 onMounted(() => {
@@ -112,7 +115,8 @@ const closeUserMenu = () => {
           <!-- PROFILE -->
           <button v-if="user" @click="toggleUserMenu"
             class="relative rounded-full bg-[#0a19bc] ring-2 ring-white dark:ring-slate-800">
-            <div class="size-10 rounded-full bg-cover bg-center" :style="{ backgroundImage: `url(https://i.pravatar.cc/150?img=3)` }">
+            <div class="size-10 rounded-full bg-cover bg-center"
+              :style="{ backgroundImage: `url(https://i.pravatar.cc/150?img=3)` }">
             </div>
           </button>
 
@@ -129,9 +133,9 @@ const closeUserMenu = () => {
            rounded-lg shadow-md w-max">
               <ul class="p-2 text-sm font-medium">
 
-                <li class="px-3 py-2 text-xs text-slate-500 flex flex-col" v-for="items in user.identities">
-                  <span class="w-full">{{ items.identity_data.first_name }}</span>
-                  <span class="w-full">{{ items.identity_data.email }}</span>
+                <li class="px-3 py-2 text-xs text-slate-500 flex flex-col" v-for="items in profile ">
+                  <span class="w-full">{{ items.first_name }}</span>
+                  <span class="w-full">{{ items.email }}</span>
                 </li>
 
                 <li>
@@ -141,10 +145,10 @@ const closeUserMenu = () => {
                   </router-link>
                 </li>
 
-                <li>
-                  <router-link to="/settings" @click="closeUserMenu"
+                <li v-if="role.role === 'admin'">
+                  <router-link to="/dashboard" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
-                    Settings
+                    DashBoard
                   </router-link>
                 </li>
 
@@ -221,10 +225,10 @@ const closeUserMenu = () => {
                   </router-link>
                 </li>
 
-                <li>
-                  <router-link to="/settings" @click="closeUserMenu"
+                <li v-if="role === 'admin'">
+                  <router-link to="/dashboard" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
-                    Settings
+                    DashBoard
                   </router-link>
                 </li>
 

@@ -32,7 +32,7 @@ onMounted(() => {
 </script>
 <template>
 
-  <Header v-if="route.fullPath!=='/auth' && route.fullPath!=='/dashboard'" />
+ 
  <!-- <section >
   <div class="absolute z-50 right-[4rem] py-4  " v-if="messager==''">
     <div class="max-w-screen-xl  mx-auto " > 
@@ -105,30 +105,6 @@ onMounted(() => {
 
 <script>
 export default {
-  name: 'App',
-  data(){
-return{
-userId:1,
-messager:'',
-  }
-},
-methods:{
-  singOut(){
-    localStorage.removeItem('usuario');
-    location.reload(true);
-  },
-  captureData()
-    {
-      this.messager=JSON.parse(localStorage.getItem('usuario'));
- 
-    }
-    
-},
-mounted(){
-  this.captureData();
-},
-components:{
-FormUsers,
-}
-};
+  name: 'AppDashBoard',
+  };
 </script>
