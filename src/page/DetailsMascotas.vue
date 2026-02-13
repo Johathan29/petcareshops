@@ -121,7 +121,7 @@ onMounted(async () => {
   initTabs()
   initModals()
 })
-const userAuthed=JSON.parse(localStorage.getItem('user'))
+const userAuthed=JSON.parse(sessionStorage.getItem('user'))
 const showMessageAlert= ref(false)
 const openMessageModal=()=>{
   showMessageAlert.value=true

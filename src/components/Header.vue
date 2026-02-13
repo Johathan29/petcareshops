@@ -60,7 +60,7 @@ onMounted(() => {
     profile.value = user.value.data.user.identities.map(item => item.identity_data)
     role.value = user.value.data.user.app_metadata;
   }
-  console.log(role.value.role)
+  
 })
 
 onMounted(() => {
