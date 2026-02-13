@@ -83,7 +83,7 @@ onMounted(() => {
     {once: true }
   )
 })
-console.log(props.data.map(items => items.icon))
+
 </script>
 
 <template>

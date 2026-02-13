@@ -5,21 +5,21 @@ import data from '../Data'
 const splideRef = ref<HTMLDivElement | null>(null)
 let splide: Splide
 interface desiases {
-    id:number,
-    title: string,
-    description: string,
-    type: string,
-    color: string,
-    action: string,
-    image: string
+  id: number,
+  title: string,
+  description: string,
+  type: string,
+  color: string,
+  action: string,
+  image: string
 }
-const original= data.value[2];
+const original = data.value[2];
 onMounted(() => {
   splide = new Splide(splideRef.value!, {
     type: "loop",
     perPage: 4,
     perMove: 1,
-    
+
     arrows: false,
     pagination: false,
     speed: 700,
@@ -51,18 +51,12 @@ const prev = () => splide.go("<")
 
         <!-- CONTROLES -->
         <div class="flex gap-2">
-          <button
-            @click="prev"
-            class="h-10 w-10 rounded-full border text-[1.6rem] font-bold text-white hover:!text-[#0F6CBD] hover:bg-white
-                   transition"
-          >
+          <button @click="prev" class="h-10 w-10 rounded-full border text-[1.6rem] font-bold text-white hover:!text-[#0F6CBD] hover:bg-white
+                   transition">
             ‹
           </button>
-          <button
-            @click="next"
-            class="h-10 w-10 text-white hover:!text-[#0F6CBD] hover:bg-white  text-[1.6rem] font-bold  rounded-full border border-secondary-foreground/20
-                   hover:bg-secondary-foreground/10 transition"
-          >
+          <button @click="next" class="h-10 w-10 text-white hover:!text-[#0F6CBD] hover:bg-white  text-[1.6rem] font-bold  rounded-full border border-secondary-foreground/20
+                   hover:bg-secondary-foreground/10 transition">
             ›
           </button>
         </div>
@@ -74,25 +68,17 @@ const prev = () => splide.go("<")
           <ul class="splide__list flex items-center">
 
             <!-- CARD -->
-            <li
-              v-for="(value, i) in original"
-              :key="i"
+            <li v-for="(value, i) in original" :key="i"
               class="splide__slide min-w-0 shrink-0 grow-0
-                     basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4 hover:-translate-y-2  duration-300 transition"
-            >
+                     basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4 hover:-translate-y-2  duration-300 transition">
               <div class=" h-full">
-                <div
-                  class="group hover:cursor-pointer hover:bg-white text-left bg-secondary-foreground/5 backdrop-blur-sm
+                <div class="group hover:cursor-pointer hover:bg-white text-left bg-secondary-foreground/5 backdrop-blur-sm
                          rounded-3xl p-6 border border-secondary-foreground/10
                          hover:border-primary/30 transition-all duration-500
-                         h-full flex flex-col"
-                >
+                         h-full flex flex-col">
                   <!-- BADGE -->
-                  <div
-                    class="inline-flex items-center rounded-full px-2.5 py-0.5
-                           text-xs font-semibold mb-4 w-fit text-white "
-                    :class="value.color"
-                  >
+                  <div class="inline-flex items-center rounded-full px-2.5 py-0.5
+                           text-xs font-semibold mb-4 w-fit text-white " :class="value.color">
                     {{ value.type }}
                   </div>
 
@@ -102,9 +88,7 @@ const prev = () => splide.go("<")
                   </div>
 
                   <!-- TITLE -->
-                  <h3
-                    class="text-xl font-bold text-white  mb-3  group-hover:!text-[#0F6CBD] transition-colors"
-                  >
+                  <h3 class="text-xl font-bold text-white  mb-3  group-hover:!text-[#0F6CBD] transition-colors">
                     {{ value.title }}
                   </h3>
 
@@ -114,23 +98,12 @@ const prev = () => splide.go("<")
                   </p>
 
                   <!-- ACTION -->
-                  <router-link 
-                    :to="`diseases/${value.id}`"
-                    class="inline-flex items-center gap-2 text-white  group-hover:!text-[#0F6CBD]  group-hover:underline
-                           font-medium text-sm group/link"
-                  >
+                  <router-link :to="`diseases/${value.id}`" class="inline-flex items-center gap-2 text-white  group-hover:!text-[#0F6CBD]  group-hover:underline
+                           font-medium text-sm group/link">
                     {{ value.action }}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-4 h-4 transition-transform
-                             group-hover/link:translate-x-1"
-                    >
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                      stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 transition-transform
+                             group-hover/link:translate-x-1">
                       <path d="M5 12h14" />
                       <path d="m12 5 7 7-7 7" />
                     </svg>
@@ -146,4 +119,3 @@ const prev = () => splide.go("<")
     </div>
   </section>
 </template>
-

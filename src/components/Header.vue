@@ -5,7 +5,7 @@ import { faPaw, faUsers, faHouse } from '@fortawesome/free-solid-svg-icons'
 const isOpen = ref(true)
 
 function openNav() {
-  return console.log(isOpen.value = !isOpen.value)
+  return isOpen.value = !isOpen.value
 }
 
 const handleScroll = () => {

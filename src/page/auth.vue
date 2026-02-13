@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { supabase } from '../config/supabase'
-import { ref,onMounted } from 'vue'
+import { ref, onMounted } from 'vue'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 const authMode = ref("login")
 const captchaToken = ref()
@@ -8,14 +8,14 @@ const captchaToken = ref()
 const setCaptchaToken = (Token) => {
 
 }
-async function   getUser() {
+async function getUser() {
   const users = await supabase.auth.getUser()
 
 
-// 'users' es un array que contiene todos los registros de la tabla 'profiles'
-console.log('Usuarios obtenidos:', users);
+  // 'users' es un array que contiene todos los registros de la tabla 'profiles'
+  return users12;
 
-  
+
 }
 onMounted(() => {
   getUser()
@@ -29,7 +29,7 @@ const welcomeMessage = ref("")
 
 const login = async () => {
   const respond = await supabase.auth.signInWithPassword({ email: email.value, password: password.value, })
-  
+
   try {
     /*
     const emai='rosariojohathan@gmail.com'
@@ -66,10 +66,10 @@ const register = async () => {
     password: insert_password.value,
     phone: insert_phone.value,
     options: {
-    data: {
-      first_name: insert_username.value,
+      data: {
+        first_name: insert_username.value,
+      },
     },
-  },
     //phone: insert_phone.value
 
   })

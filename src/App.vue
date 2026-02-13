@@ -14,7 +14,7 @@ import { useRoute } from 'vue-router';
 const route = useRoute()
 
 const captureUrl = () => {
-  console.log('URL actual:', route.fullPath)
+  return route.fullPath
 }
 
 watch(
