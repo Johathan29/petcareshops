@@ -38,7 +38,7 @@ const detalleUser = () => {
   <Mascotas></Mascotas>
   <Testimonio></Testimonio>
   <Enfermedades></Enfermedades>
-  <BirthDay></BirthDay>
+ 
   <supabase></supabase>
 </template>
 

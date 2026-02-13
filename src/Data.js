@@ -27,7 +27,7 @@ const portada = [
     }
   ],
     imagen:
-      'https://www.gabrica.cl/wp-content/uploads/2020/02/Perro-comiendo-pasto.png',
+      './src/assets/slider.png',
   },
   {
     id: 4,
@@ -50,7 +50,7 @@ const portada = [
     }
   ],
     imagen:
-      'https://lh3.googleusercontent.com/aida-public/AB6AXuB1AW26knWed7RlbWBYYtyCl3kWGnWJ3bJahhYz5-OEodWohzllKhvhgV2TXqWzltyQpTxnDal-NGqtGq3K7uqNn5EUsJZzKrtHeHg0StbAqTCsOlm6JS65x0L51EA0r7e6qbKDFqh1d1-hsWWXmTsxaCBTYxDR9HY_4lb8eG8meFpc25TH7lCz0YmEl4kannKEe0QaY4B22gaGbrWLk5o8OrDMf-lTSq5SBMQgPLn07PDiuplt6fiGec841Ni82glLB5v0SUlEDUDD',
+      './src/assets/sliderfamily.png'
   },
  
 ];

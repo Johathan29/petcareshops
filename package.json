@@ -14,7 +14,6 @@
     "@fortawesome/free-regular-svg-icons": "^6.7.2",
     "@fortawesome/free-solid-svg-icons": "^6.6.0",
     "@fortawesome/vue-fontawesome": "^3.0.8",
-    "@hcaptcha/react-hcaptcha": "^2.0.2",
     "@splidejs/vue-splide": "^0.6.12",
     "@supabase/auth-js": "^2.95.3",
     "@supabase/supabase-js": "^2.91.0",

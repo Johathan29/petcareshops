@@ -1,10 +1,12 @@
 <script setup lang="ts">
 import { supabase } from '../config/supabase'
+import { useRouter } from 'vue-router'
 import { ref, onMounted } from 'vue'
 import HCaptcha from '@hcaptcha/react-hcaptcha'
 const authMode = ref("login")
 const captchaToken = ref()
-
+const router = useRouter()
+console.log(router)
 const setCaptchaToken = (Token) => {
 
 }
@@ -31,15 +33,12 @@ const login = async () => {
   const respond = await supabase.auth.signInWithPassword({ email: email.value, password: password.value, })
 
   try {
-    /*
-    const emai='rosariojohathan@gmail.com'
-const pasw='Johathan2929*'*/
-
     if (respond.data.session !== null) {
       const user = await supabase.auth.getUser()
       sessionStorage.setItem("user", JSON.stringify(user))
-      welcomeMessage.value = `¡Bienvenido ! 🐾`
+      welcomeMessage.value = `¡Bienvenido ! 🐾  ${user.data.user.user_metadata.first_name}`
       showSuccessModal.value = true
+
     }
     else {
       errorMessage.value = respond.error.message
@@ -55,8 +54,8 @@ const pasw='Johathan2929*'*/
   }
   setTimeout(() => {
     showSuccessModal.value = false
-
-  }, 1500)
+    router.push('/')
+  }, 1000)
 
 
 }
