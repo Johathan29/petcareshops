@@ -6,7 +6,7 @@ import { ref,onMounted } from 'vue';
 
   async function getTodos() {
     const { data } = await supabase.from('animals').select()
-    console.log(data)
+    return data
   }
   /*async funtion setData(adoption){
     
@@ -15,7 +15,7 @@ import { ref,onMounted } from 'vue';
   onMounted(() => {
     getTodos()
   })
-console.log(  todos.value )
+
 </script>
 
 <template>

@@ -1,67 +1,50 @@
 <script setup lang="ts">
-import { ref, onMounted } from "vue"
-import Splide from "@splidejs/splide"
-import data from '../Data'
-const splideRef = ref<HTMLDivElement | null>(null)
-let splide: Splide
-interface desiases {
-    id:number,
-    title: string,
-    description: string,
-    type: string,
-    color: string,
-    action: string,
-    image: string
-}
-const original= data.value[2];
+import { onMounted } from "vue";
+import Splide from "@splidejs/splide";
+
 onMounted(() => {
-  splide = new Splide(splideRef.value!, {
+  new Splide("#animal-diseases", {
     type: "loop",
     perPage: 4,
-    perMove: 1,
-    
+    gap: "1rem",
     arrows: false,
     pagination: false,
-    speed: 700,
-    easing: "cubic-bezier(0.25, 1, 0.5, 1)",
     breakpoints: {
-      1024: { perPage: 2 },
-      640: { perPage: 1 },
+      1280: { perPage: 4 },
+      1024: { perPage: 3 },
+      768: { perPage: 2 },
+      640: { perPage: 1.2 }, // efecto moderno en mobile
     },
-  })
-
-  splide.mount()
-})
-
-const next = () => splide.go(">")
-const prev = () => splide.go("<")
+  }).mount();
+});
 </script>
+
 <template>
   <section class="py-8 bg-secondary">
-    <div class="max-w-screen-xl md:mx-auto px-5">
+    <div class="max-w-screen-xl mx-auto px-4 sm:px-6 lg:px-8">
 
       <!-- HEADER -->
-      <div class="flex items-end justify-between mb-10">
+      <div class="flex items-end justify-between mb-8">
         <div>
-          <h2 class="text-3xl font-bold  text-left text-white">Animal Diseases</h2>
-          <p class="text-left text-white">
+          <h2 class="text-2xl sm:text-3xl font-bold text-white">
+            Animal Diseases
+          </h2>
+          <p class="text-sm sm:text-base text-white/80">
             Educational resources to protect your pets.
           </p>
         </div>
 
-        <!-- CONTROLES -->
-        <div class="flex gap-2">
+        <!-- ARROWS -->
+        <div class="hidden sm:flex gap-2">
           <button
-            @click="prev"
-            class="h-10 w-10 rounded-full border text-[1.6rem] font-bold text-white hover:!text-[#0F6CBD] hover:bg-white
-                   transition"
+            @click="$refs.splide?.go('<')"
+            class="h-9 w-9 rounded-full border border-white/30 text-xl font-bold text-white hover:text-[#0F6CBD] hover:bg-white transition"
           >
             ‹
           </button>
           <button
-            @click="next"
-            class="h-10 w-10 text-white hover:!text-[#0F6CBD] hover:bg-white  text-[1.6rem] font-bold  rounded-full border border-secondary-foreground/20
-                   hover:bg-secondary-foreground/10 transition"
+            @click="$refs.splide?.go('>')"
+            class="h-9 w-9 rounded-full border border-white/30 text-xl font-bold text-white hover:text-[#0F6CBD] hover:bg-white transition"
           >
             ›
           </button>
@@ -69,73 +52,79 @@ const prev = () => splide.go("<")
       </div>
 
       <!-- SLIDER -->
-      <div ref="splideRef" class="splide overflow-hidden h-[20rem]">
-        <div class="splide__track h-full">
-          <ul class="splide__list flex items-center">
+      <div
+        id="animal-diseases"
+        ref="splide"
+        class="splide overflow-hidden h-auto sm:h-[18rem] lg:h-[20rem]"
+      >
+        <div class="splide__track">
+          <ul class="splide__list">
 
             <!-- CARD -->
             <li
-              v-for="(value, i) in original"
-              :key="i"
-              class="splide__slide min-w-0 shrink-0 grow-0
-                     basis-full sm:basis-1/2 lg:basis-1/3 xl:basis-1/4 pl-4 hover:-translate-y-2  duration-300 transition"
+              v-for="(disease, index) in diseases"
+              :key="index"
+              class="splide__slide px-2"
             >
-              <div class=" h-full">
+              <div
+                class="group bg-secondary-foreground/5 backdrop-blur-sm 
+                       rounded-2xl p-4 sm:p-5 lg:p-6 
+                       border border-secondary-foreground/10 
+                       hover:bg-white hover:border-primary/30
+                       transition-all duration-300 
+                       h-full flex flex-col"
+              >
+
+                <!-- BADGE -->
                 <div
-                  class="group hover:cursor-pointer hover:bg-white text-left bg-secondary-foreground/5 backdrop-blur-sm
-                         rounded-3xl p-6 border border-secondary-foreground/10
-                         hover:border-primary/30 transition-all duration-500
-                         h-full flex flex-col"
+                  :class="[
+                    'inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold mb-3 w-fit text-white',
+                    disease.badgeColor
+                  ]"
                 >
-                  <!-- BADGE -->
-                  <div
-                    class="inline-flex items-center rounded-full px-2.5 py-0.5
-                           text-xs font-semibold mb-4 w-fit text-white "
-                    :class="value.color"
-                  >
-                    {{ value.type }}
-                  </div>
-
-                  <!-- ICON -->
-                  <div class="text-5xl mb-4">
-                    {{ value.image }}
-                  </div>
-
-                  <!-- TITLE -->
-                  <h3
-                    class="text-xl font-bold text-white  mb-3  group-hover:!text-[#0F6CBD] transition-colors"
-                  >
-                    {{ value.title }}
-                  </h3>
-
-                  <!-- DESCRIPTION -->
-                  <p class="text-white  group-hover:!text-[#0F6CBD] text-sm mb-6 flex-grow">
-                    {{ value.description }}
-                  </p>
-
-                  <!-- ACTION -->
-                  <router-link 
-                    :to="`diseases/${value.id}`"
-                    class="inline-flex items-center gap-2 text-white  group-hover:!text-[#0F6CBD]  group-hover:underline
-                           font-medium text-sm group/link"
-                  >
-                    {{ value.action }}
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      viewBox="0 0 24 24"
-                      fill="none"
-                      stroke="currentColor"
-                      stroke-width="2"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      class="w-4 h-4 transition-transform
-                             group-hover/link:translate-x-1"
-                    >
-                      <path d="M5 12h14" />
-                      <path d="m12 5 7 7-7 7" />
-                    </svg>
-                  </router-link>
+                  {{ disease.category }}
                 </div>
+
+                <!-- ICON -->
+                <div class="text-4xl sm:text-5xl mb-3 sm:mb-4">
+                  {{ disease.icon }}
+                </div>
+
+                <!-- TITLE -->
+                <h3
+                  class="text-lg sm:text-xl font-bold text-white 
+                         group-hover:text-[#0F6CBD] transition-colors mb-3"
+                >
+                  {{ disease.title }}
+                </h3>
+
+                <!-- DESCRIPTION -->
+                <p
+                  class="text-xs sm:text-sm text-white/80 
+                         group-hover:text-[#0F6CBD] mb-5 flex-grow"
+                >
+                  {{ disease.description }}
+                </p>
+
+                <!-- ACTION -->
+                <a
+                  :href="disease.link"
+                  class="inline-flex items-center gap-2 text-sm font-medium text-white 
+                         group-hover:text-[#0F6CBD] group-hover:underline transition"
+                >
+                  {{ disease.action }}
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    class="w-4 h-4 transition-transform group-hover:translate-x-1"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                    stroke-width="2"
+                  >
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M5 12h14M12 5l7 7-7 7"/>
+                  </svg>
+                </a>
+
               </div>
             </li>
 
@@ -147,3 +136,59 @@ const prev = () => splide.go("<")
   </section>
 </template>
 
+<script lang="ts">
+export default {
+  data() {
+    return {
+      diseases: [
+        {
+          category: "Viral",
+          badgeColor: "bg-rose-500",
+          icon: "🦠",
+          title: "Canine Parvovirus",
+          description:
+            "A retrovirus that weakens the immune system. Regular testing and vaccination are essential.",
+          action: "Learn Prevention",
+          link: "/diseases/1",
+        },
+        {
+          category: "Bacterial",
+          badgeColor: "bg-amber-500",
+          icon: "🔬",
+          title: "Lyme Disease",
+          description:
+            "Transmitted by ticks. Watch for fever, swelling, and loss of appetite.",
+          action: "View Symptoms",
+          link: "/diseases/2",
+        },
+        {
+          category: "Chronic",
+          badgeColor: "bg-blue-500",
+          icon: "💉",
+          title: "Feline Diabetes",
+          description:
+            "Common in older cats. Signs include thirst, frequent urination and weight loss.",
+          action: "Read Management",
+          link: "/diseases/3",
+        },
+        {
+          category: "Respiratory",
+          badgeColor: "bg-emerald-500",
+          icon: "🫁",
+          title: "Kennel Cough",
+          description:
+            "Infectious bronchitis causing a persistent cough. Highly contagious.",
+          action: "Treatment Options",
+          link: "/diseases/4",
+        },
+      ],
+    };
+  },
+};
+</script>
+
+<style scoped>
+.splide__slide {
+  display: flex;
+}
+</style>

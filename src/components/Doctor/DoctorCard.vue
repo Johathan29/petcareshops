@@ -26,7 +26,7 @@ const todayKey = new Date().toLocaleDateString('es-ES', {
 const normalizeDay = (day: string) =>
   day.charAt(0).toUpperCase() + day.slice(1)
 
-console.log(normalizeDay(todayKey))
+normalizeDay(todayKey)
 const isToday = (day: string) =>
   day === normalizeDay(todayKey)
 

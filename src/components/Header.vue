@@ -5,7 +5,7 @@ import { faPaw, faUsers, faHouse } from '@fortawesome/free-solid-svg-icons'
 const isOpen = ref(true)
 
 function openNav() {
-  return console.log(isOpen.value = !isOpen.value)
+  return isOpen.value = !isOpen.value
 }
 
 const handleScroll = () => {
@@ -60,7 +60,7 @@ onMounted(() => {
     profile.value = user.value.data.user.identities.map(item => item.identity_data)
     role.value = user.value.data.user.app_metadata;
   }
-  console.log(role.value.role)
+  
 })
 
 onMounted(() => {

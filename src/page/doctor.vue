@@ -63,7 +63,7 @@ const loadingchanges = (Value: boolean) => {
   loading.value = !Value ? false : true
 }
 const services = ref<Service[]>([])
-console.log(loading.value)
+loading.value
 async function getService() {
   try {
 
@@ -91,14 +91,14 @@ async function getDoctors() {
   }
 
 }
-const matchedDoctors=ref()
+const matchedDoctors = ref()
 const doctorsByService = computed(() => {
 
   const service = services.value
 
   if (!service) return null
 
-  matchedDoctors.value= doctors.value
+  matchedDoctors.value = doctors.value
     .filter(doc =>
       doc.specialty.includes(service.title)
     )
@@ -127,7 +127,7 @@ const openReservationModal = (payload: any) => {
 }
 
 const confirmReservation = (data: any) => {
-  console.log('Reservado:', data)
+  return data
   showModal.value = false
 }
 
@@ -157,11 +157,11 @@ const breadCrumUrl = computed(() => [
 const roleUser = ref('user');
 const filterbyDoctor = ref()
 function filterDoctor(doctor) {
-  matchedDoctors.value = doctors.value.find(item=> item.name === doctor)
-  
- 
+  matchedDoctors.value = doctors.value.find(item => item.name === doctor)
+
+
 }
- 
+
 </script>
 
 
@@ -190,10 +190,11 @@ function filterDoctor(doctor) {
           <div class="flex items-center flex-col space-y-2 mx-[1rem] justify-start" v-else>
             <label for="" class="font-bold text-[#106cbd]"> Filtrar por Doctores</label>
             <select name="doctor" class=" px-8 py-2 form-select resize-none overflow-hidden text-zinc-900 border-slate-200 font-bold rounded-lg 
-                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm" @change="filterDoctor(doctor)" id="doctor" v-model="doctor">
+                        hover:shadow-lg hover:-translate-y-0.5 transition-all text-sm" @change="filterDoctor(doctor)"
+              id="doctor" v-model="doctor">
               <option disabled selected> Selectiona un Doctor</option>
               <option :value="doctor.name" v-for="doctor in doctorsByService?.doctors"> {{ doctor.name }}</option>
-              
+
             </select>
           </div>
 

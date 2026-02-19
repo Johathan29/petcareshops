@@ -86,30 +86,22 @@ const vote = (stars: number) => {
 }
 </script>
 <template>
-  <div
-    ref="cardRef"
-    :class="[
-      'testimonial-card',
-      isVisible ? 'is-visible' : ''
-    ]"
-    class="bg-[#70809029] dark:bg-slate-800 p-8 rounded-2xl
+  <div ref="cardRef" :class="[
+    'testimonial-card',
+    isVisible ? 'is-visible' : ''
+  ]" class="bg-[#70809029] dark:bg-slate-800 p-8 rounded-2xl
            border border-slate-200 dark:border-slate-700
            shadow-sm hover:shadow-lg transition-all
-           hover:-translate-y-1 relative"
-  >
+           hover:-translate-y-1 relative">
     <!-- Quote icon -->
-    <span
-      class="absolute top-6 left-6 text-6xl text-gray-500/20 font-serif leading-none"
-    >
+    <span class="absolute top-6 left-6 text-6xl text-gray-500/20 font-serif leading-none">
       "
     </span>
 
     <!-- Header -->
     <div class="flex items-center gap-4 mb-6">
-      <div
-        class="h-14 w-14 rounded-full bg-cover bg-center border-2 border-primary/20"
-        :style="{ backgroundImage: `url(${testimonial.avatar})` }"
-      ></div>
+      <div class="h-14 w-14 rounded-full bg-cover bg-center border-2 border-primary/20"
+        :style="{ backgroundImage: `url(${testimonial.avatar})` }"></div>
 
       <div>
         <h4 class="font-bold text-primary dark:text-white text-lg">
@@ -129,16 +121,10 @@ const vote = (stars: number) => {
     <!-- Rating -->
     <div class="flex items-center gap-3">
       <div class="flex gap-1 text-yellow-400">
-        <span
-          v-for="n in 5"
-          :key="n"
-          class="material-symbols-outlined text-lg cursor-pointer transition"
-          :class="[
-            n <= averageRating ? 'fill-current' : 'text-slate-300',
-            userVoted ? 'cursor-not-allowed opacity-60' : 'hover:scale-110'
-          ]"
-          @click="vote(n)"
-        >
+        <span v-for="n in 5" :key="n" class="material-symbols-outlined text-lg cursor-pointer transition" :class="[
+    n <= averageRating ? 'fill-current' : 'text-slate-300',
+    userVoted ? 'cursor-not-allowed opacity-60' : 'hover:scale-110'
+  ]" @click="vote(n)">
           star
         </span>
       </div>
@@ -156,7 +142,7 @@ const vote = (stars: number) => {
 </template>
 
 <style scoped>
-    .testimonial-card {
+.testimonial-card {
   opacity: 0;
   transform: translateY(40px) scale(0.96);
   transition:
@@ -169,5 +155,4 @@ const vote = (stars: number) => {
   opacity: 1;
   transform: translateY(0) scale(1);
 }
-
 </style>

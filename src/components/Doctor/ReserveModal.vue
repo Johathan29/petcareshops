@@ -32,7 +32,7 @@ const emit = defineEmits(['close', 'confirm'])
 
       <!-- Info -->
       <div class="space-y-3 text-sm">
-        <p><strong>Doctor:</strong> {{ data?.doctor.name }}</p>
+        <p><strong>Doctor:</strong> {{ data?.doctor?.map(item=> item.name) }}</p>
         <p><strong>Day:</strong> {{ data?.day }}</p>
         <p><strong>Hour:</strong> {{ data?.hour }}</p>
       </div>

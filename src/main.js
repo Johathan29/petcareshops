@@ -19,14 +19,30 @@ import Auth from './page/auth.vue';
 import DetailsMascotas from './page/DetailsMascotas.vue';
 import Services from './page/services.vue';
 import Doctor from './page/doctor.vue';
+import Homedashboard from './page/dashboard/Homedashboard.vue';
+import UserDashboard from './page/dashboard/UserDashboard.vue';
+import PublicLayout from './layouts/PublicLayout.vue';
+import DashboardLayout from './layouts/DashboardLayout.vue';
+ import { createPinia } from 'pinia'
+import { supabase } from './config/supabase';
 
 const routes = [
   { path: '/', 
     name: 'Home', 
     meta: {
       title: 'PetCare'
-    }, component: Home },
-  { path: '/users', component: About },
+    }, component: PublicLayout, 
+  children:[
+    { path: '',
+        name: 'Home',
+        component: () => import('./page/Home.vue'),
+        meta: { title: 'PetCare' }
+      
+    },
+{ path: '/services', component: Services },
+  ]
+  },
+  
   { path: '/user/:username', component: Setting },
  
   { path: '/diseases/:id',
@@ -34,8 +50,36 @@ const routes = [
     component: () => import('./page/Diseases.vue'),
   props: true },
   { path: '/registrar', component: Registrar },
-   { path: '/services', component: Services },
-   { path: '/dashboard', component: DashBoard },
+   
+  {
+  path: '/dashboard',
+  component: DashboardLayout,
+  meta: { requiresAuth: true }, // 🔒 obliga login
+  children: [
+   
+    {
+      path: '/dashboard/home',
+      component: Homedashboard,
+      meta: { roles: ['admin'] }
+    },
+    {
+      path: 'users',
+      component: UserDashboard,
+      meta: { roles: ['admin'] }
+    },
+    {
+      path: 'doctor',
+      component: () => import('./page/dashboard/doctor.vue'),
+      meta: { roles: ['admin', 'doctor'] }
+    },
+    {
+      path: 'profile',
+      component: Profile,
+      meta: { roles: ['admin', 'doctor'] }
+    }
+  ]
+},
+
    { path: '/services/:name', component: Doctor },
   { path: '/auth', component: Auth },
   { path: '/contacts', component: Contacts },
@@ -73,12 +117,41 @@ const router = createRouter({
   }
   
 });
+router.beforeEach(async (to, from, next) => {
+
+  const { data: { user } } = await supabase.auth.getUser()
+
+  // 🔒 Si requiere login
+  if (to.meta.requiresAuth && !user) {
+    return next('/auth')
+  }
+
+  if (user && to.meta.role) {
+
+    const userRole = user.user_metadata?.role
+
+    // Si meta.role es array
+    if (Array.isArray(to.meta.role)) {
+      if (!to.meta.role.includes(userRole)) {
+        return next('/')
+      }
+    } else {
+      if (userRole !== to.meta.role) {
+        return next('/')
+      }
+    }
+  }
+
+  next()
+})
 router.afterEach((to) => {
   const defaultTitle = 'PetCare'
   document.title = to.meta.title || defaultTitle
 })
+const pinia = createPinia()
 const app = createApp(App);
 app.use(VueSplide);
+app.use(pinia)
 app.use(router);
 
 app.mount('#app');

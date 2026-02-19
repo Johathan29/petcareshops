@@ -15,7 +15,7 @@ const user = ref()
 user.value = JSON.parse(sessionStorage.getItem('user') || '') 
 profile.value = user.value.data.user.user_metadata
 role.value = user.value.data.user.app_metadata;
-console.log(user.value)
+
 </script>
 <template>
     

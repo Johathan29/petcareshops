@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import CardTestimonio from '../components/UI/cardTestimonio.vue';
 
- const testimonials = [
+const testimonials = [
   {
     id: 1,
     name: "Sarah Johnson",
@@ -34,24 +34,21 @@ import CardTestimonio from '../components/UI/cardTestimonio.vue';
   }
 ]
 const handleLike = (testimonial: Testimonial) => {
-  console.log("Liked:", testimonial.name)
+  return testimonial.name
 }
 </script>
 <template>
-    <section class="py-12 " >
-        <div class="max-w-screen-xl mx-auto px-4">
-<div class="text-center mb-12">
-<h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">What Our Users Say</h2>
-<p class="text-slate-500 dark:text-slate-400 text-base text-left">
-            Trusted by pet owners and veterinarians across the globe. See how PetManager has simplified their lives.
+  <section class="py-12 ">
+    <div class="max-w-screen-xl mx-auto px-4">
+      <div class="text-center mb-12">
+        <h2 class="text-3xl font-bold text-[#0F6CBD] dark:text-white tracking-tight text-left">What Our Users Say</h2>
+        <p class="text-slate-500 dark:text-slate-400 text-base text-left">
+          Trusted by pet owners and veterinarians across the globe. See how PetManager has simplified their lives.
         </p>
-</div>
-<div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-<CardTestimonio v-for="item in testimonials"
-  :key="item.id"
-  :testimonial="item"
-  ></CardTestimonio>
-</div>
-</div>
-</section>
+      </div>
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+        <CardTestimonio v-for="item in testimonials" :key="item.id" :testimonial="item"></CardTestimonio>
+      </div>
+    </div>
+  </section>
 </template>

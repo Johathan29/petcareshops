@@ -97,7 +97,7 @@ let observer = new IntersectionObserver(
     rootMargin: '0px 0px -8% 0px'
   }
 )
-const userAuthed = JSON.parse(localStorage.getItem('user')) 
+const userAuthed = JSON.parse(sessionStorage.getItem('user')) 
 
 /* ---------------------------------------------------------
    Observa todas las cards visibles en el DOM

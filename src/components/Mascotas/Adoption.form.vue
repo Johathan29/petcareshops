@@ -2,6 +2,7 @@
 import { faHeartCircleCheck, faPaw } from '@fortawesome/free-solid-svg-icons'
 import { faHeart, faPaperPlane, } from '@fortawesome/free-regular-svg-icons'
 import { supabase } from '../../config/supabase'
+
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import NotificationAdoption from './NotificactionAdotion.vue'
 import { ref } from 'vue';
@@ -17,14 +18,15 @@ const user = ref()
 user.value = JSON.parse(sessionStorage.getItem('user') || '') 
 profile.value = user.value.data.user.identities.map(item => item.identity_data)
 role.value = user.value.data.user.app_metadata;
+const userName=ref(profile.value.map(item=> item.first_name).toString() || '')
 const emit = defineEmits(['closed'])
 /* Cerrar modal */
 const closeAdoptionModal = () => {
   emit("closed")
 
 }
+console.log(profile.value.map(item=> item.first_name).toString())
 const form = ref({
-  name: '',
   email: '',
   phone: '',
   address: '',
@@ -43,7 +45,7 @@ const submitAdoption = async () => {
   const { error } = await supabase
     .from('adoption')
     .insert({
-      userName: form.value.name,
+      idProfile: user.value.data.user.id,
       email: user.value.data.user.email,
       phone: form.value.phone,
       address: form.value.address,
@@ -105,8 +107,8 @@ const submitAdoption = async () => {
         <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
           Nombre completo <span class="text-red-500">*</span>
         </label>
-        <input type="text" v-model="form.name" id="form.name" name="formName" required placeholder="Tu nombre completo" class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
-             focus:border-[#0F6CBD] focus:outline-none transition" />
+        <input type="text"  id="form.name" name="formName" required placeholder="Tu nombre completo" class="text-[#666] w-full px-4 py-3 rounded-lg bg-slate-100 border-2 border-slate-200
+               focus:border-[#0F6CBD] focus:outline-none transition" disabled :value="userName" />
       </div>
 
       <!-- Email / Teléfono -->
@@ -115,7 +117,7 @@ const submitAdoption = async () => {
           <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
             Email <span class="text-red-500">*</span>
           </label>
-          <input type="email" disabled :value="user.data.user.email" required placeholder="correo@ejemplo.com" class="w-full px-4 py-3 rounded-lg bg-slate-100 border-2 border-slate-200
+          <input type="email" disabled :value="user.data.user.email" required placeholder="correo@ejemplo.com" class="text-[#666] w-full px-4 py-3 rounded-lg bg-slate-100 border-2 border-slate-200
                focus:border-[#0F6CBD] focus:outline-none transition" />
         </div>
 
@@ -123,7 +125,7 @@ const submitAdoption = async () => {
           <label class="block text-sm font-medium text-[#192e54b0] mb-2 text-left font-bold">
             Teléfono <span class="text-red-500">*</span>
           </label>
-          <input type="tel" required v-model="form.phone" id="form.phone" placeholder="(000) 000-0000" class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
+          <input type="tel" required v-model="form.phone" id="form.phone" onkeyup="keyUp(value)" placeholder="(000) 000-0000" class="w-full px-4 py-3 rounded-lg border-2 border-slate-200
                focus:border-[#0F6CBD] focus:outline-none transition" />
         </div>
       </div>
