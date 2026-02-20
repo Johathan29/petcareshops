@@ -64,6 +64,12 @@ const getConnectionTime = (lastSeen: string) => {
 
   return `${minutes}m ${seconds}s`
 }
+const selectedUser = computed(() =>
+  store.filteredUsers.find(u => u.id === store.selectedUserId)
+);
+const selectUser = (user: any) => {
+  store.selectedUserId = user.id;
+};
 </script>
 
 <template>
@@ -76,7 +82,7 @@ const getConnectionTime = (lastSeen: string) => {
       <div class="flex items-center justify-between mb-4">
         <h3 class="text-lg font-bold text-white">Users</h3>
         <span
-          class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary/10 text-primary uppercase tracking-wider"
+          class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#13daec1c] text-[#13daec] uppercase tracking-wider"
         >
           {{ store.users.length }} Total
         </span>
@@ -90,7 +96,7 @@ const getConnectionTime = (lastSeen: string) => {
           :class="[
             'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
             isActive('all')
-              ? 'bg-primary text-background-dark'
+              ? 'bg-[#13daec] text-background-dark'
               : 'bg-white/5 text-slate-400 hover:bg-white/10',
           ]"
         >
@@ -105,7 +111,7 @@ const getConnectionTime = (lastSeen: string) => {
           :class="[
             'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
             isActive(role.id)
-              ? 'bg-primary text-background-dark'
+              ? 'bg-[#13daec] text-background-dark'
               : 'bg-white/5 text-slate-400 hover:bg-white/10',
           ]"
         >
@@ -115,12 +121,19 @@ const getConnectionTime = (lastSeen: string) => {
     </div>
 
     <!-- Users -->
-    <div class="flex-1 overflow-y-auto custom-scrollbar divide-y-[0.1rem] divide-white/5 divide-x-0">
-      <div
-        v-for="user in store.filteredUsers"
-        @click="store.selectedUser = user"
-        class="flex items-center gap-4 p-4 border-l-4 cursor-pointer border-transparent hover:bg-white/5   "
-      >
+    <div class="flex-1 overflow-y-auto custom-scrollbar divide-y-[0.1rem] divide-white/5 divide-x-0 ">
+   <div
+  v-for="user in store.filteredUsers"
+  :key="user.id"
+  @click="selectUser(user)"
+  :class="[
+    'flex items-center gap-4 p-4 border-l-4 cursor-pointer transition-all duration-200',
+    store.selectedUserId === user.id
+      ? 'bg-white/10 border-primary'
+      : 'border-transparent hover:bg-white/5'
+  ]"
+>
+
         <img
           class="size-11 rounded-lg object-cover"
           :src="'https://ui-avatars.com/api/?name=' + user.first_name"
@@ -161,7 +174,7 @@ const getConnectionTime = (lastSeen: string) => {
       </div>
     </div>
   </aside>
-<UsersDetail></UsersDetail>
+<UsersDetail  :user="selectedUser"></UsersDetail>
 </section>
   
 </template>

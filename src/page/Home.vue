@@ -33,12 +33,12 @@ const detalleUser = () => {
 
   </section>
 
-  <HelloWorld></HelloWorld>
-  <ServicePortada></ServicePortada>
-  <Mascotas></Mascotas>
-  <Testimonio></Testimonio>
-  <!-- <Enfermedades></Enfermedades>
- -->
+<HelloWorld></HelloWorld>
+<ServicePortada></ServicePortada>
+<Mascotas></Mascotas>
+<Testimonio></Testimonio> 
+<!--<Enfermedades></Enfermedades>-->
+  <BirthDay></BirthDay>
   <supabase></supabase>
 </template>
 

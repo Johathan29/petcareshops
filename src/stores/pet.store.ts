@@ -1,14 +1,14 @@
 import { defineStore } from "pinia";
 import { supabase } from "../config/supabase";
 
-export const usePetStore = defineStore("pets", {
+export const usePetStore = defineStore("animals", {
   state: () => ({
     pets: [] as any[],
   }),
 
   actions: {
     async fetch() {
-      const { data } = await supabase.from("pets").select("*");
+      const { data } = await supabase.from("animals").select("*");
       this.pets = data || [];
     },
 

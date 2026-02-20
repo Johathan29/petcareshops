@@ -5,18 +5,19 @@ import { usePetStore } from "../../stores/pet.store";
 import { useAppointmentStore } from "../../stores/appointment.store";
 import { useAdoptionStore } from "../../stores/adoption.store";
 import StatCard from "./UI/StatCard.vue";
+import { useServicesStore } from "../../stores/service.store";
 const userStore = useAuthStore();
 const petStore = usePetStore();
 const appointmentStore = useAppointmentStore();
 const adoptionStore = useAdoptionStore();
-
+const services=useServicesStore()
 const loading = ref(true);
 
 onMounted(async () => {
   await Promise.all([
     userStore.fetchUsers(),
     petStore.fetch(),
-    appointmentStore.fetch(),
+    services.fetch(),
     adoptionStore.fetch(),
   ]);
   loading.value = false;
@@ -26,10 +27,17 @@ onMounted(async () => {
    COMPUTED METRICS
 ================================= */
 
-const totalUsers = computed(() => userStore.fetchUsers.length);
-
+const totalUsers = computed(() => {
+  return userStore.fetchUsers.length
+}
+);
+const totalServices = computed(() => {
+  return services.services.length
+}
+);
+console.log(totalUsers)
 const activePets = computed(() =>
-  petStore.pets.filter((p) => p.status === "available").length
+  petStore.pets.length
 );
 
 const todayAppointments = computed(() => {
@@ -54,7 +62,7 @@ const totalAdoptions = computed(() =>
     <!-- USERS -->
     <StatCard
       title="Total Users"
-      :value="totalUsers"
+      :value="userStore.users.length"
       icon="person"
       growth="+5.2%"
       subtitle="registered users"
@@ -72,7 +80,7 @@ const totalAdoptions = computed(() =>
     <!-- APPOINTMENTS -->
     <StatCard
       title="Today's Appointments"
-      :value="todayAppointments"
+      :value="totalServices"
       icon="event"
       growth="-3.4%"
       subtitle="today"

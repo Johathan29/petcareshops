@@ -5,6 +5,7 @@ export const useAuthStore = defineStore('users', {
   state: () => ({
     users: [] as any[],
     selectedUser: null as any,
+    selectedUserId: null as string | null,
     loading: false,
     filter: 'all'
   }),

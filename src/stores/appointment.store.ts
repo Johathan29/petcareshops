@@ -10,7 +10,7 @@ export const useAppointmentStore = defineStore("appointments", {
     async fetch() {
       const { data } = await supabase
         .from("appointments")
-        .select("*, services(*), profiles(full_name)");
+        .select("*, services(*), profiles(first_name)");
       this.appointments = data || [];
     },
 

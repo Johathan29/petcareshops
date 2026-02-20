@@ -40,6 +40,25 @@ const routes = [
       
     },
 { path: '/services', component: Services },
+ { path: '/services/:name', component: Doctor },
+  
+  { path: '/contacts', component: Contacts },
+  { path: '/terminos', component: Alert },
+   { path: '/:pathMatch(.*)*', component: PathNotFound },
+  { path: '/profile',
+  name: 'profile',  component: Profile  },
+  {
+  path: '/adoption',
+  component: Mascotas,
+  children: [
+    {
+      path: ':id',
+      name: 'MascotasDetails',
+      component: () => import('./page/DetailsMascotas.vue'),
+      props: true
+    }
+  ]
+}
   ]
   },
   
@@ -73,6 +92,11 @@ const routes = [
       meta: { roles: ['admin', 'doctor'] }
     },
     {
+      path: 'adoptions',
+      component: () => import('./page/dashboard/AdoptionDashBoard.vue'),
+      meta: { roles: ['admin'] }
+    },
+    {
       path: 'profile',
       component: Profile,
       meta: { roles: ['admin', 'doctor'] }
@@ -80,26 +104,9 @@ const routes = [
   ]
 },
 
-   { path: '/services/:name', component: Doctor },
-  { path: '/auth', component: Auth },
-  { path: '/contacts', component: Contacts },
-  { path: '/terminos', component: Alert },
-  { path: '/profile',
-  name: 'profile',  component: Profile  },
-  {
-  path: '/adoption',
-  component: Mascotas,
-  children: [
-    {
-      path: ':id',
-      name: 'MascotasDetails',
-      component: () => import('./page/DetailsMascotas.vue'),
-      props: true
-    }
-  ]
-}
-,
-  { path: '/:pathMatch(.*)*', component: PathNotFound },
+  
+,{ path: '/auth', component: Auth },
+ 
 ];
 
 const router = createRouter({

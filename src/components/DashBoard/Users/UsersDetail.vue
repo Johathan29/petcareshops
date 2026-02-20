@@ -9,21 +9,24 @@ const doctorStore = useDoctorStore();
 const authStore = useAuthStore();
 const rolesStore = useRolesStore();
 
-const user = computed(() => authStore.selectedUser);
+const props = defineProps<{
+  user: any
+}>()
 
-
+const user = computed(() => props.user)
 
 onMounted(async () => {
-   console.log(await doctorStore.fetch())
+   await doctorStore.fetch()
 });
 const doctorData = computed(() => {
-  if (!user.value) return null;
-
+ if (!props.user) return;
+console.log(doctorStore.doctors.find(item=> item.idUser===props.user.id))
   return doctorStore.doctors.find(
-    d => d.user_id === user.value.id
-  );
+    d => d.idUser === props.user.id
+  ) || null;
 });
-console.log(doctorStore.doctors.map(item=> item))
+
+
 const form = reactive({
   first_name: "",
   email: "",
@@ -45,7 +48,7 @@ const updateUser = async () => {
       role: form.role,
       permissions: form.permissions,
     })
-    .eq("id", user.value.id);
+    .eq("id", props.user.id);
 
   await authStore.fetchUsers();
 };
@@ -53,7 +56,7 @@ const updateUser = async () => {
 const deleteUser = async () => {
   if (!user.value) return;
 
-  await supabase.from("profiles").delete().eq("id", user.value.id);
+  await supabase.from("profiles").delete().eq("id", props.user.id);
 
   authStore.selectedUser = null;
   await authStore.fetchUsers();
@@ -66,7 +69,29 @@ const togglePermission = (perm: string) => {
     form.permissions.push(perm);
   }
 };
+const isDoctor = computed(() => {
+  return props.user?.role === "doctor";
+});
 
+const displayName = computed(() => {
+  if (isDoctor.value && doctorData.value) {
+    return `Dr. ${doctorData.value.first_name} ${doctorData.value.last_name}`;
+  }
+
+  return props.user?.first_name;
+});
+const displaySpecialty = computed(() => {
+  if (isDoctor.value && doctorData.value?.specialty) {
+    return doctorData.value.specialty;
+  }
+
+  return null;
+});
+const displayRole = computed(async() => {
+  const roles= await rolesStore.fetch()
+  roles.find(item=> item.id===props.user?.role)
+  return props.user?.role?.toUpperCase() || "";
+});
 /* ===========================
    CATEGORÍAS DE PERMISOS
 =========================== */
@@ -105,12 +130,10 @@ const adminPermissions = [
             </div>
         </div>
         <div>
-            <h2 class="text-2xl font-black text-white">{{doctorData
-      ? `Dr. ${doctorData.first_name} ${doctorData.last_name}`
-      : user?.first_name}}</h2>
-            <p class="text-slate-400"> {{ doctorData?.specialty || "Staff Member"}} </p>
+            <h2 class="text-2xl font-black text-white">{{ displayName }}</h2>
+            <p class="text-slate-400"> {{displaySpecialty }} </p>
             <div class="flex items-center gap-3 mt-2">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-background-dark uppercase">Veterinarian</span>
+                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-background-dark uppercase">{{ displayRole }}</span>
                 <span class="text-xs text-slate-500">Added on March 12, 2024</span>
             </div>
         </div>

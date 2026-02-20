@@ -20,6 +20,7 @@
     "@types/node": "^22.15.14",
     "buffer": "^6.0.3",
     "chart.js": "^4.4.9",
+    "chartjs-plugin-datalabels": "^2.2.0",
     "cors": "^2.8.5",
     "crypto-js": "^3.1.9-1",
     "express": "^5.2.1",
@@ -36,7 +37,8 @@
     "twitter.js": "^0.14.0",
     "typeorm": "^0.3.17",
     "vue": "^3.3.4",
-    "vue-router": "^4.2.5"
+    "vue-router": "^4.2.5",
+    "vuedraggable": "^4.1.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.2.3",

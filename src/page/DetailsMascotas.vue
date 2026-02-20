@@ -11,7 +11,7 @@ import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome';
 import { supabase } from '../config/supabase';
 /* ================= ROUTE ================= */
 const route = useRoute()
-const petId = parseInt(route.params.id)
+const petId = route.params.id
 
 /* ================= INTERFACE ================= */
 export interface Pet {

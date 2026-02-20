@@ -146,7 +146,7 @@ const closeUserMenu = () => {
                 </li>
 
                 <li v-if="role.role === 'admin'">
-                  <router-link to="/dashboard" @click="closeUserMenu"
+                  <router-link to="/dashboard/home" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
                     DashBoard
                   </router-link>
@@ -226,7 +226,7 @@ const closeUserMenu = () => {
                 </li>
 
                 <li v-if="role === 'admin'">
-                  <router-link to="/dashboard" @click="closeUserMenu"
+                  <router-link to="/dashboard/home" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
                     DashBoard
                   </router-link>
@@ -255,8 +255,7 @@ const closeUserMenu = () => {
 
 <style>
 /* active route */
-a.router-link-active.router-link-exact-active,
-.router-link-active {
+a.router-link-active.router-link-exact-active {
   border-radius: 0.375rem;
   color: #0F6CBD !important;
 }

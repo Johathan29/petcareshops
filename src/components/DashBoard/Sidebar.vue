@@ -1,113 +1,84 @@
 <script setup lang="ts">
-import { computed } from 'vue'
 import { useRoute } from 'vue-router'
-import { useAuthStore } from '../../stores/auth.store'
 
 interface Props {
+  collapsed?: boolean
+  open?: boolean
   firstName: string
   role: string
 }
 
 const props = defineProps<Props>()
+
+const emit = defineEmits<{
+  (e: 'close'): void
+  (e: 'toggle'): void
+}>()
+
 const route = useRoute()
 
-/**
- * 🔥 Menú dinámico escalable
- */
+const isActive = (path: string) => {
+  return route.path.startsWith(path)
+}
+
 const menuSections = [
   {
     title: 'Core Dashboard',
     items: [
-      {
-        label: 'Overview',
-        icon: 'dashboard',
-        to: '/dashboard/home'
-      }
+      { label: 'Overview', icon: 'dashboard', to: '/dashboard/home' }
     ]
   },
   {
     title: 'Management',
     items: [
-      {
-        label: 'Adoptions',
-        icon: 'favorite',
-        to: '/dashboard/adoptions'
-      },
-      {
-        label: 'Pets Inventory',
-        icon: 'pets',
-        to: '/dashboard/pets'
-      },
-      {
-        label: 'Users & Clients',
-        icon: 'group',
-        to: '/dashboard/users'
-      },
-      {
-        label: 'Roles & Permissions',
-        icon: 'shield_person',
-        to: '/dashboard/roles'
-      }
+      { label: 'Adoptions', icon: 'favorite', to: '/dashboard/adoptions' },
+      { label: 'Pets Inventory', icon: 'pets', to: '/dashboard/pets' },
+      { label: 'Users & Clients', icon: 'group', to: '/dashboard/users' },
+      { label: 'Roles & Permissions', icon: 'shield_person', to: '/dashboard/roles' }
     ]
   },
   {
     title: 'Veterinary',
     items: [
-      {
-        label: 'Doctors',
-        icon: 'stethoscope',
-        to: '/dashboard/doctor'
-      },
-      {
-        label: 'Services',
-        icon: 'medical_services',
-        to: '/dashboard/services'
-      },
-      {
-        label: 'Appointments',
-        icon: 'calendar_month',
-        to: '/dashboard/appointments'
-      }
+      { label: 'Doctors', icon: 'stethoscope', to: '/dashboard/doctor' },
+      { label: 'Services', icon: 'medical_services', to: '/dashboard/services' },
+      { label: 'Appointments', icon: 'calendar_month', to: '/dashboard/appointments' }
     ]
   }
 ]
-
-/**
- * 🔥 Clase activa automática
- */
-const isActive = (path: string) => {
-  return route.path.startsWith(path)
-}
-const auth = useAuthStore()
-
-const filteredMenu = computed(() => {
-  return menuSections.map(section => ({
-    ...section,
-    items: section.items.filter(item =>
-      !item.roles || item.roles.includes(auth.role)
-    )
-  }))
-})
 </script>
 
 <template>
   <aside
-    class="w-64 bg-background-dark border-r border-white/10 flex flex-col shrink-0 h-screen"
+    class="fixed lg:relative z-50 top-0 left-0 h-full 
+    bg-[#132424] md:bg-background-dark border-r border-white/50 
+    flex flex-col shrink-0
+    transition-all duration-300 ease-in-out"
+    :class="[
+      props.collapsed ? 'w-20' : 'w-64',
+      props.open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+    ]"
   >
+
+    <!-- Close Button (Mobile) -->
+    <button
+      class="lg:hidden absolute right-4 top-4 text-white"
+      @click="emit('close')"
+    >
+      <span class="material-symbols-outlined">close</span>
+    </button>
+
     <!-- Header -->
     <div class="p-6 flex items-center gap-3">
-      <div
-        class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center"
-      >
+      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
         <span class="material-symbols-outlined text-background-dark font-bold">
           pets
         </span>
       </div>
-      <div>
+
+      <div v-if="!props.collapsed">
         <h1 class="text-white font-bold text-lg leading-none">PetAdmin</h1>
-        <p
-          class="text-primary text-[10px] uppercase tracking-widest font-semibold mt-1"
-        >
+        <p class="text-primary text-[10px] uppercase tracking-widest font-semibold mt-1">
           Management Hub
         </p>
       </div>
@@ -115,11 +86,10 @@ const filteredMenu = computed(() => {
 
     <!-- Navigation -->
     <nav class="flex-1 px-4 mt-4 space-y-6 overflow-y-auto custom-scrollbar">
-      <div
-        v-for="section in menuSections"
-        :key="section.title"
-      >
+      <div v-for="section in menuSections" :key="section.title">
+
         <div
+          v-if="!props.collapsed"
           class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2"
         >
           {{ section.title }}
@@ -129,6 +99,7 @@ const filteredMenu = computed(() => {
           v-for="item in section.items"
           :key="item.label"
           :to="item.to"
+          @click="emit('close')"
           class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all"
           :class="isActive(item.to)
             ? 'active-sidebar-item'
@@ -137,13 +108,17 @@ const filteredMenu = computed(() => {
           <span class="material-symbols-outlined text-[22px]">
             {{ item.icon }}
           </span>
-          {{ item.label }}
+
+          <span v-if="!props.collapsed">
+            {{ item.label }}
+          </span>
         </router-link>
+
       </div>
     </nav>
 
     <!-- User Card -->
-    <div class="p-4 border-t border-white/5">
+    <div class="p-4 border-t border-white/5" v-if="!props.collapsed">
       <div class="glass-card rounded-xl p-3 flex items-center gap-3">
         <div
           class="size-9 rounded-full bg-slate-600 flex items-center justify-center text-white text-sm font-bold"
@@ -159,17 +134,11 @@ const filteredMenu = computed(() => {
             {{ props.role }}
           </p>
         </div>
-
-        <button
-          class="text-slate-400 hover:text-white transition-colors"
-        >
-          <span class="material-symbols-outlined text-[18px]">
-            logout
-          </span>
-        </button>
       </div>
     </div>
+
   </aside>
+  
 </template>
 
 <style scoped>
@@ -191,9 +160,9 @@ const filteredMenu = computed(() => {
   color: #13daec;
 }
 
-.active-sidebar-item {
+a.router-link-active {
   background: rgba(19, 218, 236, 0.15);
-  color: #13daec;
+  color: #13daec !important;
   border-right: 3px solid #13daec;
 }
 
