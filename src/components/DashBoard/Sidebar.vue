@@ -1,65 +1,126 @@
 <script setup lang="ts">
-import { useRoute } from 'vue-router'
+import { useRoute, useRouter } from "vue-router";
+import { computed } from "vue";
+import { useAuthStore } from "../../stores/auth.store";
 
-interface Props {
-  collapsed?: boolean
-  open?: boolean
-  firstName: string
-  role: string
-}
+const router = useRouter();
+const route = useRoute();
+const authStore = useAuthStore();
 
-const props = defineProps<Props>()
+const props = defineProps({
+  collapsed: Boolean,
+  open: Boolean,
+  firstName: String,
+  email: String,
+  avatar: String,
+  role: String,
+  permissions: Object,
+});
 
+console.log(props.avatar);
 const emit = defineEmits<{
-  (e: 'close'): void
-  (e: 'toggle'): void
-}>()
+  (e: "close"): void;
+  (e: "toggle"): void;
+}>();
 
-const route = useRoute()
+/* ===============================
+   LOGOUT
+================================= */
+const logout = async () => {
+  await authStore.logOut();
+  sessionStorage.clear();
+  localStorage.clear();
+  router.replace("/auth");
+};
 
+/* ===============================
+   ACTIVE ROUTE
+================================= */
 const isActive = (path: string) => {
-  return route.path.startsWith(path)
-}
+  return route.path.startsWith(path);
+};
 
-const menuSections = [
-  {
-    title: 'Core Dashboard',
-    items: [
-      { label: 'Overview', icon: 'dashboard', to: '/dashboard/home' }
-    ]
-  },
-  {
-    title: 'Management',
-    items: [
-      { label: 'Adoptions', icon: 'favorite', to: '/dashboard/adoptions' },
-      { label: 'Pets Inventory', icon: 'pets', to: '/dashboard/pets' },
-      { label: 'Users & Clients', icon: 'group', to: '/dashboard/users' },
-      { label: 'Roles & Permissions', icon: 'shield_person', to: '/dashboard/roles' }
-    ]
-  },
-  {
-    title: 'Veterinary',
-    items: [
-      { label: 'Doctors', icon: 'stethoscope', to: '/dashboard/doctor' },
-      { label: 'Services', icon: 'medical_services', to: '/dashboard/services' },
-      { label: 'Appointments', icon: 'calendar_month', to: '/dashboard/appointments' }
-    ]
+/* ===============================
+   ROLE-BASED MENU
+================================= */
+const menuSections = computed(() => {
+  // 👑 ADMIN → ve todo
+  if (props.role === "admin") {
+    return [
+      {
+        title: "Core Dashboard",
+        items: [
+          { label: "Overview", icon: "dashboard", to: "/dashboard/home" },
+        ],
+      },
+      {
+        title: "Management",
+        items: [
+          { label: "Adoptions", icon: "favorite", to: "/dashboard/adoptions" },
+          { label: "Pets Inventory", icon: "pets", to: "/dashboard/pets" },
+          { label: "Users & Clients", icon: "group", to: "/dashboard/users" },
+          {
+            label: "Roles & Permissions",
+            icon: "shield_person",
+            to: "/dashboard/roles",
+          },
+        ],
+      },
+      {
+        title: "Veterinary",
+        items: [
+          { label: "Doctors", icon: "stethoscope", to: "/dashboard/doctor" },
+          {
+            label: "Services",
+            icon: "medical_services",
+            to: "/dashboard/services",
+          },
+          {
+            label: "Appointments",
+            icon: "calendar_month",
+            to: "/dashboard/appointments",
+          },
+        ],
+      },
+    ];
   }
-]
-</script>
 
+  // 🩺 DOCTOR → solo Doctors y Appointments
+  if (props.role === "doctors") {
+    return [
+      {
+        title: "Veterinary",
+        items: [
+          { label: "Doctors", icon: "stethoscope", to: "/dashboard/doctor" },
+          {
+            label: "Appointments",
+            icon: "calendar_month",
+            to: "/dashboard/appointments",
+          },
+        ],
+      },
+    ];
+  }
+
+  // Default vacío
+  return [];
+});
+const userInitial = computed(() => {
+  return props.firstName?.charAt(0).toUpperCase() || "U";
+});
+
+const hasAvatar = computed(() => {
+  return !!props.avatar;
+});
+</script>
 <template>
   <aside
-    class="fixed lg:relative z-50 top-0 left-0 h-full 
-    bg-[#132424] md:bg-background-dark border-r border-white/50 
-    flex flex-col shrink-0
-    transition-all duration-300 ease-in-out"
+    class="fixed lg:relative z-50 top-0 left-0 h-full bg-[#132424] md:bg-background-dark border-r border-white/50 flex flex-col shrink-0 transition-all duration-300 ease-in-out"
     :class="[
-      props.collapsed ? 'w-20' : 'w-64',
-      props.open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+      collapsed ? 'w-20' : 'w-64',
+      open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
     ]"
   >
-
     <!-- Close Button (Mobile) -->
     <button
       class="lg:hidden absolute right-4 top-4 text-white"
@@ -70,15 +131,19 @@ const menuSections = [
 
     <!-- Header -->
     <div class="p-6 flex items-center gap-3">
-      <div class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center">
+      <div
+        class="w-10 h-10 bg-primary rounded-lg flex items-center justify-center"
+      >
         <span class="material-symbols-outlined text-background-dark font-bold">
           pets
         </span>
       </div>
 
-      <div v-if="!props.collapsed">
+      <div v-if="!collapsed">
         <h1 class="text-white font-bold text-lg leading-none">PetAdmin</h1>
-        <p class="text-primary text-[10px] uppercase tracking-widest font-semibold mt-1">
+        <p
+          class="text-primary text-[10px] uppercase tracking-widest font-semibold mt-1"
+        >
           Management Hub
         </p>
       </div>
@@ -87,9 +152,8 @@ const menuSections = [
     <!-- Navigation -->
     <nav class="flex-1 px-4 mt-4 space-y-6 overflow-y-auto custom-scrollbar">
       <div v-for="section in menuSections" :key="section.title">
-
         <div
-          v-if="!props.collapsed"
+          v-if="!collapsed"
           class="text-slate-500 text-[11px] font-bold uppercase tracking-wider px-3 mb-2"
         >
           {{ section.title }}
@@ -101,44 +165,67 @@ const menuSections = [
           :to="item.to"
           @click="emit('close')"
           class="flex items-center gap-3 px-3 py-3 rounded-lg text-sm font-medium transition-all"
-          :class="isActive(item.to)
-            ? 'active-sidebar-item'
-            : 'sidebar-item text-slate-400'"
+          :class="
+            isActive(item.to)
+              ? 'active-sidebar-item'
+              : 'sidebar-item text-slate-400'
+          "
         >
           <span class="material-symbols-outlined text-[22px]">
             {{ item.icon }}
           </span>
 
-          <span v-if="!props.collapsed">
+          <span v-if="!collapsed">
             {{ item.label }}
           </span>
         </router-link>
-
       </div>
     </nav>
 
     <!-- User Card -->
-    <div class="p-4 border-t border-white/5" v-if="!props.collapsed">
-      <div class="glass-card rounded-xl p-3 flex items-center gap-3">
+    <!-- User Card -->
+    <div class="p-4 border-t border-white/5" v-if="!collapsed">
+      <div class="glass-card rounded-xl p-3 flex items-center gap-3 mb-3">
+        <!-- Avatar -->
         <div
-          class="size-9 rounded-full bg-slate-600 flex items-center justify-center text-white text-sm font-bold"
+          class="w-[3.25rem] h-[2.5rem] rounded-full overflow-hidden bg-slate-600 flex items-center justify-center text-white text-sm font-bold"
         >
-          {{ props.firstName?.charAt(0).toUpperCase() }}
+          <!-- Imagen si existe -->
+          <img
+            v-if="hasAvatar"
+            :src="avatar"
+            alt="user avatar"
+            class="w-full h-full object-cover"
+          />
+
+          <!-- Inicial fallback -->
+          <span v-else>
+            {{ userInitial }}
+          </span>
         </div>
 
-        <div class="flex-1 overflow-hidden">
-          <p class="text-xs font-bold text-white truncate">
-            {{ props.firstName }}
-          </p>
-          <p class="text-[10px] text-slate-500 truncate">
-            {{ props.role }}
-          </p>
+        <!-- User Info -->
+        <div class="w-full flex items-center justify-between overflow-hidden">
+          <div>
+            <p class="text-xs font-bold text-white truncate">
+              {{ firstName }}
+            </p>
+            <p class="text-[10px] text-slate-500 truncate capitalize">
+              {{ role }}
+            </p>
+          </div>
+          <!-- Logout -->
+          <button
+            @click="logout"
+            class="  py-2 rounded-lg text-xs font-semibold bg-red-500/10 text-red-400 hover:bg-red-500/20 transition-all"
+          >
+            <span class="material-symbols-outlined text-[18px]"> logout </span>
+            
+          </button>
         </div>
       </div>
     </div>
-
   </aside>
-  
 </template>
 
 <style scoped>

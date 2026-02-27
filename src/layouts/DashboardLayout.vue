@@ -1,46 +1,94 @@
 <script setup lang="ts">
-import Sidebar from '../components/DashBoard/Sidebar.vue'
-import { ref, computed, onMounted, onUnmounted } from "vue"
-
-interface SessionUser {
-  data: {
-    user: {
-      app_metadata: { role: string }
-      user_metadata: { first_name: string }
-    }
-  }
-}
+import Sidebar from "../components/DashBoard/Sidebar.vue";
+import { ref, computed, onMounted, onUnmounted } from "vue";
 
 /* ===============================
-   USER
+   TYPES
 ================================= */
-const rawUser = sessionStorage.getItem("user")
 
-const parsedUser = ref<SessionUser | null>(
-  rawUser ? JSON.parse(rawUser) : null
-)
 
-const firstName = computed(
-  () => parsedUser.value?.data.user.user_metadata.first_name ?? "User"
-)
+/* ===============================
+   USER STATE
+================================= */
 
-const role = computed(
-  () => parsedUser.value?.data.user.app_metadata.role ?? "Guest"
-)
+const user = ref()
+const profile = ref()
+const role = ref()
+const email=ref()
+const avatar=ref()
+onMounted(() => {
+  const storedUser = sessionStorage.getItem("user")
+  if (storedUser) {
+    user.value = JSON.parse(storedUser)
+console.log(user.value)
+    profile.value = user.value.profile.first_name
+    avatar.value=user.value.profile.avatar || null
+email.value = user.value.profile.email
+    role.value = user.value.role.name
+  }
+}) 
+
+
+/* ===============================
+   COMPUTED USER DATA
+================================= */
+
+
+
+/* ===============================
+   ROLE PERMISSIONS
+================================= */
+
+const permissions = computed(() => {
+  switch (role.value) {
+    case "admin":
+      return {
+        dashboard: true,
+        users: true,
+        doctors: true,
+        appointments: true,
+        calendar: true,
+        services: true,
+        adoption: true,
+      }
+
+    case "Doctors":
+      return {
+        dashboard: true,
+        users: false,
+        doctors: true,
+        appointments: true,
+        calendar: true,
+        services: false,
+        adoption: false,
+      }
+
+    default:
+      return {
+        dashboard: true,
+        users: false,
+        doctors: false,
+        appointments: false,
+        calendar: false,
+        services: false,
+        adoption: false,
+      }
+  }
+})
 
 /* ===============================
    CLOCK
 ================================= */
+
 const time = ref("")
 let interval: any
 
 const updateClock = () => {
-  const now = new Date()
-  time.value = now.toLocaleTimeString('en-US', {
-    hour: '2-digit',
-    minute: '2-digit',
-    second: '2-digit',
-    hour12: true
+  time.value = new Date().toLocaleTimeString("en-US", {
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hour12: true,
   })
 }
 
@@ -56,8 +104,9 @@ onUnmounted(() => {
 /* ===============================
    SIDEBAR STATE
 ================================= */
-const sidebarOpen = ref(false)      // mobile
-const sidebarCollapsed = ref(false) // desktop
+
+const sidebarOpen = ref(false)
+const sidebarCollapsed = ref(false)
 
 const closeSidebar = () => {
   sidebarOpen.value = false
@@ -66,55 +115,54 @@ const closeSidebar = () => {
 
 <template>
   <div class="flex h-screen bg-[#102022] overflow-hidden relative">
-
     <!-- Overlay (Mobile) -->
+     
     <div
       v-if="sidebarOpen"
       class="fixed inset-0 bg-black/50 backdrop-blur-sm z-40 lg:hidden"
       @click="closeSidebar"
-    />
+    ></div>
 
     <!-- Sidebar -->
     <Sidebar
-      :collapsed="sidebarCollapsed"
-      :open="sidebarOpen"
-      :firstName="firstName"
-      :role="role"
-      @close="closeSidebar"
-      @toggle="sidebarCollapsed = !sidebarCollapsed"
-    />
- <button
-            class="hidden lg:flex text-slate-400 relative top-[1rem] hover:text-primary transition duration-300 "
-            :class="sidebarCollapsed ? 'left-[-1.1rem]': 'left-[-1.5rem]'"
-            @click="sidebarCollapsed = !sidebarCollapsed"
-          >
-            <span class="material-symbols-outlined !text-[2.5rem] text-white/70  z-50">
-              {{ sidebarCollapsed ? 'arrow_right' : 'arrow_left' }}
-            </span>
-          </button>
+  :collapsed="sidebarCollapsed"
+  :open="sidebarOpen"
+  :firstName="profile"
+  :email="email"
+  :avatar="avatar"
+  :role="role"
+  :permissions="permissions"
+  @close="closeSidebar"
+  @toggle="sidebarCollapsed = !sidebarCollapsed"
+/>
+    <button
+      class="hidden lg:flex text-slate-400 relative top-[1rem] hover:text-primary transition duration-300"
+      :class="sidebarCollapsed ? 'left-[-1.1rem]' : 'left-[-1.5rem]'"
+      @click="sidebarCollapsed = !sidebarCollapsed"
+    >
+      <span class="material-symbols-outlined !text-[2.5rem] text-white/70 z-50">
+        {{ sidebarCollapsed ? "arrow_right" : "arrow_left" }}
+      </span>
+    </button>
     <!-- MAIN -->
     <main class="flex-1 flex flex-col overflow-hidden">
-
       <!-- HEADER -->
       <header
         class="h-16 border-b border-white/10 px-4 md:px-8 flex items-center justify-between bg-background-dark/50 backdrop-blur-md shrink-0"
       >
         <div class="flex items-center gap-4">
-
           <!-- Mobile Menu Button -->
-          <button
-            class="lg:hidden text-white"
-            @click="sidebarOpen = true"
-          >
+          <button class="lg:hidden text-white" @click="sidebarOpen = true">
             <span class="material-symbols-outlined">menu</span>
           </button>
 
           <!-- Desktop Collapse Button -->
-         
 
-          <h2 class="text-sm md:text-lg font-bold text-white flex items-center gap-2">
+          <h2
+            class="text-sm md:text-lg font-bold text-white flex items-center gap-2"
+          >
             Welcome,
-            <span class="text-primary">{{ firstName }}</span>
+            <span class="text-primary">{{ profile }}</span>
           </h2>
 
           <div class="hidden sm:flex items-center gap-2 text-slate-400">
@@ -132,7 +180,6 @@ const closeSidebar = () => {
           <router-view />
         </transition>
       </div>
-
     </main>
   </div>
 </template>

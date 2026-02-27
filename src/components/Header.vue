@@ -2,6 +2,7 @@
 import { ref, onMounted, onUnmounted } from 'vue'
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faPaw, faUsers, faHouse } from '@fortawesome/free-solid-svg-icons'
+import { useAuthStore } from '../stores/auth.store'
 const isOpen = ref(true)
 
 function openNav() {
@@ -30,8 +31,10 @@ interface User {
 
   }]
 }
+const userLogin=useAuthStore()
 const logout = () => {
   sessionStorage.removeItem("user")
+userLogin.logOut();
   user.value = null
   isUserMenuOpen.value = false
 }
@@ -57,11 +60,13 @@ onMounted(() => {
   const storedUser = sessionStorage.getItem("user")
   if (storedUser) {
     user.value = JSON.parse(storedUser)
-    profile.value = user.value.data.user.identities.map(item => item.identity_data)
-    role.value = user.value.data.user.app_metadata;
+console.log(user.value)
+    profile.value = user.value.profile.first_name
+    
+
+    role.value = user.value.role.name
   }
-  
-})
+}) 
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -133,9 +138,9 @@ const closeUserMenu = () => {
            rounded-lg shadow-md w-max">
               <ul class="p-2 text-sm font-medium">
 
-                <li class="px-3 py-2 text-xs text-slate-500 flex flex-col" v-for="items in profile ">
-                  <span class="w-full">{{ items.first_name }}</span>
-                  <span class="w-full">{{ items.email }}</span>
+                <li class="px-3 py-2 text-xs text-slate-500 flex flex-col" >
+                  <span class="w-full">{{ profile }}</span>
+                 <span class="w-full">{{ profile }}</span>
                 </li>
 
                 <li>
@@ -145,7 +150,7 @@ const closeUserMenu = () => {
                   </router-link>
                 </li>
 
-                <li v-if="role.role === 'admin'">
+                <li v-if="role === 'admin'  || role==='doctors'">
                   <router-link to="/dashboard/home" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
                     DashBoard
@@ -225,7 +230,7 @@ const closeUserMenu = () => {
                   </router-link>
                 </li>
 
-                <li v-if="role === 'admin'">
+                <li v-if="role === 'admin'  || role==='doctors'">
                   <router-link to="/dashboard/home" @click="closeUserMenu"
                     class="block px-3 py-2 hover:bg-slate-100 dark:hover:bg-slate-800 rounded">
                     DashBoard

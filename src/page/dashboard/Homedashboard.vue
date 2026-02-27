@@ -2,6 +2,7 @@
 import AdoptionChart from '../../components/DashBoard/charts/AdoptionChart.vue'
 import ServicesChart from '../../components/DashBoard/charts/ServicesChart.vue'
 import DashboardStats from '../../components/DashBoard/DashboardStats.vue'
+import RecentActivityOverview from '../../components/DashBoard/RecentActivityOverview.vue';
 import UserList from '../../components/DashBoard/Users/UserList.vue'
 </script>
 
@@ -34,7 +35,7 @@ import UserList from '../../components/DashBoard/Users/UserList.vue'
     </div>
 
     <!-- User List Full Width -->
-   
+   <RecentActivityOverview/>
 
   </section>
 </template>

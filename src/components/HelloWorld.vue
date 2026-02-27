@@ -18,15 +18,14 @@ const options = {
   interval: 5000,
   pauseOnHover: false,
   rewind: true,
-  gap: "1rem",
-  height: "100vh",
+  gap: "0",
+  heightRatio: 0.6, // 👈 mejor que height fijo
   breakpoints: {
-    640: { height: "100vh" },
-    768: { height: "90vh" },
-    1024: { height: "600px" },
+    640: { heightRatio: 0.9 },
+    768: { heightRatio: 0.8 },
+    1024: { heightRatio: 0.6 },
   },
 };
-
 /* =========================
    PERFORMANCE
 ========================= */
@@ -90,7 +89,7 @@ onMounted(async () => {
 
 <template>
   <Splide
-    class="hero-slider relative w-full h-full max-h-[45rem]"
+    class="hero-slider relative w-full min-h-[70vh] lg:min-h-[80vh]"
     :options="options"
     aria-label="Hero Slider"
     @splide:active="(e) => heroVisible && runAnimations(e.slide)"
@@ -98,7 +97,7 @@ onMounted(async () => {
     <SplideSlide
       v-for="(item, index) in slides"
       :key="index"
-      class="relative slide-anim max-h-[45rem]"
+      class="relative w-full"
     >
       <!-- Background -->
       <div
@@ -111,56 +110,74 @@ onMounted(async () => {
 
         <!-- Content -->
         <div
-          class="relative h-full flex flex-col justify-center max-w-[1280px] mx-auto px-4 sm:px-6 lg:px-10"
+          class="relative h-full flex items-center"
         >
-          <div class="max-w-2xl">
-            <!-- Badge -->
-            <span
-              class="badge-anim inline-block px-3 py-1 mb-6 text-xs font-semibold tracking-wider uppercase bg-teal-50 text-teal-900 rounded-full"
-            >
-              {{ item.estado }}
-            </span>
+          <div
+            class="w-full max-w-7xl mx-auto px-4 sm:px-6 md:px-10 lg:px-16"
+          >
+            <div class="max-w-3xl">
 
-            <!-- Title -->
-            <h1
-              class="title-anim text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white mb-6 leading-tight"
-              style="text-shadow: 0 4px 20px rgba(0, 0, 0, 0.6)"
-            >
-              {{ item.title }}
-            </h1>
+              <!-- Badge -->
+              <span
+                class="badge-anim inline-block px-3 py-1 mb-4 text-xs sm:text-sm font-semibold uppercase bg-teal-50 text-teal-900 rounded-full"
+              >
+                {{ item.estado }}
+              </span>
 
-            <!-- Description -->
-            <p
-              class="desc-anim text-base sm:text-lg md:text-xl text-slate-200 mb-8 mx-[4rem] truncate"
-            >
-              {{ item.description }}
-            </p>
+              <!-- Title -->
+              <h1
+                class="title-anim font-bold text-white leading-tight mb-6
+                text-2xl
+                sm:text-3xl
+                md:text-4xl
+                lg:text-5xl
+                xl:text-6xl"
+                style="text-shadow: 0 4px 20px rgba(0,0,0,0.6)"
+              >
+                {{ item.title }}
+              </h1>
 
-            <!-- Buttons -->
-            
-              <div  class="flex flex-col sm:flex-row gap-4 mx-[4rem] ">
-                <div v-for="(btn, i) in item.button">
-                   <router-link
-                  
+              <!-- Description -->
+              <p
+                class="desc-anim text-slate-200 mb-8
+                text-sm
+                sm:text-base
+                md:text-lg
+                lg:text-xl"
+              >
+                {{ item.description }}
+              </p>
+
+              <!-- Buttons -->
+              <div
+                class="flex flex-col sm:flex-row gap-4"
+              >
+                <router-link
+                  v-for="(btn, i) in item.button"
                   :key="i"
                   v-if="btn?.link"
                   :to="btn.link"
-                  class="btn-anim w-full sm:w-auto px-6 sm:px-8 py-3 sm:py-4 font-semibold rounded-lg shadow-lg transition-all flex items-center justify-center gap-2 px-4 py-2 rounded-lg text-white "
-                  :class="
-                    btn.type === 'action'
-                      ? 'bg-primary text-white font-bold text-sm hover:bg-sky-700'
-                      : 'bg-primary text-white font-bold text-sm hover:bg-sky-700'
-                  "
+                  class="btn-anim
+                  w-full sm:w-auto
+                  px-6 py-3
+                  text-sm sm:text-base
+                  font-semibold
+                  rounded-lg
+                  shadow-lg
+                  transition-all
+                  duration-300
+                  hover:scale-105
+                  bg-primary
+                  text-white"
                 >
                   {{ btn.title }}
                 </router-link>
-                </div>
-               
               </div>
+
             </div>
           </div>
         </div>
-      
+      </div>
     </SplideSlide>
   </Splide>
 </template>

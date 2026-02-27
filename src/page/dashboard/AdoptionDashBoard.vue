@@ -1,258 +1,400 @@
 <script setup lang="ts">
-import { onMounted, computed, ref } from "vue"
-import draggable from "vuedraggable"
+import { computed, onMounted, ref, watch } from "vue";
+import { supabase } from "../../config/supabase";
+import { useAdoptionStore } from "../../stores/adoption.store";
+import { useAuthStore } from "../../stores/auth.store";
+import { usePetStore } from "../../stores/pet.store";
+import { useDoctorStore } from "../../stores/doctor.store";
+import { useRoute } from "vue-router";
+import KanbanColumn from "../../components/DashBoard/UI/KanbanColumn.vue";
+import SidebarAdoption from "../../components/DashBoard/UI/SidebarAdoption.vue";
 
+const route = useRoute();
 
-/* const adoptionStore = useAdoptionStore()
-const petStore = usePetStore()
-const authStore = useAuthStore() */
+const isDashboardHome = computed(() => {
+  return route.path === "/dashboard/home";
+});
 
-const selectedAdoption = ref<any>(null)
-const showModal = ref(false)
-
-/* ===============================
-   MOCK DATA (solo si vacío)
-================================= */
-
-
-  
-
- const petStore = [
-    { id: "p1", name: "Copper", breed: "Golden Retriever", image_url: "https://images.unsplash.com/photo-1558788353-f76d92427f16", adoption_status: "available" },
-    { id: "p2", name: "Luna", breed: "Tuxedo Cat", image_url: "https://images.unsplash.com/photo-1518791841217-8f162f1e1131", adoption_status: "available" },
-    { id: "p3", name: "Ghost", breed: "Husky", image_url: "https://images.unsplash.com/photo-1605568427561-40dd23c2acea", adoption_status: "available" },
-    { id: "p4", name: "Buddy", breed: "Labrador", image_url: "https://images.unsplash.com/photo-1552053831-71594a27632d", adoption_status: "adopted" }
-  ]
-
-  const authStore = [
-    { id: "u1", full_name: "Mark Stevens", email: "mark@mail.com" },
-    { id: "u2", full_name: "Elena Gomez", email: "elena@mail.com" },
-    { id: "u3", full_name: "Sarah Thompson", email: "sarah@mail.com" },
-    { id: "u4", full_name: "Rachel Zane", email: "rachel@mail.com" }
-  ]
-
-  const adoptionStore= [
-    { id: "a1", pet_id: "p1", user_id: "u1", status: "new", created_at: new Date().toISOString() },
-    { id: "a2", pet_id: "p2", user_id: "u2", status: "interview", created_at: new Date().toISOString() },
-    { id: "a3", pet_id: "p3", user_id: "u3", status: "home_visit", created_at: new Date().toISOString() },
-    { id: "a4", pet_id: "p4", user_id: "u4", status: "approved", created_at: new Date().toISOString() }
-  ]
-
+const adoptionStore = useAdoptionStore();
+const authStore = useAuthStore();
+const petStore = usePetStore();
+const doctorStore = useDoctorStore();
 
 /* ===============================
-   Fetch
+   FETCH + DEBUG LOGS
 ================================= */
 
 onMounted(async () => {
-/*   await Promise.all([
-    adoptionStore.fetch?.(),
-    petStore.fetch?.(),
-    authStore.fetchUsers?.()
-  ]) */
+  console.log("🚀 Fetching all stores...");
 
- 
-})
-
-/* ===============================
-   Helpers
-================================= */
-
-const getPet = (petId: string) =>{
-  return petStore.find(p => p.id === petId) 
-   console.log(petStore)
-}
-  
-
-const getUser = (userId: string) =>
-  authStore.find(u => u.id === userId)
+  await Promise.all([
+    adoptionStore.fetch(),
+    authStore.fetchUsers(),
+    petStore.fetch(),
+    doctorStore.fetch(),
+  ]);
+  fullAdoptions.value;
+  console.log("✅ Adoption Store:", adoptionStore.adoptions);
+  console.log("✅ Auth Store (Users):", authStore.users);
+  console.log("✅ Pet Store:", petStore.pets);
+  console.log("✅ Doctor Store:", doctorStore.doctors);
+});
 
 /* ===============================
-   Grouped by Status
+   REACTIVE WATCH LOGS
+   (Se ejecuta cuando cambian)
 ================================= */
 
-const grouped = computed(() => ({
-  new: adoptionStore.filter(a => a.status === "new"),
-  interview: adoptionStore.filter(a => a.status === "interview"),
-  home_visit: adoptionStore.filter(a => a.status === "home_visit"),
-  approved: adoptionStore.filter(a => a.status === "approved"),
-  rejected: adoptionStore.filter(a => a.status === "rejected")
-}))
+watch(
+  () => adoptionStore.adoptions,
+  (val) => {
+    console.log("📦 Adoption updated:", val);
+  },
+  { deep: true },
+);
+
+watch(
+  () => authStore.users,
+  (val) => {
+    console.log("👤 Users updated:", val);
+  },
+  { deep: true },
+);
+
+watch(
+  () => petStore.pets,
+  (val) => {
+    console.log("🐶 Pets updated:", val);
+  },
+  { deep: true },
+);
+
+watch(
+  () => doctorStore.doctors,
+  (val) => {
+    console.log("🩺 Doctors updated:", val);
+  },
+  { deep: true },
+);
+const fullAdoptions = computed(() => {
+  if (
+    !adoptionStore.adoptions.length ||
+    !petStore.pets.length ||
+    !authStore.users.length
+  )
+    return [];
+
+  return adoptionStore.adoptions
+    .map((adoption) => {
+      const pet = petStore.pets.find((p) => p.id === adoption.idPet);
+
+      const user = authStore.users.find((u) => u.id === adoption.idProfile);
+
+      return {
+        ...adoption,
+        pet,
+        user,
+      };
+    })
+    .sort((a, b) => {
+      return (
+        new Date(b.created_at).getTime() - new Date(a.created_at).getTime()
+      );
+    });
+});
+console.log(fullAdoptions.value);
+const search = ref("");
+const statusFilter = ref("all");
+const filteredAdoptions = computed(() => {
+  const query = search.value.toLowerCase().trim();
+
+  return fullAdoptions.value.filter((adoption) => {
+    /* 🔎 SEARCH FILTER */
+    const petName = adoption.pet?.nombre?.toLowerCase() || "";
+    const userName = adoption.user?.first_name?.toLowerCase() || "";
+    const userEmail = adoption.user?.email?.toLowerCase() || "";
+    const status = adoption.status?.toLowerCase() || "";
+    const id = adoption.id?.toString() || "";
+    const date = new Date(adoption.created_at)
+      .toLocaleDateString()
+      .toLowerCase();
+
+    const matchesSearch =
+      !query ||
+      petName.includes(query) ||
+      userName.includes(query) ||
+      userEmail.includes(query) ||
+      status.includes(query) ||
+      id.includes(query) ||
+      date.includes(query);
+
+    /* 🏷 STATUS FILTER */
+    const matchesStatus =
+      statusFilter.value === "all" ||
+      adoption.status === statusFilter.value;
+
+    return matchesSearch && matchesStatus;
+  });
+});
+const grouped = computed(() => {
+  const source = filteredAdoptions.value;
+
+  return {
+    pending: source.filter((a) => a.status === "pending"),
+    interview: source.filter((a) => a.status === "interview"),
+    home_visit: source.filter((a) => a.status === "home_visit"),
+    approved: source.filter((a) => a.status === "approved"),
+    rejected: source.filter((a) => a.status === "rejected"),
+  };
+});
+const isUrgent = (date: string) => {
+  const created = new Date(date).getTime();
+  const now = new Date().getTime();
+
+  const diffInDays = (now - created) / (1000 * 60 * 60 * 24);
+
+  return diffInDays <= 3;
+};
+const selectedAdoption = ref<any>(null);
+const sidebarOpen = ref(false);
+
+const openDetails = (item: any) => {
+  selectedAdoption.value = item;
+  sidebarOpen.value = true;
+};
+
+const closeSidebar = () => {
+  sidebarOpen.value = false;
+  setTimeout(() => {
+    selectedAdoption.value = null;
+  }, 200);
+};
 
 /* ===============================
-   Status Change
+   APPROVE APPLICATION
 ================================= */
 
-/* const changeStatus = async (adoption: any, status: string) => {
 
-  if (status === "rejected") {
-    const confirmReject = confirm("Are you sure you want to reject this adoption?")
-    if (!confirmReject) return
-  }
 
-  await adoptionStore.update?.(adoption.id, { status })
-
-  if (status === "approved") {
-    await petStore.update?.(adoption.pet_id, { adoption_status: "adopted" })
-  }
-
-  console.log(`Status changed to ${status}`)
-} */
-
-/* ===============================
-   Drag & Drop
-================================= */
-
-const onDragEnd = async (event: any) => {
-  const adoption = event.item.__draggable_context.element
-  const newStatus = event.to.closest("[data-status]")?.dataset.status
-
-  if (!newStatus || adoption.status === newStatus) return
-
-  adoption.status = newStatus
-  
-}
-
-/* ===============================
-   Edit Modal
-================================= */
-
-const openEdit = (adoption: any) => {
+const openSidebar = (adoption: any) => {
   selectedAdoption.value = adoption
-  showModal.value = true
+  sidebarOpen.value = true
 }
 
-/* const savePetChanges = async () => {
-  const pet = getPet(selectedAdoption.value.pet_id)
-  if (!pet) return
-  await petStore.update?.(pet.id, pet)
-  showModal.value = false
-} */
+
+const handleStatusChange = async ({
+  item,
+  newStatus,
+}: {
+  item: any;
+  newStatus: string;
+}) => {
+  try {
+    // 🔥 Update adoption
+    const { error } = await supabase
+      .from("adoption")
+      .update({ status: newStatus })
+      .eq("id", item.id);
+
+    if (error) throw error;
+
+    // 🔥 Update animal
+    await supabase
+      .from("animals")
+      .update({
+        status: newStatus === "approved" ? "adopted" : "available",
+      })
+      .eq("id", item.idPet);
+
+    // ✅ Reactive update (NO reload)
+    const adoption = adoptionStore.adoptions.find(
+      (a) => a.id === item.id
+    );
+
+    if (adoption) {
+      adoption.status = newStatus;
+    }
+
+    const pet = petStore.pets.find((p) => p.id === item.idPet);
+
+    if (pet) {
+      pet.status =
+        newStatus === "approved" ? "adopted" : "available";
+    }
+  } catch (err) {
+    console.error("Status change error:", err);
+  }
+};
+const updateApplicationStatus = async (
+  newStatus: "approved" | "rejected"
+) => {
+  if (!selectedAdoption.value) return;
+
+  const adoptionId = selectedAdoption.value.id;
+  const petId = selectedAdoption.value.idPet;
+
+  const previousAdoptionStatus = selectedAdoption.value.status;
+  const previousPetStatus =
+    petStore.pets.find((p) => p.id === petId)?.status || null;
+
+  try {
+    /* ===============================
+       🟢 OPTIMISTIC UI (instant update)
+    =============================== */
+
+    // Update adoption locally
+    const adoption = adoptionStore.adoptions.find(
+      (a) => a.id === adoptionId
+    );
+    if (adoption) adoption.status = newStatus;
+
+    // Update pet locally
+    const pet = petStore.pets.find((p) => p.id === petId);
+    if (pet) {
+      pet.status = newStatus === "approved" ? "adopted" : "available";
+    }
+
+    selectedAdoption.value.status = newStatus;
+
+    /* ===============================
+       🔥 DATABASE UPDATE
+    =============================== */
+
+    const { error: adoptionError } = await supabase
+      .from("adoption")
+      .update({ status: newStatus })
+      .eq("id", adoptionId);
+
+    if (adoptionError) throw adoptionError;
+
+    const { error: animalError } = await supabase
+      .from("animals")
+      .update({
+        status: newStatus === "approved" ? "adopted" : "available",
+      })
+      .eq("id", petId);
+
+    if (animalError) throw animalError;
+
+    closeSidebar();
+  } catch (error) {
+    console.error("Status update failed:", error);
+
+    /* ===============================
+       🔴 ROLLBACK SI FALLA
+    =============================== */
+
+    const adoption = adoptionStore.adoptions.find(
+      (a) => a.id === adoptionId
+    );
+    if (adoption) adoption.status = previousAdoptionStatus;
+
+    const pet = petStore.pets.find((p) => p.id === petId);
+    if (pet && previousPetStatus) {
+      pet.status = previousPetStatus;
+    }
+  }
+};
+
+/* ===============================
+   WRAPPERS SIMPLES
+================================= */
+
+const approveApplication = () =>
+  updateApplicationStatus("approved");
+
+const rejectApplication = () =>
+  updateApplicationStatus("rejected");
+console.log(grouped.value.pending);
+let timeout: any;
+
+watch(search, () => {
+  clearTimeout(timeout);
+  timeout = setTimeout(() => {}, 300);
+});
 </script>
-
 <template>
-  <div class="flex-1 overflow-x-auto custom-scrollbar bg-[#0d1a1b] p-6 flex gap-6 h-full">
-
-    <div
-      v-for="(items, status) in grouped"
-      :key="status"
-      :data-status="status"
-      class="flex flex-col gap-4 w-80 shrink-0"
+  <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
+    <!-- Top Header Action Bar -->
+    <header
+      class="h-16 flex items-center h-auto justify-between px-8 py-8 bg-background-dark/50 border-b border-[#234548] backdrop-blur-md z-10"
     >
-      <!-- Header -->
-      <div class="flex justify-between items-center px-2 border-b border-[#234548] pb-3">
-        <h3 class="font-bold text-slate-100 capitalize">
-          {{ status.replace('_', ' ') }}
-        </h3>
-        <span class="bg-[#234548] text-primary text-xs font-bold px-2 py-0.5 rounded-full">
-          {{ items.length }}
-        </span>
-      </div>
-
-      <!-- Draggable -->
-      <draggable
-        :list="items"
-        group="adoptions"
-        item-key="id"
-        @end="onDragEnd"
-        class="flex flex-col gap-3"
-      >
-        <template #item="{ element }">
-
-          <div
-            :class="[
-              'p-4 rounded-lg shadow-lg transition-all',
-              element.status === 'approved'
-                ? 'bg-emerald-900/30 border border-emerald-500/30'
-                : element.status === 'rejected'
-                ? 'bg-rose-900/30 border border-rose-500/30'
-                : 'bg-card-dark hover:ring-1 hover:ring-primary/50'
-            ]"
+      <div class="flex flex-wrap items-center gap-6 flex-1 md:max-w-4xl">
+        <h2 class="text-xl font-bold text-white whitespace-nowrap">
+          Adoption Board
+        </h2>
+        <div class="relative flex-1 max-w-md">
+          <span
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl"
+            >search</span
           >
-
-            <div class="flex gap-3 mb-3">
-              <div
-                class="size-12 rounded-lg bg-cover bg-center"
-                :style="{ backgroundImage: `url(${getPet(element.pet_id)?.image_url})` }"
-              ></div>
-
-              <div class="flex-1 min-w-0">
-                <h4 class="text-sm font-bold text-white truncate">
-                  {{ getPet(element.pet_id).name }}
-                  ({{ getPet(element.pet_id)?.breed }})
-                </h4>
-
-                <p class="text-xs text-slate-400 truncate">
-                  Applicant:
-                  {{ getUser(element.user_id)?.full_name }}
-                </p>
-              </div>
-            </div>
-
-            <div class="flex justify-between items-center mt-3">
-
-              <select
-                class="bg-[#1c3639] text-xs text-white rounded px-2 py-1"
-                v-model="element.status"
-                @change="changeStatus(element, element.status)"
-              >
-                <option value="new">New</option>
-                <option value="interview">Interview</option>
-                <option value="home_visit">Home Visit</option>
-                <option value="approved">Approved</option>
-                <option value="rejected">Rejected</option>
-              </select>
-
-              <button
-                @click="openEdit(element)"
-                class="text-primary text-xs hover:underline"
-              >
-                Edit Pet
-              </button>
-            </div>
-
-          </div>
-
-        </template>
-      </draggable>
-    </div>
-
-    <!-- Modal -->
-    <div
-      v-if="showModal"
-      class="fixed inset-0 bg-black/50 flex items-center justify-center"
-    >
-      <div class="bg-[#0f2021] p-6 rounded-xl w-96">
-        <h3 class="text-white font-bold mb-4">Edit Pet</h3>
-
-        <input
-          v-model="getPet(selectedAdoption.pet_id).name"
-          class="w-full mb-3 p-2 bg-[#1c3639] text-white rounded"
-          placeholder="Pet Name"
-        />
-
-        <input
-          v-model="getPet(selectedAdoption.pet_id).breed"
-          class="w-full mb-3 p-2 bg-[#1c3639] text-white rounded"
-          placeholder="Breed"
-        />
-
-        <div class="flex justify-end gap-2">
-          <button
-            @click="showModal = false"
-            class="px-3 py-1 bg-slate-600 rounded text-white"
+          <input
+            v-model="search"
+            class="w-full bg-[#1c3639] text-white text-sm rounded-lg pl-10 pr-4 py-2"
+            placeholder="Search applicants or pets..."
+            type="text"
+          />
+        </div>
+        <div class="flex items-center gap-3">
+          <select
+            v-model="statusFilter"
+            class="bg-[#1c3639] text-xs text-white rounded px-2 py-2"
           >
-            Cancel
-          </button>
-
-          <button
-            @click="savePetChanges"
-            class="px-3 py-1 bg-primary rounded text-white"
-          >
-            Save
-          </button>
+            <option value="all">All</option>
+            <option value="pending">New</option>
+            <option value="interview">Interview</option>
+            <option value="home_visit">Home Visit</option>
+            <option value="approved">Approved</option>
+            <option value="rejected">Rejected</option>
+          </select>
+         
         </div>
       </div>
-    </div>
+     
+    </header>
+    <!-- Kanban Content Area -->
+    <div
+      class="flex-1 overflow-x-auto bg-[#0d1a1b] p-4 sm:p-6 flex gap-6 w-full"
+    > 
+      <!-- Column: New Application -->
+     <KanbanColumn
+  title="New"
+  status="pending"
+  :items="grouped.pending"
+   @open-details="openSidebar"
+  @change-status="handleStatusChange"
+/>
 
-  </div>
+<KanbanColumn
+  title="Approved"
+  status="approved"
+  :items="grouped.approved"
+   @open-details="openSidebar"
+  @change-status="handleStatusChange"
+/>
+
+<kanban-column
+  title="Rejected"
+  status="rejected"
+  :items="grouped.rejected"
+   @open-details="openSidebar"
+  @change-status="handleStatusChange"
+/>
+    </div>
+    <!-- OVERLAY -->
+    <div
+      v-if="sidebarOpen"
+      @click="closeSidebar"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
+    ></div>
+
+  <sidebar-adoption
+  :adoption="selectedAdoption"
+  :open="sidebarOpen"
+  @close="closeSidebar"
+  @approve="approveApplication"
+  @reject="rejectApplication"
+/>
+  </main>
 </template>
+

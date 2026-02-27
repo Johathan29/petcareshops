@@ -51,7 +51,7 @@ export const useAuthStore = defineStore('users', {
 
       await this.fetchUsers()
     },
-    async setOnline() {
+    async setOnline(id:string) {
   if (!this.users) return
 
   await supabase
@@ -60,9 +60,9 @@ export const useAuthStore = defineStore('users', {
       is_online: true,
       last_seen: new Date()
     })
-    .eq('id', this.users.id)
+    .eq('id', id )
 },
-async setOffline() {
+async setOffline(id:string) {
   if (!this.users) return
 
   await supabase
@@ -71,7 +71,10 @@ async setOffline() {
       is_online: false,
       last_seen: new Date()
     })
-    .eq('id', this.users.id)
+    .eq('id', id)
+},
+async logOut(){
+ await supabase.auth.signOut()
 }
 
   }

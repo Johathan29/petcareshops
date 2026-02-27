@@ -25,6 +25,10 @@ import PublicLayout from './layouts/PublicLayout.vue';
 import DashboardLayout from './layouts/DashboardLayout.vue';
  import { createPinia } from 'pinia'
 import { supabase } from './config/supabase';
+import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
+import { roleMiddleware } from './middleware/rolesGuard';
+import { MotionPlugin } from '@vueuse/motion'
+
 
 const routes = [
   { path: '/', 
@@ -73,13 +77,13 @@ const routes = [
   {
   path: '/dashboard',
   component: DashboardLayout,
-  meta: { requiresAuth: true }, // 🔒 obliga login
+   // 🔒 obliga login
   children: [
    
     {
       path: '/dashboard/home',
       component: Homedashboard,
-      meta: { roles: ['admin'] }
+    beforeEnter: roleMiddleware(['admin']),
     },
     {
       path: 'users',
@@ -105,7 +109,7 @@ const routes = [
 },
 
   
-,{ path: '/auth', component: Auth },
+,{ path: '/auth', component: Auth,beforeEnter: roleMiddleware(['admin']) },
  
 ];
 
@@ -158,7 +162,9 @@ router.afterEach((to) => {
 const pinia = createPinia()
 const app = createApp(App);
 app.use(VueSplide);
+
+pinia.use(piniaPluginPersistedstate)
 app.use(pinia)
 app.use(router);
-
+app.use(MotionPlugin)
 app.mount('#app');
