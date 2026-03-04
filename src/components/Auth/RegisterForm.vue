@@ -2,41 +2,114 @@
 import { ref } from "vue"
 import { supabase } from "../../config/supabase"
 
-/* ===============================
-   STATE
-================================= */
-const insertEmail = ref<string>("")
-const insertPassword = ref<string>("")
-const passwordConfirmation = ref<string>("")
-const insert_username = ref<string>("")
-const insert_phone = ref<string>("")
+const avatarFile = ref<File | null>(null)
+const avatarPreview = ref<string | null>(null)
+
+const form = ref({
+  insertEmail: "",
+  insertPassword: "",
+  passwordConfirmation: "",
+  insert_username: "",
+  insert_phone: ""
+})
+
+const handleFileChange = (e: Event) => {
+  const target = e.target as HTMLInputElement
+  if (!target.files?.length) return
+
+  const file = target.files[0]
+
+  // VALIDAR TIPO
+  if (!file.type.startsWith("image/")) {
+    alert("Only image files are allowed")
+    return
+  }
+
+  // VALIDAR TAMAÑO (2MB)
+  if (file.size > 2 * 1024 * 1024) {
+    alert("Image must be less than 2MB")
+    return
+  }
+
+  avatarFile.value = file
+  avatarPreview.value = URL.createObjectURL(file)
+}
 
 const register = async () => {
 
-  if (insertPassword.value !== passwordConfirmation.value) {
+  if (form.value.insertPassword !== form.value.passwordConfirmation) {
     alert("Passwords do not match")
     return
   }
 
-  const data= await supabase.auth.signUp({
-    email: 'mabel3030mm@gmail.com',
-    password: '123456789',
+  const { data, error } = await supabase.auth.signUp({
+    email: form.value.insertEmail,
+    password: form.value.insertPassword,
+    options: {
+      data: {
+        first_name: form.value.insert_username,
+        phone: form.value.insert_phone,
+      }
+    }
   })
 
-  if (data.error) {
-    console.error("Supabase Error:", data.error.message)
-    alert(data.error.message)
+  if (error) {
+    alert(error.message)
     return
   }
 
-  console.log("User created:", data)
+  if (!data.user) {
+    alert("User not created")
+    return
+  }
+
+  // SUBIR AVATAR
+  if (avatarFile.value) {
+
+    const fileExt = avatarFile.value.name.split(".").pop()
+    const filePath = `${data.user.id}/avatar.${fileExt}`
+
+    const { error: uploadError } = await supabase.storage
+      .from("avatars")
+      .upload(filePath, avatarFile.value, { upsert: true })
+
+   if (!uploadError) {
+
+  const { data: publicUrl } = supabase.storage
+    .from("avatars")
+    .getPublicUrl(filePath)
+
+  const avatarUrl = publicUrl.publicUrl
+console.log(data.user.id)
+  await supabase.from("profiles")
+    .update({ avatar_url: avatarUrl })
+    .eq("id",data.user.id )
+}
+  }
+
   alert("User registered successfully")
 }
 </script>
-
 <template>
         <form key="register" @submit.prevent="register" class="absolute inset-0 space-y-5 text-left px-4">
+<div class="space-y-1.5">
+  <label class="text-sm font-bold text-[#0e171b] dark:text-slate-200 block">
+    Avatar
+  </label>
 
+  <input
+    type="file"
+    accept="image/*"
+    @change="handleFileChange"
+    class="w-full h-12 px-4 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-sm"
+  />
+  <div v-if="avatarPreview" class="mt-3">
+  <img 
+    :src="avatarPreview"
+    class="w-24 h-24 rounded-full object-cover border"
+  />
+</div>
+</div>
                 <div class="space-y-1.5">
                   <label class="text-sm font-bold text-[#0e171b] dark:text-slate-200 block" for="name">Full Name</label>
                   <div class="relative group">
@@ -59,7 +132,7 @@ const register = async () => {
                     </div>
                     <input
                       class="w-full h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-base text-[#0e171b] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      id="insert_username" placeholder="John Doe" required v-model="insert_username" type="text">
+                      id="insert_username" placeholder="John Doe" required v-model="form.insert_username" type="text">
                   </div>
                 </div>
                 <div class="space-y-1.5">
@@ -84,7 +157,7 @@ const register = async () => {
                     </div>
                     <input
                       class="w-full h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-base text-[#0e171b] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
-                      id="insert_phone" placeholder="888-888-8888" required v-model="insert_phone" type="tel" />
+                      id="insert_phone" placeholder="888-888-8888" required v-model="form.insert_phone" type="tel" />
                   </div>
                 </div>
                 <div class="space-y-1.5">
@@ -107,7 +180,7 @@ const register = async () => {
                         </svg>
                       </span>
                     </div>
-                    <input v-model="insertEmail"
+                    <input v-model="form.insertEmail"
                       class="w-full h-12 pl-11 pr-4 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-base text-[#0e171b] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       id="insertEmail" placeholder="name@example.com" required type="email">
                   </div>
@@ -131,7 +204,7 @@ const register = async () => {
                         </svg>
                       </span>
                     </div>
-                    <input v-model="insertPassword"
+                    <input v-model="form.insertPassword"
                       class="w-full h-12 pl-11 pr-12 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-base text-[#0e171b] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       id="insertPassword" placeholder="••••••••" required type="password">
                     <button
@@ -173,7 +246,7 @@ const register = async () => {
                         </svg>
                       </span>
                     </div>
-                    <input v-model="passwordConfirmation"
+                    <input v-model="form.passwordConfirmation"
                       class="w-full h-12 pl-11 pr-12 bg-slate-50 dark:bg-slate-800 border border-[#d0dfe7] dark:border-slate-700 rounded-lg text-base text-[#0e171b] dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary transition-all"
                       id="passwordConfirmation" placeholder="••••••••" required type="password">
                   </div>

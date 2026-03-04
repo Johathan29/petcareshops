@@ -28,6 +28,9 @@ import { supabase } from './config/supabase';
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
 import { roleMiddleware } from './middleware/rolesGuard';
 import { MotionPlugin } from '@vueuse/motion'
+import ServicesDashBoard from './page/dashboard/ServicesDashBoard.vue';
+import PetsDashBoard from './page/dashboard/PetsDashBoard.vue';
+import RolesPermisos from './page/dashboard/Roles&permisos.vue';
 
 
 const routes = [
@@ -83,6 +86,21 @@ const routes = [
     {
       path: '/dashboard/home',
       component: Homedashboard,
+    beforeEnter: roleMiddleware(['admin']),
+    },
+    {
+      path: 'services',
+      component: ServicesDashBoard,
+    beforeEnter: roleMiddleware(['admin']),
+    },
+    {
+      path: 'pets',
+      component: PetsDashBoard,
+    beforeEnter: roleMiddleware(['admin']),
+    },
+    {
+      path: 'roles',
+      component: RolesPermisos,
     beforeEnter: roleMiddleware(['admin']),
     },
     {

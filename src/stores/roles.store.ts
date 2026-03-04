@@ -1,31 +1,33 @@
-import { defineStore } from "pinia";
-import { supabase } from "../config/supabase";
+// stores/roles.store.ts
+import { defineStore } from "pinia"
+import { supabase } from "../config/supabase"
 
 export const useRolesStore = defineStore("roles", {
   state: () => ({
     roles: [] as any[],
+    loading: false,
   }),
 
+  getters: {
+    getAllRoles: (state) => state.roles,
+  },
+
   actions: {
-    async fetch() {
-      const { data } = await supabase.from("roles").select("*");
-      this.roles = data || [];
-      
-    },
+    async fetchRoles() {
+      this.loading = true
 
-    async create(pet: any) {
-      await supabase.from("pets").insert(pet);
-      await this.fetch();
-    },
+      const { data, error } = await supabase
+        .from("roles")
+        .select(`
+          *,
+          users:profiles(count)
+        `)
 
-    async updateStatus(id: string, status: string) {
-      await supabase.from("pets").update({ status }).eq("id", id);
-      await this.fetch();
-    },
+      if (!error && data) {
+        this.roles = data
+      }
 
-    async remove(id: string) {
-      await supabase.from("pets").delete().eq("id", id);
-      await this.fetch();
+      this.loading = false
     },
   },
-});
+})
