@@ -115,7 +115,7 @@ const hasAvatar = computed(() => {
 </script>
 <template>
   <aside
-    class="fixed lg:relative z-50 top-0 left-0 h-full bg-[#132424] md:bg-background-dark border-r border-white/50 flex flex-col shrink-0 transition-all duration-300 ease-in-out"
+    class="fixed lg:relative z-40 top-0 left-0 h-full bg-[#132424] md:bg-background-dark border-r border-white/50 flex flex-col shrink-0 transition-all duration-300 ease-in-out"
     :class="[
       collapsed ? 'w-20' : 'w-64',
       open ? 'translate-x-0' : '-translate-x-full lg:translate-x-0',
@@ -264,5 +264,8 @@ a.router-link-active {
 .custom-scrollbar::-webkit-scrollbar-thumb {
   background: #13daec33;
   border-radius: 10px;
+}
+.bg-primary {
+    background-color: #04c9cc;
 }
 </style>

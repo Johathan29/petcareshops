@@ -25,7 +25,7 @@ const doctorStore = useDoctorStore();
 ================================= */
 
 onMounted(async () => {
-  console.log("🚀 Fetching all stores...");
+
 
   await Promise.all([
     adoptionStore.fetch(),
@@ -34,10 +34,7 @@ onMounted(async () => {
     doctorStore.fetch(),
   ]);
   fullAdoptions.value;
-  console.log("✅ Adoption Store:", adoptionStore.adoptions);
-  console.log("✅ Auth Store (Users):", authStore.users);
-  console.log("✅ Pet Store:", petStore.pets);
-  console.log("✅ Doctor Store:", doctorStore.doctors);
+
 });
 
 /* ===============================
@@ -48,7 +45,7 @@ onMounted(async () => {
 watch(
   () => adoptionStore.adoptions,
   (val) => {
-    console.log("📦 Adoption updated:", val);
+    return val;
   },
   { deep: true },
 );
@@ -56,7 +53,7 @@ watch(
 watch(
   () => authStore.users,
   (val) => {
-    console.log("👤 Users updated:", val);
+    return val;
   },
   { deep: true },
 );
@@ -64,7 +61,7 @@ watch(
 watch(
   () => petStore.pets,
   (val) => {
-    console.log("🐶 Pets updated:", val);
+    return val
   },
   { deep: true },
 );
@@ -72,7 +69,7 @@ watch(
 watch(
   () => doctorStore.doctors,
   (val) => {
-    console.log("🩺 Doctors updated:", val);
+    return val;
   },
   { deep: true },
 );
@@ -102,7 +99,7 @@ const fullAdoptions = computed(() => {
       );
     });
 });
-console.log(fullAdoptions.value);
+
 const search = ref("");
 const statusFilter = ref("all");
 const filteredAdoptions = computed(() => {
@@ -206,7 +203,7 @@ const handleStatusChange = async ({
       })
       .eq("id", item.idPet);
 
-    // ✅ Reactive update (NO reload)
+    // Reactive update (NO reload)
     const adoption = adoptionStore.adoptions.find(
       (a) => a.id === item.id
     );
@@ -281,7 +278,7 @@ const updateApplicationStatus = async (
     console.error("Status update failed:", error);
 
     /* ===============================
-       🔴 ROLLBACK SI FALLA
+       ROLLBACK SI FALLA
     =============================== */
 
     const adoption = adoptionStore.adoptions.find(
@@ -305,41 +302,31 @@ const approveApplication = () =>
 
 const rejectApplication = () =>
   updateApplicationStatus("rejected");
-console.log(grouped.value.pending);
+
 let timeout: any;
 
 watch(search, () => {
   clearTimeout(timeout);
-  timeout = setTimeout(() => {}, 300);
+  timeout = setTimeout(() => { }, 300);
 });
 </script>
 <template>
   <main class="flex-1 flex flex-col min-w-0 overflow-hidden">
     <!-- Top Header Action Bar -->
     <header
-      class="h-16 flex items-center h-auto justify-between px-8 py-8 bg-background-dark/50 border-b border-[#234548] backdrop-blur-md z-10"
-    >
+      class="h-16 flex items-center h-auto justify-between px-8 py-8 bg-background-dark/50 border-b border-[#234548] backdrop-blur-md z-10">
       <div class="flex flex-wrap items-center gap-6 flex-1 md:max-w-4xl">
         <h2 class="text-xl font-bold text-white whitespace-nowrap">
           Adoption Board
         </h2>
         <div class="relative flex-1 max-w-md">
           <span
-            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl"
-            >search</span
-          >
-          <input
-            v-model="search"
-            class="w-full bg-[#1c3639] text-white text-sm rounded-lg pl-10 pr-4 py-2"
-            placeholder="Search applicants or pets..."
-            type="text"
-          />
+            class="material-symbols-outlined absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xl">search</span>
+          <input v-model="search" class="w-full bg-[#1c3639] text-white text-sm rounded-lg pl-10 pr-4 py-2"
+            placeholder="Search applicants or pets..." type="text" />
         </div>
         <div class="flex items-center gap-3">
-          <select
-            v-model="statusFilter"
-            class="bg-[#1c3639] text-xs text-white rounded px-2 py-2"
-          >
+          <select v-model="statusFilter" class="bg-[#1c3639] text-xs text-white rounded px-2 py-2">
             <option value="all">All</option>
             <option value="pending">New</option>
             <option value="interview">Interview</option>
@@ -347,54 +334,28 @@ watch(search, () => {
             <option value="approved">Approved</option>
             <option value="rejected">Rejected</option>
           </select>
-         
+
         </div>
       </div>
-     
+
     </header>
     <!-- Kanban Content Area -->
-    <div
-      class="flex-1 overflow-x-auto bg-[#0d1a1b] p-4 sm:p-6 flex gap-6 w-full"
-    > 
+    <div class="flex-1 overflow-x-auto bg-[#0d1a1b] p-4 sm:p-6 flex gap-6 w-full">
       <!-- Column: New Application -->
-     <KanbanColumn
-  title="New"
-  status="pending"
-  :items="grouped.pending"
-   @open-details="openSidebar"
-  @change-status="handleStatusChange"
-/>
+      <KanbanColumn title="New" status="pending" :items="grouped.pending" @open-details="openSidebar"
+        @change-status="handleStatusChange" />
 
-<KanbanColumn
-  title="Approved"
-  status="approved"
-  :items="grouped.approved"
-   @open-details="openSidebar"
-  @change-status="handleStatusChange"
-/>
+      <KanbanColumn title="Approved" status="approved" :items="grouped.approved" @open-details="openSidebar"
+        @change-status="handleStatusChange" />
 
-<kanban-column
-  title="Rejected"
-  status="rejected"
-  :items="grouped.rejected"
-   @open-details="openSidebar"
-  @change-status="handleStatusChange"
-/>
+      <kanban-column title="Rejected" status="rejected" :items="grouped.rejected" @open-details="openSidebar"
+        @change-status="handleStatusChange" />
     </div>
     <!-- OVERLAY -->
-    <div
-      v-if="sidebarOpen"
-      @click="closeSidebar"
-      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"
-    ></div>
+    <div v-if="sidebarOpen" @click="closeSidebar"
+      class="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 transition-opacity duration-300"></div>
 
-  <sidebar-adoption
-  :adoption="selectedAdoption"
-  :open="sidebarOpen"
-  @close="closeSidebar"
-  @approve="approveApplication"
-  @reject="rejectApplication"
-/>
+    <sidebar-adoption :adoption="selectedAdoption" :open="sidebarOpen" @close="closeSidebar"
+      @approve="approveApplication" @reject="rejectApplication" />
   </main>
 </template>
-

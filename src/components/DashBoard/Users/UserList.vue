@@ -10,8 +10,8 @@ const roles = useRolesStore();
 
 onMounted(async () => {
   await store.fetchUsers();
-  await roles.fetch();
-   supabase
+  await roles.fetchRoles();
+  supabase
     .channel('profiles-changes')
     .on(
       'postgres_changes',
@@ -25,6 +25,7 @@ onMounted(async () => {
 
 const setFilter = (roleId: string | "all") => {
   store.filter = roleId;
+
 };
 
 const isActive = (roleId: string | "all") => {
@@ -73,108 +74,83 @@ const selectUser = (user: any) => {
 </script>
 
 <template>
-    <section class="flex gap-6 ">
-<aside
-    class="w-[400px] flex flex-col border-r border-white/5 bg-background-dark/30"
-  >
-    <!-- Header -->
-    <div class="p-6 border-b border-white/5">
-      <div class="flex items-center justify-between mb-4">
-        <h3 class="text-lg font-bold text-white">Users</h3>
-        <span
-          class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#13daec1c] text-[#13daec] uppercase tracking-wider"
-        >
-          {{ store.users.length }} Total
-        </span>
+  <section class="md:flex-row flex-col flex gap-6 ">
+    <aside class="w-[400px] flex flex-col border-r border-white/5 bg-background-dark/30">
+      <!-- Header -->
+      <div class="p-6 border-b border-white/5">
+        <div class="flex items-center justify-between mb-4">
+          <h3 class="text-lg font-bold text-white">Users</h3>
+          <span
+            class="px-2 py-0.5 rounded text-[10px] font-bold bg-[#13daec1c] text-[#13daec] uppercase tracking-wider">
+            {{ store.users.length }} Total
+          </span>
+        </div>
+
+        <!-- Filters -->
+        <div class="grid grid-cols-1 md:grid-cols-4  gap-2">
+          <!-- ALL -->
+          <button @click="setFilter('all')" :class="[
+              'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
+              isActive('all')
+                ? 'bg-[#13daec] text-background-dark'
+                : 'bg-white/5 text-slate-400 hover:bg-white/10',
+            ]">
+            All
+          </button>
+
+          <!-- ROLES DINÁMICOS -->
+          <button v-for="role in roles.roles" :key="role.id" @click="setFilter(role.id)" :class="[
+              'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
+              isActive(role.id)
+                ? 'bg-[#13daec] text-background-dark'
+                : 'bg-white/5 text-slate-400 hover:bg-white/10',
+            ]">
+            {{ role.name }}
+          </button>
+        </div>
       </div>
 
-      <!-- Filters -->
-      <div class="flex gap-2">
-        <!-- ALL -->
-        <button
-          @click="setFilter('all')"
-          :class="[
-            'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
-            isActive('all')
-              ? 'bg-[#13daec] text-background-dark'
-              : 'bg-white/5 text-slate-400 hover:bg-white/10',
-          ]"
-        >
-          All
-        </button>
+      <!-- Users -->
+      <div class="flex-1 overflow-y-auto custom-scrollbar divide-y-[0.1rem] divide-white/5 divide-x-0 ">
+        <div v-for="user in store.filteredUsers" :key="user.id" @click="selectUser(user)" :class="[
+              'flex items-center gap-4 p-4 border-l-4 cursor-pointer transition-all duration-200',
+              store.selectedUserId === user.id
+                ? 'bg-white/10 border-primary'
+                : 'border-transparent hover:bg-white/5'
+            ]">
 
-        <!-- ROLES DINÁMICOS -->
-        <button
-          v-for="role in roles.roles"
-          :key="role.id"
-          @click="setFilter(role.id)"
-          :class="[
-            'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
-            isActive(role.id)
-              ? 'bg-[#13daec] text-background-dark'
-              : 'bg-white/5 text-slate-400 hover:bg-white/10',
-          ]"
-        >
-          {{ role.name }}
-        </button>
-      </div>
-    </div>
+          <img class="size-11 rounded-lg object-cover" :src="'https://ui-avatars.com/api/?name=' + user.first_name" />
 
-    <!-- Users -->
-    <div class="flex-1 overflow-y-auto custom-scrollbar divide-y-[0.1rem] divide-white/5 divide-x-0 ">
-   <div
-  v-for="user in store.filteredUsers"
-  :key="user.id"
-  @click="selectUser(user)"
-  :class="[
-    'flex items-center gap-4 p-4 border-l-4 cursor-pointer transition-all duration-200',
-    store.selectedUserId === user.id
-      ? 'bg-white/10 border-primary'
-      : 'border-transparent hover:bg-white/5'
-  ]"
->
+          <div class="flex-1 min-w-0">
+            <p class="text-sm font-bold text-white truncate">
+              {{ user.first_name }}
+            </p>
+            <p class="text-xs text-slate-500 truncate">
+              {{ user.email }}
+            </p>
+            <div class="flex items-center gap-2 mt-1">
+              <span :class="[
+              'text-[10px] px-1.5 py-0.5 rounded',
+              roleColor(getRoleName(user.role))
+            ]">
+                {{ getRoleName(user.role) }}
+              </span>
+              <!-- ONLINE STATUS -->
+              <span v-if="user.is_online" class="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400">
+                Online • {{ getConnectionTime(user.last_seen) }}
+              </span>
 
-        <img
-          class="size-11 rounded-lg object-cover"
-          :src="'https://ui-avatars.com/api/?name=' + user.first_name"
-        />
-
-        <div class="flex-1 min-w-0">
-          <p class="text-sm font-bold text-white truncate">
-            {{ user.first_name }}
-          </p>
-          <p class="text-xs text-slate-500 truncate">
-            {{ user.email }}
-          </p>
-          <div class="flex items-center gap-2 mt-1">
-            <span
-  :class="[
-    'text-[10px] px-1.5 py-0.5 rounded',
-    roleColor(getRoleName(user.role))
-  ]"
->
-  {{ getRoleName(user.role) }}
-</span>
-  <!-- ONLINE STATUS -->
-  <span
-    v-if="user.is_online"
-    class="text-[10px] px-1.5 py-0.5 rounded bg-green-500/20 text-green-400"
-  >
-    Online • {{ getConnectionTime(user.last_seen) }}
-  </span>
-
-  <span
-    v-else
-    class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400"
-  >
-    Last seen: {{ new Date(user.last_seen).toLocaleString() }}
-  </span>
+              <span v-else class="text-[10px] px-1.5 py-0.5 rounded bg-white/5 text-slate-400">
+                Last seen: {{ new Date(user.last_seen).toLocaleString() }}
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-  </aside>
-<UsersDetail  :user="selectedUser"></UsersDetail>
-</section>
-  
+    </aside>
+    
+      <UsersDetail :user="selectedUser"></UsersDetail>
+    
+  </section>
+
 </template>
