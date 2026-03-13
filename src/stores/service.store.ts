@@ -1,87 +1,41 @@
 import { defineStore } from "pinia"
 import { supabase } from "../config/supabase"
 
-export const useServicesStore = defineStore("services", {
-  state: () => ({
-    services: [] as any[],
-    selectedService: null as any | null,
-    loading: false,
-    typeFilter: "standard" as "standard" | "premium"
-  }),
+export const useServicesStore = defineStore("servicess", {
+    state: () => ({
+        services: [] as any[],
 
-  getters: {
-    filteredServices: (state) =>
-      state.services.filter(s => s.type === state.typeFilter)
-  },
+        loading: false
+    }),
 
-  actions: {
-
-    async fetch() {
-      this.loading = true
-
-      const { data } = await supabase
-        .from("services")
-        .select("*")
-        this.services=data || []
-
-  
-
-      this.loading = false
+    getters: {
+        getAllServices: (state) => state.services,
+        getServices: (state) => state.services
     },
 
-    async create(service: any, doctorIds: string[]) {
-      const { data, error } = await supabase
-        .from("services")
-        .insert(service)
-        .select()
-        .single()
+    actions: {
 
-      if (error) return
+        async fetchServices() {
+            this.loading = true
 
-      if (doctorIds.length) {
-        await supabase.from("doctor_services").insert(
-          doctorIds.map(id => ({
-            doctor_id: id,
-            service_id: data.id
-          }))
-        )
-      }
+            const data= await supabase
+                .from("services")
+                .select(`
+          *
+        `)
+ 
+          
 
-      await this.fetch()
-    },
+            if (data) 
+            return this.services = data.data
 
-    async update(service: any, doctorIds: string[]) {
-      await supabase
-        .from("services")
-        .update({
-          name: service.name,
-          description: service.description,
-          price: service.price,
-          type: service.type
-        })
-        .eq("id", service.id)
+            this.loading = false
+        },
 
-      // eliminar relaciones previas
-      await supabase
-        .from("doctor_services")
-        .delete()
-        .eq("service_id", service.id)
 
-      if (doctorIds.length) {
-        await supabase.from("doctor_services").insert(
-          doctorIds.map(id => ({
-            doctor_id: id,
-            service_id: service.id
-          }))
-        )
-      }
 
-      await this.fetch()
-    },
 
-    async remove(id: string) {
-      await supabase.from("services").delete().eq("id", id)
-      await this.fetch()
+
+
     }
-  }
 })

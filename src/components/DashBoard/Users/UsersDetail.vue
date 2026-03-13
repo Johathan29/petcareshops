@@ -145,12 +145,10 @@ const adminPermissions = [
         </div>
       </div>
       <div class="grid grid-cols-2 gap-2 relative divide-x-2 divide-[#ffffff1a] p-2">
-        <button
-          class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
+        <button class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
           <span class="material-symbols-outlined">mail</span>
         </button>
-        <button @click="optionMore = !optionMore"
-          class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
+        <button @click="optionMore = !optionMore" class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
           <span class="material-symbols-outlined">more_vert</span>
         </button>
         <div v-if="optionMore"
@@ -158,7 +156,8 @@ const adminPermissions = [
           <button class="w-full text-left px-4 py-2 hover:bg-[#13daec26] text-sm hover:text-[#13daec] text-white">
             options
           </button>
-          <button @click="deleteUser" class="w-full text-left px-4 py-2 hover:bg-[#13daec26] text-sm hover:text-[#13daec] text-white">
+          <button @click="deleteUser"
+            class="w-full text-left px-4 py-2 hover:bg-[#13daec26] text-sm hover:text-[#13daec] text-white">
             Delete
           </button>
         </div>

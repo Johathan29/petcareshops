@@ -1,9 +1,11 @@
 <script setup lang="ts">
 
-import { onMounted, computed, ref, watch } from "vue"
-import { useRolesStore } from "../../stores/roles.store"
+import ModalSuccess from "../../components/UI/SuccessModal.vue"
+import ModalError from "../../components/UI/ErrorModal.vue"
+import PermissionsAside from "../../components/DashBoard/Roles/PermissionsAside.vue"
 import CreateRoles from "../../components/DashBoard/Roles/createRoles.vue"
-
+import { useRolesStore } from '../../stores/roles.store'
+import { ref, onMounted, watch, computed } from "vue";
 const rolesStore = useRolesStore()
 
 const showCreate = ref(false)
@@ -49,18 +51,37 @@ const toggleEditPermission = (id: string) => {
   }
 
 }
+const showSuccessModal = ref(false)
+const showErrorModal = ref(false)
+const modalMessage = ref("")
 
 const savePermissions = async () => {
 
   if (!selectedRole.value) return
 
-  await rolesStore.updateRolePermissions(
-    selectedRole.value.id,
-    editedPermissions.value
-  )
+  try {
+
+    await rolesStore.updateRolePermissions(
+      selectedRole.value.id,
+      editedPermissions.value
+    )
+
+    modalMessage.value = "Permissions updated successfully"
+    showSuccessModal.value = true
+
+    setTimeout(() => {
+      showSuccessModal.value = false
+      closeEdit()
+    }, 1800)
+
+  } catch (error) {
+
+    modalMessage.value = "Error updating permissions"
+    showErrorModal.value = true
+
+  }
 
 }
-
 const refreshRoles = () => {
   rolesStore.fetchRoles()
 }
@@ -127,7 +148,7 @@ const permissionsByModule = computed(() => {
 })
 </script>
 <template>
-  <section class="flex-1 overflow-y-auto bg-background-dark p-8 relative flex gap-8">
+  <section class="flex-1 bg-background-dark p-8 relative flex gap-8 overflow-y-auto custom-scrollbar overflow-x-hidden ">
     <div class="flex-1 max-w-6xl">
       <!-- Header Section -->
       <div class="flex flex-wrap justify-between items-end gap-6 mb-8">
@@ -227,23 +248,23 @@ const permissionsByModule = computed(() => {
               <td class="px-6 py-5">
                 <div class="flex flex-col">
                   <span class="text-slate-100 font-bold">
-                    {{ role.name }} 
+                    {{ role.name }}
                   </span>
                   <span class="text-slate-500 text-xs">
                     {{ role.description }}
                   </span>
                 </div>
               </td>
-
               <td class="px-6 py-5 text-slate-300">
-                {{ role.users?.[0]?.count ?? 0 }} Users
+                {{ role.users?.[0]?.count ?? 0 }}
               </td>
 
               <td class="px-6 py-5">
                 <span class="flex items-center gap-1.5 text-xs font-bold"
-                  :class="role.active ? 'text-primary' : 'text-slate-500'">
-                  <span class="h-2 w-2 rounded-full" :class="role.active ? 'bg-primary' : 'bg-slate-600'"></span>
-                  {{ role.active ? "Active" : "Inactive" }}
+                  :class="role.users?.[0]?.count ?? 0 ? 'text-primary' : 'text-slate-500'">
+                  <span class="h-2 w-2 rounded-full"
+                    :class="role.users?.[0]?.count ?? 0 ? 'bg-primary' : 'bg-slate-600'"></span>
+                  {{ role.users?.[0]?.count ?? 0 ? "Active" : "Inactive" }}
                 </span>
               </td>
 
@@ -309,89 +330,15 @@ const permissionsByModule = computed(() => {
         </div>
       </div>
     </div>
-    <!-- Slide-out Permissions Panel -->
-    <div v-if="showEdit"
-      class="w-[450px] sticky top-0 h-[calc(100vh-100px)] bg-[#132424] border border-border-dark rounded-xl flex flex-col shadow-2xl overflow-hidden animate-slide-in">
-
-      <!-- HEADER -->
-
-      <div class="p-6 border-b border-border-dark flex items-center justify-between bg-border-dark/20">
-
-        <div class="flex flex-col">
-          <h3 class="text-slate-100 text-xl font-bold">Edit Permissions</h3>
-
-          <p class="text-primary text-xs font-bold uppercase tracking-widest">
-            {{ selectedRole?.name }}
-          </p>
-        </div>
-
-        <button @click="closeEdit" class="text-slate-400 hover:text-primary transition-colors">
-          <span class="material-symbols-outlined">close</span>
-        </button>
-
-      </div>
-
-
-      <!-- PERMISSIONS -->
-
-      <div class="flex-1 overflow-y-auto p-6 custom-scrollbar space-y-8">
-
-        <div v-for="(perms, module) in permissionsByModule" :key="module">
-
-          <div class="flex items-center gap-2 mb-4">
-
-            <span class="material-symbols-outlined text-primary text-xl">
-              security
-            </span>
-
-            <h4 class="text-slate-100 font-bold">
-              {{ module }}
-            </h4>
-
-          </div>
-
-
-          <div class="space-y-4">
-
-            <label v-for="perm in perms" :key="perm.id"
-              class="flex items-center justify-between p-3 rounded-lg bg-background-dark/50 border border-border-dark cursor-pointer group hover:border-primary/50 transition-colors">
-
-              <span class="text-sm text-slate-300">
-                {{ perm.label }}
-              </span>
-
-              <input type="checkbox" :checked="editedPermissions.includes(perm.id)"
-                @change="toggleEditPermission(perm.id)"
-                class="w-5 h-5 rounded border-border-dark bg-background-dark text-primary focus:ring-primary" />
-
-            </label>
-
-          </div>
-
-        </div>
-
-      </div>
-
-
-      <!-- FOOTER -->
-
-      <div class="p-6 border-t border-border-dark bg-border-dark/10 flex gap-3">
-
-        <button @click="savePermissions"
-          class="flex-1 px-4 py-2.5 bg-primary text-background-dark font-bold rounded-lg hover:opacity-90 transition-all shadow-lg shadow-primary/20">
-          Save Changes
-        </button>
-
-        <button @click="closeEdit"
-          class="flex-1 px-4 py-2.5 bg-background-dark text-slate-100 border border-border-dark rounded-lg font-bold hover:bg-slate-800 transition-all">
-          Cancel
-        </button>
-
-      </div>
-
-    </div>
     <CreateRoles v-if="showCreate" @close="showCreate = false" @created="refreshPets" />
+    <PermissionsAside :show="showEdit" :selectedRole="selectedRole" :editedPermissions="editedPermissions"
+      @toggle="toggleEditPermission" @save="savePermissions" @close="closeEdit" />
+
+    <ModalSuccess :show="showSuccessModal" :message="modalMessage" />
+
+    <ModalError :show="showErrorModal" :message="modalMessage" @close="showErrorModal = false" />
   </section>
+
 </template>
 <style lang="css" scoped>
 .bg-background-dark {
@@ -426,7 +373,35 @@ const permissionsByModule = computed(() => {
 .bg-primary {
   background-color: #04c9cc;
 }
-.hover\:text-primary:hover{
-color: #04c9cc;
+
+.hover\:text-primary:hover {
+  color: #04c9cc;
+}
+
+/* SLIDE ASIDE */
+
+.asidePermissions-enter-active,
+.asidePermissions-leave-active {
+  transition: all 0.35s cubic-bezier(.25, .8, .25, 1);
+}
+
+.asidePermissions-enter-from {
+  transform: translateX(100%);
+  opacity: 0;
+}
+
+.asidePermissions-enter-to {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.asidePermissions-leave-from {
+  transform: translateX(0);
+  opacity: 1;
+}
+
+.asidePermissions-leave-to {
+  transform: translateX(100%);
+  opacity: 0;
 }
 </style>

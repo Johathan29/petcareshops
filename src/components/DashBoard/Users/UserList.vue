@@ -87,7 +87,7 @@ const selectUser = (user: any) => {
         </div>
 
         <!-- Filters -->
-        <div class="grid grid-cols-1 md:grid-cols-4  gap-2">
+        <div class="grid grid-cols-1 md:grid-cols-3  gap-2">
           <!-- ALL -->
           <button @click="setFilter('all')" :class="[
               'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
@@ -100,7 +100,7 @@ const selectUser = (user: any) => {
 
           <!-- ROLES DINÁMICOS -->
           <button v-for="role in roles.roles" :key="role.id" @click="setFilter(role.id)" :class="[
-              'flex-1 py-1.5 text-xs font-semibold rounded transition-colors',
+              'flex-1 py-1.5 px-2 text-xs font-semibold rounded transition-colors truncate',
               isActive(role.id)
                 ? 'bg-[#13daec] text-background-dark'
                 : 'bg-white/5 text-slate-400 hover:bg-white/10',
@@ -148,9 +148,39 @@ const selectUser = (user: any) => {
         </div>
       </div>
     </aside>
-    
-      <UsersDetail :user="selectedUser"></UsersDetail>
+    <transition name="asidePermissions">
+       <UsersDetail :user="selectedUser"></UsersDetail>
+    </transition>
+     
     
   </section>
 
 </template>
+<style scoped>
+
+.asidePermissions-enter-active,
+.asidePermissions-leave-active {
+    transition: all 0.35s cubic-bezier(.25, .8, .25, 1);
+}
+
+.asidePermissions-enter-from {
+    transform: translatey(100%);
+    opacity: 0;
+}
+
+.asidePermissions-enter-to {
+    transform: translatey(0);
+    opacity: 1;
+}
+
+.asidePermissions-leave-from {
+    transform: translatey(0);
+    opacity: 1;
+}
+
+.asidePermissions-leave-to {
+    transform: translatey(100%);
+    opacity: 0;
+}
+
+</style>

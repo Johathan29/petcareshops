@@ -126,7 +126,7 @@ const closeSidebar = () => {
     <button class="hidden lg:flex text-slate-400 relative top-[1rem] hover:text-primary h-fit transition duration-300 "
       :class="sidebarCollapsed ? 'left-[-1.1rem]' : 'left-[-1rem]'" @click="sidebarCollapsed = !sidebarCollapsed">
       <span class="material-symbols-outlined !text-[1.2rem] text-primary z-50">
-        {{ sidebarCollapsed ? "right_panel_open" : "right_panel_close" }}
+        {{ sidebarCollapsed ? "right_panel_close" : "right_panel_open" }}
       </span>
     </button>
     <!-- MAIN -->

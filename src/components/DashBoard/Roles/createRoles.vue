@@ -28,16 +28,55 @@ const togglePermission = (id: string) => {
     }
 
 }
-
+const errors = ref({
+    name: false,
+    category: false,
+    description: false
+})
+const showSuccessModal = ref(false)
+const showErrorModal = ref(false)
+const modalMessage = ref("")
 const createRole = async () => {
 
-    await rolesStore.createRole(
-        form.value,
-        selectedPermissions.value
-    )
+    errors.value = {
+        name: !form.value.name,
+        category: !form.value.category,
+        description: !form.value.description
+    }
 
-    emit("created")
-    emit("close")
+    if (errors.value.name || errors.value.category || errors.value.description) {
+
+        modalMessage.value = "Please complete all fields"
+        showErrorModal.value = true
+        return
+
+    }
+
+    try {
+
+        await rolesStore.createRole(
+            form.value,
+            selectedPermissions.value
+        )
+
+        modalMessage.value = "Role created successfully"
+        showSuccessModal.value = true
+
+        emit("created")
+
+        setTimeout(() => {
+
+            showSuccessModal.value = false
+            emit("close")
+
+        }, 1500)
+
+    } catch (e) {
+
+        modalMessage.value = "Error creating role"
+        showErrorModal.value = true
+
+    }
 
 }
 </script>
@@ -47,7 +86,7 @@ const createRole = async () => {
     <div class="fixed inset-0 z-[100] flex items-center justify-center p-4 bg-black/70 backdrop-blur-sm">
 
         <div
-            class="glass-modal w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar rounded-2xl p-8 flex flex-col gap-8">
+            class="glass-modal w-full max-w-2xl max-h-[90vh] overflow-y-auto custom-scrollbar !bg-[#132424] border !border-border-dark rounded-xl  rounded-2xl p-8 flex flex-col gap-8">
 
             <!-- HEADER -->
 
@@ -81,53 +120,56 @@ const createRole = async () => {
 
             </div>
 
-
             <!-- FORM -->
 
             <div class="flex flex-col gap-6">
 
                 <div>
 
-                    <label class="text-xs text-slate-400 mb-1 block">
+                    <label class="text-[14px] font-bold text-slate-400 mb-1 text-left block">
                         Role Name
                     </label>
 
                     <input v-model="form.name" placeholder="Enter role name"
-                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white" />
+                        :class="errors.name ? 'border-red-400' : ''"
+                        class="w-full bg-white/5 border border-white/10 rounded-lg focus:outline focus:outline-offset-1 outline-[#13daec4d]  px-4 py-2.5 text-sm text-white" />
 
                 </div>
 
                 <div>
 
-                    <label class="text-xs text-slate-400 mb-1 block">
+                    <label class="text-[14px] font-bold text-slate-400 mb-1 text-left block">
                         Category
                     </label>
 
                     <input v-model="form.category" placeholder="Enter category"
-                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white" />
+                        :class="errors.category ? 'border-red-400' : ''"
+                        class="w-full bg-white/5 border focus:outline focus:outline-offset-1 outline-[#13daec4d]  border-white/10 rounded-lg px-4 py-2.5 text-sm text-white" />
 
                 </div>
 
                 <div>
 
-                    <label class="text-xs text-slate-400 mb-1 block">
+                    <label class="text-[14px] font-bold text-slate-400 mb-1 text-left block">
                         Description
                     </label>
 
-                    <textarea v-model="form.description"
-                        class="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-sm text-white"></textarea>
-
+                    <textarea v-model="form.description" :class="errors.description ? 'border-red-400' : ''"
+                        class="w-full bg-white/5 border  rounded-lg   px-4 py-2.5 text-sm text-white">
+                    </textarea>
                 </div>
-
-
+                <hr class="border-white/30">
                 <!-- PERMISSIONS -->
 
                 <div class="flex flex-col gap-4">
-
-                    <label class="text-xs text-slate-400">
-                        Permissions
-                    </label>
-
+                    <h2 class="text-2xl font-bold text-white flex items-center gap-2">
+                        <span class="material-symbols-outlined text-primary text-5xl">
+                            rule_settings
+                        </span>
+                        <label class="">
+                            Permissions
+                        </label>
+                    </h2>
                     <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
 
                         <label v-for="perm in rolesStore.permissions" :key="perm.id"
@@ -159,15 +201,10 @@ const createRole = async () => {
                         class="px-8 py-2.5 bg-primary text-background-dark rounded-lg font-bold">
                         Create Role
                     </button>
-
                 </div>
-
             </div>
-
         </div>
-
     </div>
-
 </template>
 
 <style scoped>
