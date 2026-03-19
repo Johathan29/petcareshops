@@ -52,7 +52,7 @@ export default {
       pageSize: 10,
       visibleTodos: [],
       userId:'',
-      delete:faUserPlus ,
+      iconDelete:faUserPlus ,
       useradmin:'',
       categoryTitle:title ,
       newarray:[],
@@ -294,12 +294,12 @@ if (this.chart) {
     },
     updateUrl(){
       this.pageSize= this.breadCrumUrl[1]!=='' ? 5 : 5,
-      this.delete=faUserPlus;
+      this.iconDelete=faUserPlus;
       const url=window.location.pathname;
      this.breadCrumUrl=url.split("/");
      console.log(this.breadCrumUrl)
-    
- 
+
+
     return this.breadCrumUrl,this.pageSize;
     },
     getMonthDay(item)

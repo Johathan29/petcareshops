@@ -21,7 +21,7 @@
       <div :class="[breadCrumUrl[1]==='users'?'border-b-[1px] border-[#d1d5db] my-[2rem]':'hidden']" >
                       <!-- Modal toggle -->
             <a data-modal-target="crud-modal" data-modal-toggle="crud-modal" :class="[users=='admin'?'block w-max text-blue-700 hover:text-blue-800 hover:cursor-pointer focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800':'hidden']" type="button">
-              <FontAwesomeIcon :icon="delete" class="mb-0"/>
+              <FontAwesomeIcon :icon="iconDelete" class="mb-0"/>
               <span class="tooltiptextCreate">Create new User </span>
             </a>
             <!-- Main modal -->

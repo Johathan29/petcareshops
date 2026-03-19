@@ -1,9 +1,14 @@
 <script setup lang="ts">
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
 import { faArrowRight, faCheckCircle, faHeart } from '@fortawesome/free-solid-svg-icons'
+import { library } from '@fortawesome/fontawesome-svg-core'
+import { fas } from '@fortawesome/free-solid-svg-icons'
 import { computed, onMounted } from 'vue'
 import { useRoute, RouterLink } from 'vue-router'
 import { animate, stagger, inView } from 'motion'
+
+// Add all solid icons to the library
+library.add(fas)
 
 /* ------------------------------------
    Types
@@ -11,7 +16,6 @@ import { animate, stagger, inView } from 'motion'
 interface Service {
   title: string
   description: string
-
   link: string
   bg: string
   color: string
@@ -61,6 +65,19 @@ const slugify = (text: string) =>
     .replace(/[^a-z0-9]+/g, '')
 
 /* ------------------------------------
+   Icon Resolver - Dynamic FontAwesome
+------------------------------------ */
+const getServiceIcon = (iconName: any) => {
+  if (!iconName) return faHeart
+  // If it's already a FontAwesome icon object, return it directly
+  if (typeof iconName === 'object' && iconName !== null) {
+    return iconName
+  }
+  // If it's a string, return as array format for FontAwesome
+  return ['fas', String(iconName)]
+}
+
+/* ------------------------------------
    Animations
 ------------------------------------ */
 onMounted(() => {
@@ -80,10 +97,9 @@ onMounted(() => {
         }
       )
     },
-    {once: true }
+    { once: true }
   )
 })
-
 </script>
 
 <template>
@@ -91,45 +107,65 @@ onMounted(() => {
     <div v-if="props.loading" class="flex justify-center">
       <div class="p-6">
         <div class="loader w-full"></div>
-
       </div>
     </div>
-    <component :is="CardWrapper" v-for="service in visibleServices" :key="service.title" :id="slugify(service.title)"
-      v-bind="isHome ? { to: service.link } : {}" class="service-card group flex gap-4 h-full bg-card rounded-3xl p-8
+    <component
+      :is="CardWrapper"
+      v-for="service in visibleServices"
+      :key="service.title"
+      :id="slugify(service.title)"
+      v-bind="isHome ? { to: service.link } : {}"
+      class="service-card group flex gap-4 h-full bg-card rounded-3xl p-8
              border border-border/50 relative shadow-card
              hover:shadow-hover transition-all duration-300
-             bg-white/50 hover:bg-white" :class="cardHoverClass">
+             bg-white/50 hover:bg-white"
+      :class="cardHoverClass"
+    >
       <!-- ICON -->
-      <div class="w-min h-min p-[4px] rounded-md transition-transform
+      <div
+        class="w-min h-min p-[4px] rounded-md transition-transform
                duration-300 ease-out will-change-transform
-               group-hover:scale-110" :class="[service.bg, service.color]">
-        <FontAwesomeIcon :icon="faHeart" class="w-8 h-8" />
+               group-hover:scale-110"
+        :class="[service.bg, service.color]"
+      >
+        <FontAwesomeIcon :icon="getServiceIcon(service.icon)" class="w-8 h-8" />
       </div>
 
-      <div class="w-fit relative ">
+      <div class="w-fit relative">
         <!-- TITLE -->
-        <h3 class="text-xl font-bold mb-3 text-black text-left
-                 group-hover:text-[#0f6cbdc5] transition duration-300">
+        <h3
+          class="text-xl font-bold mb-3 text-black text-left
+                 group-hover:text-[#0f6cbdc5] transition duration-300"
+        >
           {{ service.title }}
         </h3>
 
         <!-- DESCRIPTION -->
         <p
-          class="text-muted-foreground leading-relaxed mb-4 text-left pb-[1rem] min-h-[6rem] border-b-[1px] border-gray-500/20 group-hover:border-[#0f6cbdc5]">
+          class="text-muted-foreground leading-relaxed mb-4 text-left pb-[1rem] min-h-[6rem] border-b-[1px] border-gray-500/20 group-hover:border-[#0f6cbdc5]"
+        >
           {{ service.description }}
         </p>
 
-        <!--<hr class="my-2 group-hover:bg-[#0f6cbdc5] h-[0.1rem]" />-->
-
         <!-- CTA / PROCESOS -->
         <template v-if="isHome">
-          <div class="flex items-center text-primary font-semibold text-sm
+          <div
+            class="flex items-center text-primary font-semibold text-sm
                    absolute -bottom-[1rem] gap-2
-                   group-hover:gap-3 transition-all ">
+                   group-hover:gap-3 transition-all"
+          >
             Saber más
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-              stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 transition-transform
-                     group-hover:translate-x-1">
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              class="w-4 h-4 transition-transform
+                     group-hover:translate-x-1"
+            >
               <path d="M5 12h14" />
               <path d="m12 5 7 7-7 7" />
             </svg>
@@ -137,19 +173,30 @@ onMounted(() => {
         </template>
         <template v-else>
           <ul class="grid grid-cols-1 lg:grid-cols-2 gap-4 w-full mb-4 py-[1.4rem]">
-            <li v-for="(value, i) in service.procesos" :key="i" class="flex w-max items-center gap-2 text-sm
-                     text-slate-500 group-hover:text-black">
-              <FontAwesomeIcon :icon="faCheckCircle"
-                class=" group-hover:scale-[1.2] group-hover:text-[#0f6cbdc5] transition-transform duration-300" />
+            <li
+              v-for="(value, i) in service.procesos"
+              :key="i"
+              class="flex w-max items-center gap-2 text-sm
+                     text-slate-500 group-hover:text-black"
+            >
+              <FontAwesomeIcon
+                :icon="faCheckCircle"
+                class="group-hover:scale-[1.2] group-hover:text-[#0f6cbdc5] transition-transform duration-300"
+              />
               {{ value }}
             </li>
           </ul>
-          <RouterLink :to="`/services/${slugify(service.title)}`"
+          <RouterLink
+            :to="`/services/${slugify(service.title)}`"
             class="absolute bottom-0 right-0 flex items-center gap-4 group-hover:text-[#0f6cbdc5] transition-all duration-300"
-            :title="service.title">
+            :title="service.title"
+          >
             Ver más
-            <FontAwesomeIcon :icon="faArrowRight" class="w-4 h-4 group-hover:translate-x-1.5
-               transition duration-300" />
+            <FontAwesomeIcon
+              :icon="faArrowRight"
+              class="w-4 h-4 group-hover:translate-x-1.5
+               transition duration-300"
+            />
           </RouterLink>
         </template>
       </div>
@@ -158,13 +205,20 @@ onMounted(() => {
 
   <!-- CTA HOME -->
   <div v-if="isHome" class="pt-[4rem] text-center">
-    <RouterLink title="Ver todos los servicios" to="/services" class="inline-flex items-center justify-center gap-2
+    <RouterLink
+      title="Ver todos los servicios"
+      to="/services"
+      class="inline-flex items-center justify-center gap-2
              font-semibold bg-sky-500 text-white shadow-md
              hover:shadow-hover transition-all duration-300
-             group h-14 rounded-2xl px-8 text-base">
+             group h-14 rounded-2xl px-8 text-base"
+    >
       Ver todos los servicios
-      <FontAwesomeIcon :icon="faArrowRight" class="w-4 h-4 group-hover:translate-x-1.5
-               transition duration-300" />
+      <FontAwesomeIcon
+        :icon="faArrowRight"
+        class="w-4 h-4 group-hover:translate-x-1.5
+               transition duration-300"
+      />
     </RouterLink>
   </div>
 </template>
@@ -190,7 +244,6 @@ onMounted(() => {
 .ribbon-diagonal::before {
   left: 0;
 }
-
 
 .ribbon-diagonal::before,
 .ribbon-diagonal::after {
@@ -251,12 +304,9 @@ onMounted(() => {
 }
 
 .card-item {
-
   animation-delay: calc(var(--i) * 60ms);
-
   opacity: 1;
   transform: translateY(12px) scale(0.98);
-
 }
 
 .card-item.in-view {
@@ -280,7 +330,6 @@ onMounted(() => {
 .card-item:not(.in-view) {
   opacity: 1;
   transform: translateY(28px) scale(0.96);
-
 }
 
 .card-item {
@@ -291,7 +340,6 @@ onMounted(() => {
   to {
     opacity: 1;
     transform: translateY(28px) scale(0.96);
-
     transition:
       opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1),
       transform 0.6s cubic-bezier(0.22, 1, 0.36, 1),

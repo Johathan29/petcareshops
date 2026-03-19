@@ -2,7 +2,7 @@ import { createApp } from 'vue';
 import './style.css';
 import App from './App.vue';
 import About from './About.vue';
-import Home from './components/Home.vue';
+import Home from './src/page/Home.vue';
 import Mascotas from './Mascotas.vue';
 import PathNotFound from './PathNotFound.vue';
 import { createRouter, createWebHashHistory } from 'vue-router';

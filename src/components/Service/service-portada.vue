@@ -1,9 +1,30 @@
 <script setup lang="ts">
 import Data from '../../Data';
 import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import CardServices from './cardServices.vue';
-
-
+import { faHeart } from '@fortawesome/free-solid-svg-icons'
+import CardServices from './cardServices.vue'
+import {useServicesStore} from '../../stores/service.store'
+import { computed, onMounted } from 'vue';
+const services = computed(() => servicesStore.services)
+const servicesStore = useServicesStore()
+onMounted(async () => {
+  await Promise.all([
+    servicesStore.fetch(),
+  
+  ])
+})
+/* ------------------------------------
+   Icon Resolver - Dynamic FontAwesome
+------------------------------------ */
+const getServiceIcon = (iconName: any) => {
+  if (!iconName) return faHeart
+  // If it's already a FontAwesome icon object, return it directly
+  if (typeof iconName === 'object' && iconName !== null) {
+    return iconName
+  }
+  // If it's a string, return as array format for FontAwesome
+  return ['fas', String(iconName)]
+}
 
 </script>
 
@@ -30,63 +51,8 @@ import CardServices from './cardServices.vue';
       </header>
 
       <!-- GRID -->
-      <div
-        class="grid gap-6 sm:grid-cols-2 lg:grid-cols-3"
-      >
-        <a
-          v-for="service in services"
-          :key="service.title"
-          :href="`${service.link}/#${service.title.replace(' ','').toLocaleLowerCase()}`"
-          class="group block h-full bg-card rounded-3xl p-8 border border-border/50
-                 shadow-card hover:shadow-hover transition-all duration-300
-                 hover:-translate-y-2"
-        >
-          <!-- ICON -->
-          <div
-            class="w-16 h-16 rounded-2xl flex items-center justify-center mb-6
-                   transition-transform duration-300 group-hover:scale-110"
-            :class="[service.bg, service.color]"
-          >
-          <FontAwesomeIcon :icon="service.icon"/>
-            
-          </div>
-
-          <!-- TITLE -->
-          <h3
-            class="font-display text-xl font-bold text-foreground mb-3
-                   group-hover:text-primary transition-colors"
-          >
-            {{ service.title }}
-          </h3>
-
-          <!-- DESCRIPTION -->
-          <p class="text-muted-foreground leading-relaxed mb-4 text-left">
-            {{ service.description }}
-          </p>
-
-          <!-- CTA -->
-          <div
-            class="flex items-center text-primary font-semibold text-sm
-                   gap-2 group-hover:gap-3 transition-all"
-          >
-            Saber más
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              stroke-width="2"
-              stroke-linecap="round"
-              stroke-linejoin="round"
-              class="w-4 h-4 transition-transform group-hover:translate-x-1"
-            >
-              <path d="M5 12h14" />
-              <path d="m12 5 7 7-7 7" />
-            </svg>
-          </div>
-        </a>
-      </div>
-      <CardServices :data="Data.value[3]"></CardServices>
+     
+      <CardServices :data="services"></CardServices>
     </div>
   </section>
 </template>

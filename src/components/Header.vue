@@ -1,8 +1,6 @@
 <script setup lang="ts">
 import { ref, onMounted, onUnmounted } from 'vue'
-import { FontAwesomeIcon } from '@fortawesome/vue-fontawesome'
-import { faPaw, faUsers, faHouse } from '@fortawesome/free-solid-svg-icons'
-import { useAuthStore } from '../stores/auth.store'
+
 const isOpen = ref(true)
 
 function openNav() {
@@ -31,13 +29,17 @@ interface User {
 
   }]
 }
-const userLogin=useAuthStore()
+
+const user = ref()
+const profile = ref()
+const role = ref()
+
 const logout = () => {
   sessionStorage.removeItem("user")
-userLogin.logOut();
   user.value = null
   isUserMenuOpen.value = false
 }
+
 const handleClickOutside = (event: MouseEvent) => {
   const menu = document.querySelector("#user-menu")
   if (menu && !menu.contains(event.target as Node)) {
@@ -53,20 +55,15 @@ onUnmounted(() => {
   document.removeEventListener("click", handleClickOutside)
 })
 
-const user = ref()
-const profile = ref()
-const role = ref()
 onMounted(() => {
   const storedUser = sessionStorage.getItem("user")
   if (storedUser) {
     user.value = JSON.parse(storedUser)
-console.log(user.value)
-    profile.value = user.value.profile.first_name
-    
-
-    role.value = user.value.role.name
+    console.log(user.value)
+    profile.value = user.value.profile?.first_name || user.value.auth?.email || 'Usuario'
+    role.value = user.value.role?.name
   }
-}) 
+})
 
 onMounted(() => {
   window.addEventListener('scroll', handleScroll)
@@ -75,6 +72,7 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener('scroll', handleScroll)
 })
+
 const isUserMenuOpen = ref(false)
 
 const toggleUserMenu = () => {
@@ -120,8 +118,8 @@ const closeUserMenu = () => {
           <!-- PROFILE -->
           <button v-if="user" @click="toggleUserMenu"
             class="relative rounded-full bg-[#0a19bc] ring-2 ring-white dark:ring-slate-800">
-            <div class="size-10 rounded-full bg-cover bg-center"
-              :style="{ backgroundImage: `url(https://i.pravatar.cc/150?img=3)` }">
+            <div class="size-10 rounded-full bg-[#0a19bc] ring-2 ring-white dark:ring-slate-800 flex items-center justify-center text-white font-bold">
+              {{ profile?.charAt(0) || 'U' }}
             </div>
           </button>
 
@@ -132,7 +130,7 @@ const closeUserMenu = () => {
 
           <!-- Dropdown menu -->
           <transition name="fade">
-            <div v-if="user && isUserMenuOpen" class="absolute 
+            <div v-if="user && isUserMenuOpen" class="absolute
     right-[15rem] top-16 z-50 bg-white dark:bg-slate-900
            border border-slate-200 dark:border-slate-800
            rounded-lg shadow-md w-max">
@@ -214,7 +212,7 @@ const closeUserMenu = () => {
 
           <!-- Dropdown menu -->
           <transition name="fade">
-            <div v-if="user && isUserMenuOpen" class=" z-50 bg-white dark:bg-slate-900
+            <div v-if="user && isUserMenuOpen" class="z-50 bg-white dark:bg-slate-900
            border border-slate-200 dark:border-slate-800
            rounded-lg shadow-md w-44">
               <ul class="p-2 text-sm font-medium">
