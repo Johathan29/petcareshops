@@ -13,7 +13,7 @@ export const useAuthStore = defineStore('users', {
   getters: {
     filteredUsers: (state) => {
       if (state.filter === 'all') return state.users
-      return state.users.filter(u => u.role === state.filter)
+      return state.users.filter(u => u.idRole === state.filter)
     }
   },
 

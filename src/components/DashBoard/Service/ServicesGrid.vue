@@ -61,7 +61,7 @@
             <span class="material-symbols-outlined">edit</span>
           </button>
           <button
-            @click="$emit('delete', service.id)"
+            @click="$emit('delete', service.id.toString())"
             class="text-slate-500 hover:text-red-500 transition-colors"
             title="Eliminar"
           >
@@ -113,7 +113,7 @@ defineProps<{
 
 defineEmits<{
   (e: "edit", service: Service): void;
-  (e: "delete", id: number): void;
+  (e: "delete", id: string): void;
 }>();
 const formatServiceData = (service: Service) => {
   return service.procesos.map((proceso, index) => ({

@@ -17,56 +17,40 @@ export interface Service {
 
 export const useServicesStore = defineStore("services", {
   state: () => ({
-    services: [] as Service[],
-    selectedService: null as Service | null,
+    services: [] as any[],
+    selectedService: null as any | null,
     loading: false,
     typeFilter: "standard" as "standard" | "premium"
   }),
 
-  getters: {
-    filteredServices: (state) =>
-      state.services.filter(s => s.type === state.typeFilter)
-  },
+    getters: {
+        getAllServices: (state) => state.services,
+        getServices: (state) => state.services
+    },
 
   actions: {
+
     async fetch() {
       this.loading = true
 
-      const { data, error } = await supabase
+      const { data } = await supabase
         .from("services")
         .select("*")
+        this.services=data || []
 
-      if (error) {
-        console.error("Error fetching services:", error)
-      } else {
-        this.services = data || []
-      }
+  
 
-      this.loading = false
-    },
+            this.loading = false
+        },
 
-    async create(service: Service, doctorIds: string[]) {
+    async create(service: any, doctorIds: string[]) {
       const { data, error } = await supabase
         .from("services")
-        .insert({
-          title: service.title,
-          description: service.description,
-          link: service.link,
-          bg: service.bg,
-          color: service.color,
-          procesos: service.procesos,
-          icon: service.icon,
-          price: service.price,
-          category: service.category,
-          type: service.type || "standard"
-        })
+        .insert(service)
         .select()
         .single()
 
-      if (error) {
-        console.error("Error creating service:", error)
-        return
-      }
+      if (error) return
 
       if (doctorIds.length) {
         await supabase.from("doctor_services").insert(
@@ -80,27 +64,16 @@ export const useServicesStore = defineStore("services", {
       await this.fetch()
     },
 
-    async update(service: Service, doctorIds: string[]) {
-      const { error } = await supabase
+    async update(service: any, doctorIds: string[]) {
+      await supabase
         .from("services")
         .update({
-          title: service.title,
+          name: service.name,
           description: service.description,
-          link: service.link,
-          bg: service.bg,
-          color: service.color,
-          procesos: service.procesos,
-          icon: service.icon,
           price: service.price,
-          category: service.category,
           type: service.type
         })
         .eq("id", service.id)
-
-      if (error) {
-        console.error("Error updating service:", error)
-        return
-      }
 
       // eliminar relaciones previas
       await supabase
@@ -120,12 +93,8 @@ export const useServicesStore = defineStore("services", {
       await this.fetch()
     },
 
-    async remove(id: number) {
-      const { error } = await supabase.from("services").delete().eq("id", id)
-      if (error) {
-        console.error("Error deleting service:", error)
-        return
-      }
+    async remove(id: string) {
+      await supabase.from("services").delete().eq("id", id)
       await this.fetch()
     }
   }

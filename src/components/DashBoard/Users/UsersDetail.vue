@@ -4,11 +4,12 @@ import { useAuthStore } from "../../../stores/auth.store";
 import { useRolesStore } from "../../../stores/roles.store";
 import { supabase } from "../../../config/supabase";
 import { useDoctorStore } from "../../../stores/doctor.store";
+import { ref } from "vue";
 
 const doctorStore = useDoctorStore();
 const authStore = useAuthStore();
 const rolesStore = useRolesStore();
-
+const optionMore = ref(false)
 const props = defineProps<{
   user: any
 }>()
@@ -16,11 +17,12 @@ const props = defineProps<{
 const user = computed(() => props.user)
 
 onMounted(async () => {
-   await doctorStore.fetch()
+  await rolesStore.fetchRoles();
+  await doctorStore.fetch()
 });
 const doctorData = computed(() => {
- if (!props.user) return;
-console.log(doctorStore.doctors.find(item=> item.idUser===props.user.id))
+  if (!props.user) return;
+  console.log(doctorStore.doctors.find(item => item.idUser === props.user.id))
   return doctorStore.doctors.find(
     d => d.idUser === props.user.id
   ) || null;
@@ -87,11 +89,12 @@ const displaySpecialty = computed(() => {
 
   return null;
 });
-const displayRole = computed(async() => {
-  const roles= await rolesStore.fetch()
-  roles.find(item=> item.id===props.user?.role)
-  return props.user?.role?.toUpperCase() || "";
+const displayRole = computed(() => {
+  const roles = rolesStore.getAllRoles
+  const role = roles.find(item => item.id === props.user?.idRole)
+  return role?.name
 });
+console.log()
 /* ===========================
    CATEGORÍAS DE PERMISOS
 =========================== */
@@ -116,156 +119,137 @@ const adminPermissions = [
 </script>
 
 <template>
-  <section
-    v-if="user"
-    class="flex-1 flex flex-col overflow-auto bg-card-dark/40"
-  >
+  <section v-if="user" class="flex-1 flex flex-col overflow-auto bg-card-dark/40">
     <!-- HEADER -->
-   <div class="flex items-center justify-between mb-8 bg-white/5 p-6 rounded-xl border border-white/5">
-    <div class="flex items-center gap-6">
+    <div
+      class="flex md:flex-row flex-col items-center justify-between mb-8 bg-white/5 p-6 rounded-xl border border-white/5">
+      <div class="flex md:flex-row flex-col  items-center gap-6">
         <div class="relative">
-            <img class="size-20 rounded-2xl object-cover border-4 border-primary/20" data-alt="Profile of Sarah Smith in detail view" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWOAp4eHz_NUUfPIx-Ky8NKAO6u8L5hMvlcUSFbiB_-Mg_ENZaRknhvVXAV2CBXcLnp4XY2Lbxahw2jmuGYwbEHmITYt967DdXoaqMxdHywXU0vba5JBmFYxUdd551cZolpEHGl6NbjfvizHbgycIjsiIkOD0gWcfOp69_2CVk27LYTzXb49HVZH8FECc8fjgJSJTlR4LzD1dT-eIwIgkcj5jbiVue2g8Lmk74fsAaBg_vx_0heRbA7KV52BcD3PZMIzSSg5IvuA">
-            <div class="absolute -bottom-1 -right-1 size-6 bg-primary rounded-full flex items-center justify-center border-4 border-surface-dark">
-                <span class="material-symbols-outlined text-[12px] text-background-dark font-bold">check</span>
-            </div>
+          <img class="size-20 rounded-2xl object-cover border-4 border-primary/20"
+            data-alt="Profile of Sarah Smith in detail view"
+            src="https://lh3.googleusercontent.com/aida-public/AB6AXuDWOAp4eHz_NUUfPIx-Ky8NKAO6u8L5hMvlcUSFbiB_-Mg_ENZaRknhvVXAV2CBXcLnp4XY2Lbxahw2jmuGYwbEHmITYt967DdXoaqMxdHywXU0vba5JBmFYxUdd551cZolpEHGl6NbjfvizHbgycIjsiIkOD0gWcfOp69_2CVk27LYTzXb49HVZH8FECc8fjgJSJTlR4LzD1dT-eIwIgkcj5jbiVue2g8Lmk74fsAaBg_vx_0heRbA7KV52BcD3PZMIzSSg5IvuA">
+          <div
+            class="absolute -bottom-1 -right-1 size-6 bg-primary rounded-full flex items-center justify-center border-4 border-surface-dark">
+            <span class="material-symbols-outlined text-[12px] text-background-dark font-bold">check</span>
+          </div>
         </div>
         <div>
-            <h2 class="text-2xl font-black text-white">{{ displayName }}</h2>
-            <p class="text-slate-400"> {{displaySpecialty }} </p>
-            <div class="flex items-center gap-3 mt-2">
-                <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-background-dark uppercase">{{ displayRole }}</span>
-                <span class="text-xs text-slate-500">Added on March 12, 2024</span>
-            </div>
+          <h2 class="text-2xl font-black text-white text-left">{{ displayName }}</h2>
+          <p class="text-slate-400"> {{ displaySpecialty }} </p>
+          <div class="flex items-center gap-3 mt-2">
+            <span class="px-2 py-0.5 rounded text-[10px] font-bold bg-primary text-background-dark uppercase"
+              v-for="role in displayRole">{{
+    role }}</span>
+            <span class="text-xs text-slate-500">Added on March 12, 2024</span>
+          </div>
         </div>
-    </div>
-    <div class="flex gap-3">
-        <button class="p-2 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 transition-all border border-white/10">
-            <span class="material-symbols-outlined">mail</span>
+      </div>
+      <div class="grid grid-cols-2 gap-2 relative divide-x-2 divide-[#ffffff1a] p-2">
+        <button class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
+          <span class="material-symbols-outlined">mail</span>
         </button>
-        <button class="p-2 rounded-lg bg-white/5 text-slate-400 hover:bg-white/10 transition-all border border-white/10">
-            <span class="material-symbols-outlined">more_vert</span>
+        <button @click="optionMore = !optionMore" class="p-0 text-slate-400/40 hover:text-white/80 transition-all ">
+          <span class="material-symbols-outlined">more_vert</span>
         </button>
-    </div>
+        <div v-if="optionMore"
+          class="absolute mt-2 w-44 bg-[#13daec45]  border border-primary/20 top-12 right-4 rounded-xl shadow-xl z-50">
+          <button class="w-full text-left px-4 py-2 hover:bg-[#13daec26] text-sm hover:text-[#13daec] text-white">
+            options
+          </button>
+          <button @click="deleteUser"
+            class="w-full text-left px-4 py-2 hover:bg-[#13daec26] text-sm hover:text-[#13daec] text-white">
+            Delete
+          </button>
+        </div>
+      </div>
 
 
       <!-- ACTIONS -->
-      <div class="flex gap-3">
-        <button
-          @click="deleteUser"
-          class="px-4 py-2 rounded-lg bg-red-500/20 text-red-400 hover:bg-red-500/30 transition-all"
-        >
-          Delete
-        </button>
-      </div>
+
+
     </div>
 
     <!-- PERMISSIONS -->
     <div class="flex-1  p-8 custom-scrollbar">
-        <div class="flex items-center gap-2 mb-4">
-            <span class="material-symbols-outlined text-primary text-xl">pets</span>
-            <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500"> Pet Management </h4>
-        </div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-primary text-xl">pets</span>
+        <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500"> Pet Management </h4>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <label
-          v-for="perm in petPermissions"
-          
-          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
-        >
-        <div class="flex flex-col">
+        <label v-for="perm in petPermissions"
+          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+          <div class="flex flex-col">
             <span class="text-sm font-bold text-white capitalize">
-            {{ perm?.title.replace("_", " ") }}
-          </span>
-          <span class="text-[10px] text-slate-500">{{perm.description}}</span>
-        </div>
-          
-          <input
-            type="checkbox"
-            :checked="form.permissions.includes(perm)"
-            @change="togglePermission(perm.title)"
-            class="rounded border-white/20 bg-transparent text-primary size-5"
-          />
+              {{ perm?.title.replace("_", " ") }}
+            </span>
+            <span class="text-[10px] text-slate-500">{{ perm.description }}</span>
+          </div>
+
+          <input type="checkbox" :checked="form.permissions.includes(perm)" @change="togglePermission(perm.title)"
+            class="rounded border-white/20 bg-transparent text-primary size-5" />
         </label>
       </div>
     </div>
-<div class="flex-1 p-8 custom-scrollbar">
-        <div class="flex items-center gap-2 mb-4">
-            <span class="material-symbols-outlined text-primary text-xl">event_available</span>
-            <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500"> Operations </h4>
-        </div>
+    <div class="flex-1 p-8 custom-scrollbar">
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-primary text-xl">event_available</span>
+        <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500"> Operations </h4>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <label
-          v-for="perm in operationPermissions"
-          
-          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
-        >
-        <div class="flex flex-col">
+        <label v-for="perm in operationPermissions"
+          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+          <div class="flex flex-col">
             <span class="text-sm font-bold text-white capitalize">
-            {{ perm?.title.replace("_", " ") }}
-          </span>
-          <span class="text-[10px] text-slate-500">{{perm.description}}</span>
-        </div>
-          
-          <input
-            type="checkbox"
-            :checked="form.permissions.includes(perm)"
-            @change="togglePermission(perm.title)"
-            class="rounded border-white/20 bg-transparent text-primary size-5"
-          />
+              {{ perm?.title.replace("_", " ") }}
+            </span>
+            <span class="text-[10px] text-slate-500">{{ perm.description }}</span>
+          </div>
+
+          <input type="checkbox" :checked="form.permissions.includes(perm)" @change="togglePermission(perm.title)"
+            class="rounded border-white/20 bg-transparent text-primary size-5" />
         </label>
       </div>
     </div>
     <div class="flex-1  p-8 custom-scrollbar">
-        <div class="flex items-center gap-2 mb-4">
-            <span class="material-symbols-outlined text-primary text-xl">admin_panel_settings</span>
-            <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500">  Administrative </h4>
-        </div>
+      <div class="flex items-center gap-2 mb-4">
+        <span class="material-symbols-outlined text-primary text-xl">admin_panel_settings</span>
+        <h4 class="text-sm font-bold uppercase tracking-widest text-slate-500"> Administrative </h4>
+      </div>
       <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-        <label
-          v-for="perm in adminPermissions"
-          
-          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer"
-        >
-        <div class="flex flex-col">
+        <label v-for="perm in adminPermissions"
+          class="flex items-center justify-between p-4 rounded-lg bg-white/5 border border-white/5 hover:border-primary/30 transition-all cursor-pointer">
+          <div class="flex flex-col">
             <span class="text-sm font-bold text-white capitalize">
-            {{ perm?.title.replace("_", " ") }}
-          </span>
-          <span class="text-[10px] text-slate-500">{{perm.description}}</span>
-        </div>
-          
-          <input
-            type="checkbox"
-            :checked="form.permissions.includes(perm)"
-            @change="togglePermission(perm.title)"
-            class="rounded border-white/20 bg-transparent text-primary size-5"
-          />
+              {{ perm?.title.replace("_", " ") }}
+            </span>
+            <span class="text-[10px] text-slate-500">{{ perm.description }}</span>
+          </div>
+
+          <input type="checkbox" :checked="form.permissions.includes(perm)" @change="togglePermission(perm.title)"
+            class="rounded border-white/20 bg-transparent text-primary size-5" />
         </label>
       </div>
     </div>
     <!-- FOOTER -->
-    <div
-      class="p-6 border-t border-white/5 bg-background-dark/50 flex justify-end gap-4"
-    >
-      <button
-        @click="authStore.selectedUser = null"
-        class="px-6 py-2 rounded-lg text-slate-300 font-bold text-sm"
-      >
+    <div class="p-6 border-t border-white/5 bg-background-dark/50 flex justify-end gap-4">
+      <button @click="authStore.selectedUser = null" class="px-6 py-2 rounded-lg text-slate-300 font-bold text-sm">
         Cancel
       </button>
 
-      <button
-        @click="updateUser"
-        class="px-8 py-2.5 rounded-lg bg-primary text-background-dark font-bold text-sm shadow-xl hover:scale-[1.02] transition-all"
-      >
+      <button @click="updateUser"
+        class="px-8 py-2.5 rounded-lg bg-primary text-background-dark font-bold text-sm shadow-xl hover:scale-[1.02] transition-all">
         Save Changes
       </button>
     </div>
   </section>
 
   <!-- EMPTY STATE -->
-  <section
-    v-else
-    class="flex-1 flex items-center justify-center text-slate-500"
-  >
+  <section v-else class="flex-1 flex items-center justify-center text-slate-500">
     Select a user to view details
   </section>
 </template>
+<style scoped>
+.bg-primary {
+  background-color: #04c9cc;
+}
+</style>

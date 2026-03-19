@@ -53,7 +53,7 @@ const handleUpdate = async (serviceData: any) => {
   await servicesStore.update(serviceData, [])
 }
 
-const handleDelete = async (id: number) => {
+const handleDelete = async (id: string) => {
   if (confirm('¿Estás seguro de que deseas eliminar este servicio?')) {
     await servicesStore.remove(id)
   }
@@ -100,7 +100,7 @@ onMounted(async () => {
           <span class="truncate">Servicios</span>
           <input
             v-model="activeTab"
-            checked=""
+            
             class="hidden"
             type="radio"
             value="services"
@@ -223,3 +223,4 @@ onMounted(async () => {
   background-color: rgb(0 206 209 / 0.1);
 }
 </style>
+

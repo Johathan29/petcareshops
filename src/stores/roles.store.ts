@@ -205,65 +205,33 @@ export const useRolesStore = defineStore("roles", {
       return true
     },
 
-   async updateRolePermissions(roleId: string, permissionIds: string[]) {
-  try {
-    // 1. Obtener permisos actuales desde DB
-    const { data: current, error: fetchError } = await supabase
-      .from("role_permissions")
-      .select("permissions_id")
-      .eq("role_id", roleId)
-
-    if (fetchError) {
-      console.error("Error fetching current permissions:", fetchError)
-      return false
-    }
-
-    const currentIds = current.map(p => p.permissions_id)
-
-    // 2. Calcular diferencias
-    const toInsert = permissionIds.filter(id => !currentIds.includes(id))
-    const toDelete = currentIds.filter(id => !permissionIds.includes(id))
-
-    // 3. Eliminar los que ya no están
-    if (toDelete.length > 0) {
-      const { error: deleteError } = await supabase
+    async updateRolePermissions(roleId: string, permissionIds: string[]) {
+      // Delete existing permissions
+      await supabase
         .from("role_permissions")
         .delete()
         .eq("role_id", roleId)
-        .in("permissions_id", toDelete)
 
-      if (deleteError) {
-        console.error("Error deleting permissions:", deleteError)
-        return false
+      // Insert new permissions (one insert per permission)
+      if (permissionIds.length > 0) {
+        const inserts = permissionIds.map(permissionId => ({
+          role_id: roleId,
+          permissions_id: permissionId
+        }))
+
+        const { error } = await supabase
+          .from("role_permissions")
+          .insert(inserts)
+
+        if (error) {
+          console.error("Error updating role permissions:", error)
+          return false
+        }
       }
-    }
 
-    // 4. Insertar nuevos
-    if (toInsert.length > 0) {
-      const payload = toInsert.map(id => ({
-        role_id: roleId,
-        permissions_id: id
-      }))
-
-      const { error: insertError } = await supabase
-        .from("role_permissions")
-        .insert(payload)
-
-      if (insertError) {
-        console.error("Error inserting permissions:", insertError)
-        return false
-      }
-    }
-
-    // 5. Refrescar roles
-    await this.fetchRoles()
-
-    return true
-  } catch (err) {
-    console.error("Unexpected error:", err)
-    return false
-  }
-},
+      await this.fetchRoles()
+      return true
+    },
 
     async getRolePermissions(roleId: string) {
       const { data, error } = await supabase

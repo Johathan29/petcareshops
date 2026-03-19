@@ -8,6 +8,11 @@ import RolePermissionsModal from "../../components/DashBoard/Roles/RolePermissio
 import RolesTable from "../../components/DashBoard/Roles/RolesTable.vue"
 import ConfirmModal from "../../components/UI/ConfirmModal.vue"
 
+import ModalSuccess from "../../components/UI/SuccessModal.vue"
+import ModalError from "../../components/UI/ErrorModal.vue"
+import PermissionsAside from "../../components/DashBoard/Roles/PermissionsAside.vue"
+import CreateRoles from "../../components/DashBoard/Roles/createRoles.vue"
+
 const rolesStore = useRolesStore()
 
 // State
@@ -332,6 +337,7 @@ const getCurrentRolePermissions = () => {
       @cancel="showDeletePermissionConfirm = false"
     />
   </section>
+
 </template>
 
 <style lang="css" scoped>
